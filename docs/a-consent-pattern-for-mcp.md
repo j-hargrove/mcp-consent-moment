@@ -25,8 +25,14 @@ Granted scope is visible, attributable, and revocable. Scope creep — a server 
 **5. Match the human to the right tempo.**
 Low-risk actions get post-hoc visibility: the user can review what happened. High-risk actions get pre-hoc gates: nothing happens until the user says so. The system, not the user, decides which tempo a given action gets — because the user cannot classify risk at agent speed and should not have to.
 
+## What this looks like in practice
+
+The live demo runs four scenarios against three mock MCP servers. In the happy path, reads flow without interruption, the write action prompts once with the full schema shown, and the destructive refund gates hard every time — different tempos for different stakes, in sequence. In the partial completion scenario, the user denies the refund: the agent doesn't stop; it notes the ticket and surfaces a clear partial state, because denied doesn't mean stopped. In the scope creep scenario, the server requests expanded fields mid-task; the user denies the expansion; the agent falls back silently to the narrow grant it already holds and completes what it can. In the tool error scenario, the refund call fails after consent is granted, the agent retries automatically, then surfaces the failure inline and hands the decision back to the user — retry or skip — without interrupting the rest of the task. The argument in each case is the same: a system that stays useful under constraint, not one that trades control for friction.
+
 ## What this asks of hosts
 
 The spec is explicit that hosts own the safety boundary. What is missing is shared UX vocabulary for *how* to own it. This pattern is deliberately host-agnostic — three risk tiers, a schema-driven card, a budget view — so it composes with whatever a given host's product is rather than competing with it. Treat it as a starting point for a conversation about consent UX, not a finished standard.
 
-A reference implementation — a working demo plus a small adoptable pattern set — accompanies this piece.
+A reference implementation accompanies this piece — an interactive demo running four scenarios against three mock MCP servers, and a small adoptable pattern set: a framework-agnostic consent lifecycle state machine and React bindings any host can drop in. The demo was built autonomously by Claude Code from a tight spec in a single session. That's not a footnote — it's the argument made real. An agentic AI built the consent pattern for agentic AI, and the spec was the thing that kept it honest.
+
+Live demo: https://mcp-consent-moment.vercel.app
