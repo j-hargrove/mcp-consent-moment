@@ -35,17 +35,9 @@ import {
  *   budget: Budget,
  *   grants: Grant[],
  *   revokeGrant: (serverId, toolName) => void,
+ *   grantedSchemas: object,
+ *   setRememberNextGrant: (val: boolean) => void,
  * }}
- *
- * Usage:
- *   const { callTool, pendingRequest, resolve, grants, revokeGrant } = useConsentGate();
- *
- *   // In agent loop:
- *   const ok = await callTool(serverId, tool, args);
- *   if (!ok) return; // user denied
- *
- *   // In render:
- *   {pendingRequest && <ConsentCard request={pendingRequest} onResolve={resolve} />}
  */
 export function useConsentGate(options = {}) {
   const budget = useRef(createBudget()).current;
@@ -53,6 +45,8 @@ export function useConsentGate(options = {}) {
   const [pendingRequest, setPendingRequest] = useState(null);
   const [grants, setGrants] = useState([]);
   const resolveRef = useRef(null);
+  // Controls whether the next grant is persisted; set by host before resolve()
+  const rememberNextRef = useRef(options.rememberGrants ?? true);
 
   const refreshGrants = useCallback(() => {
     setGrants(budget.list().filter(g => g.state === ConsentState.GRANTED));
@@ -80,11 +74,14 @@ export function useConsentGate(options = {}) {
       budget,
       prompt,
       options: {
-        rememberGrants: options.rememberGrants ?? true,
+        // Read via getter so the value set by setRememberNextGrant() before
+        // resolve() fires is visible when gate() resumes after the Promise.
+        get rememberGrants() { return rememberNextRef.current; },
         classifyTool: options.classifyTool,
         grantedSchemas,
       },
     });
+    rememberNextRef.current = options.rememberGrants ?? true;
     refreshGrants();
     return proceed;
   }, [budget, prompt, options, grantedSchemas, refreshGrants]);
@@ -94,7 +91,26 @@ export function useConsentGate(options = {}) {
     refreshGrants();
   }, [budget, refreshGrants]);
 
-  return { callTool, pendingRequest, resolve, budget, grants, revokeGrant };
+  const resetBudget = useCallback(() => {
+    budget.clear();
+    refreshGrants();
+  }, [budget, refreshGrants]);
+
+  const setRememberNextGrant = useCallback((val) => {
+    rememberNextRef.current = val;
+  }, []);
+
+  return {
+    callTool,
+    pendingRequest,
+    resolve,
+    budget,
+    grants,
+    revokeGrant,
+    resetBudget,
+    grantedSchemas,
+    setRememberNextGrant,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -103,7 +119,7 @@ export function useConsentGate(options = {}) {
 
 /**
  * Renders a consent request. Unstyled — bring your own CSS or Tailwind.
- * For styled reference implementation see @mcp-consent/react/themed.
+ * For styled reference implementation see the demo's StyledConsentCard.
  *
  * Props:
  *   request    ConsentRequest from useConsentGate

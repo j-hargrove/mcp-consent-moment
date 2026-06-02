@@ -114,6 +114,11 @@ export function createBudget() {
       return Array.from(grants.values());
     },
 
+    /** Clear all grants (e.g. to reset demo state). */
+    clear() {
+      grants.clear();
+    },
+
     /** Serialize for persistence. */
     toJSON() {
       return JSON.stringify(Array.from(grants.entries()));

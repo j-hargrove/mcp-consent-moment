@@ -1,0 +1,14 @@
+{
+  "name": "@mcp-consent/react",
+  "version": "0.1.0",
+  "description": "React bindings for @mcp-consent/core.",
+  "type": "module",
+  "main": "./index.jsx",
+  "exports": {
+    ".": "./index.jsx"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "license": "MIT"
+}
