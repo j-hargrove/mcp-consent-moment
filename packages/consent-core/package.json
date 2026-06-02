@@ -1,0 +1,12 @@
+{
+  "name": "@mcp-consent/core",
+  "version": "0.1.0",
+  "description": "Framework-agnostic consent lifecycle state machine for MCP tool authorization.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "keywords": ["mcp", "consent", "authorization", "agent", "tool-use"],
+  "license": "MIT"
+}
