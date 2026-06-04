@@ -21,6 +21,7 @@ body {
   --text:         #dcdcf0;
   --text-muted:   #6868a0;
   --text-dim:     #404070;
+  --text-label:   #8C8CA4;
   --radius:       8px;
   --radius-sm:    5px;
 
@@ -131,10 +132,11 @@ body {
 }
 .task-card__label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--text-label);
   margin-bottom: 6px;
 }
 .task-card__text {
@@ -241,10 +243,11 @@ body {
 }
 .side-section__label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--text-label);
   margin-bottom: 10px;
 }
 
@@ -296,8 +299,8 @@ body {
 
 .activity-tier {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 8px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.04em;
   padding: 2px 3px;
   border-radius: 3px;
@@ -492,7 +495,7 @@ body {
 
 .tier-badge {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -513,7 +516,7 @@ body {
 }
 .server-name {
   font-size: 11px;
-  color: var(--text-dim);
+  color: var(--text-label);
 }
 
 /* ── Scope creep alert ── */
@@ -537,10 +540,11 @@ body {
 }
 .creep-diff__col { display: flex; flex-direction: column; gap: 3px; }
 .creep-diff__label {
-  font-size: 9px;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-dim);
+  color: var(--text-label);
   margin-bottom: 4px;
 }
 .creep-diff__field { color: var(--text-muted); }
@@ -560,10 +564,11 @@ body {
 }
 .amount-gate__label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--text-label);
   margin-bottom: 4px;
 }
 .amount-gate__value {
@@ -593,10 +598,11 @@ body {
 }
 .schema-section__label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-dim);
+  color: var(--text-label);
   margin-bottom: 10px;
 }
 
@@ -898,7 +904,7 @@ body {
 /* ── Side section sublabel ── */
 .side-section__sublabel {
   font-size: 10px;
-  color: var(--text-dim);
+  color: var(--text-label);
   margin-top: -6px;
   margin-bottom: 10px;
   line-height: 1.4;
