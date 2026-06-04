@@ -22,6 +22,7 @@ body {
   --text-muted:   #6868a0;
   --text-dim:     #404070;
   --text-label:   #8C8CA4;
+  --text-body:    #A0A0B4;
   --radius:       8px;
   --radius-sm:    5px;
 
@@ -80,7 +81,7 @@ body {
   gap: 8px;
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-body);
   overflow: hidden;
 }
 .status-bar__dot {
@@ -254,7 +255,7 @@ body {
 /* ── Activity strip ── */
 .activity-empty {
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-body);
   font-style: italic;
 }
 
@@ -329,7 +330,7 @@ body {
 .activity-fallback-badge {
   font-family: 'JetBrains Mono', monospace;
   font-size: 8px;
-  color: var(--text-dim);
+  color: var(--text-body);
   background: var(--bg-elevated);
   padding: 1px 4px;
   border-radius: 3px;
@@ -358,7 +359,7 @@ body {
 .activity-state-label--running       { color: var(--write); }
 .activity-state-label--passed        { color: var(--read); }
 .activity-state-label--denied        { color: var(--destructive); }
-.activity-state-label--skipped       { color: var(--text-dim); }
+.activity-state-label--skipped       { color: var(--text-body); }
 .activity-state-label--fallback      { color: var(--text-muted); }
 .activity-state-label--error         { color: var(--destructive); }
 .activity-state-label--retrying      { color: var(--write); }
@@ -367,7 +368,7 @@ body {
 .activity-thesis {
   font-family: 'JetBrains Mono', monospace;
   font-size: 8px;
-  color: var(--text-dim);
+  color: var(--text-body);
   white-space: nowrap;
 }
 
@@ -414,7 +415,7 @@ body {
 /* ── Budget panel (styles for BudgetPanel data-* elements) ── */
 [data-budget-empty] {
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-body);
   font-style: italic;
 }
 
@@ -444,14 +445,14 @@ body {
 }
 [data-grant-server] {
   font-size: 11px;
-  color: var(--text-dim);
+  color: var(--text-body);
   grid-column: 1;
   grid-row: 2;
 }
 [data-grant-time] {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: var(--text-dim);
+  color: var(--text-body);
   grid-column: 2;
   grid-row: 1;
   text-align: right;
@@ -461,7 +462,7 @@ body {
   grid-row: 2;
   background: none;
   border: none;
-  color: var(--text-dim);
+  color: var(--text-body);
   font-size: 10px;
   cursor: pointer;
   text-align: right;
@@ -580,7 +581,7 @@ body {
 }
 .amount-gate__to {
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-body);
   margin-top: 4px;
 }
 .amount-gate__warn {
@@ -660,10 +661,10 @@ body {
   border-bottom: 1px solid var(--border-dim);
   cursor: pointer;
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-body);
   transition: color 0.15s;
 }
-.remember-toggle:hover { color: var(--text-muted); }
+.remember-toggle:hover { color: var(--text); }
 .remember-toggle input[type="checkbox"] {
   accent-color: var(--write);
   width: 13px;
@@ -742,7 +743,7 @@ body {
 
 .explainer__framing {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-body);
   line-height: 1.5;
   margin-top: -4px;
 }
@@ -784,13 +785,13 @@ body {
 
 .explainer-row__desc {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-body);
   line-height: 1.45;
 }
 
 .explainer__footer {
   font-size: 11px;
-  color: var(--text-dim);
+  color: var(--text-body);
   padding-top: 2px;
   border-top: 1px solid var(--border-dim);
 }
@@ -806,7 +807,7 @@ body {
 }
 .mode-picker__prompt {
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-body);
   letter-spacing: 0.04em;
 }
 .mode-picker__grid {
@@ -847,7 +848,7 @@ body {
 
 .mode-card__description {
   font-size: 11px;
-  color: var(--text-dim);
+  color: var(--text-body);
   line-height: 1.45;
 }
 
@@ -913,7 +914,7 @@ body {
 /* ── Mode card watch line ── */
 .mode-card__watch {
   font-size: 10px;
-  color: var(--text-dim);
+  color: var(--text-body);
   line-height: 1.45;
   margin-top: 2px;
   font-style: italic;
@@ -937,7 +938,7 @@ body {
 /* ── Outcome insight (completion / stopped / partial) ── */
 .outcome-insight {
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-body);
   font-style: italic;
   line-height: 1.5;
   text-align: center;
