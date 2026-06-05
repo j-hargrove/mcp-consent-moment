@@ -225,6 +225,13 @@ function ModePicker({ onSelect }) {
               <span className="explainer-row__desc">Hard stop every time. No memory. Friction is the feature.</span>
             </div>
           </div>
+          <div className="explainer-row">
+            <span className="explainer-row__dot explainer-row__dot--creep" />
+            <div className="explainer-row__body">
+              <span className="explainer-row__label">Scope creep — growing beyond an existing grant</span>
+              <span className="explainer-row__desc">Any request that exceeds the current grant surfaces as a new decision. No silent expansion.</span>
+            </div>
+          </div>
         </div>
         <div className="explainer__footer">
           Revoke any permission at any time — the agent re-prompts on next use.

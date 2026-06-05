@@ -770,6 +770,7 @@ body {
 .explainer-row__dot--read        { background: var(--read); }
 .explainer-row__dot--write       { background: var(--write); }
 .explainer-row__dot--destructive { background: var(--destructive); }
+.explainer-row__dot--creep       { background: var(--creep); }
 
 .explainer-row__body {
   display: flex;
