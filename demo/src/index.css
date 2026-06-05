@@ -227,6 +227,31 @@ body {
   color: var(--text);
 }
 
+/* Completion-state CTA: text link treatment, amber accent */
+.completion .btn--reset,
+.partial-completion .btn--reset {
+  padding: 0;
+  border: none;
+  color: var(--write);
+  font-size: 14px;
+}
+.completion .btn--reset::after,
+.partial-completion .btn--reset::after {
+  content: '→';
+  margin-left: 0.4em;
+  display: inline-block;
+  transition: transform 0.15s;
+}
+.completion .btn--reset:hover,
+.partial-completion .btn--reset:hover {
+  color: var(--write);
+  filter: none;
+}
+.completion .btn--reset:hover::after,
+.partial-completion .btn--reset:hover::after {
+  transform: translateX(2px);
+}
+
 /* ── Side panel ── */
 .side-panel {
   width: 280px;
