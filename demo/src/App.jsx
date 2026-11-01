@@ -4,6 +4,7 @@ import { RiskTier } from '@mcp-consent/core';
 import { runDemo, seedGrants } from './agent.js';
 import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
+import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
 import { WriteCard } from './components/WriteCard.jsx';
 
@@ -46,6 +47,8 @@ export default function App() {
   // Bumped by Stop Agent. Anything from an older run is ignored, and its next tool call never returns.
   const runIdRef = useRef(0);
   const litThesesRef = useRef([]);
+  // Which new fields the human approved on the scope-creep card
+  const approvedFieldsRef = useRef(null);
   const [stopNotice, setStopNotice] = useState(null);
   const [approvedDraft, setApprovedDraft] = useState(null);
 
@@ -87,13 +90,17 @@ export default function App() {
     decisionResolveRef.current = null;
   }, []);
 
-  const handleResolve = useCallback((allowed) => {
-    // Creep cards have no checkbox: approving them is the decision to expand the grant.
-    setRememberNextGrant(pendingRequest?.isCreep || remember);
+  const handleResolve = useCallback((allowed, rememberGrant = remember) => {
+    setRememberNextGrant(rememberGrant);
     if (allowed && isFirstWrite(pendingRequest)) setApprovedDraft(pendingRequest);
     resolve(allowed);
     setRemember(false);
   }, [resolve, remember, pendingRequest, setRememberNextGrant]);
+
+  const approveFields = useCallback((fields, rememberFields) => {
+    approvedFieldsRef.current = fields;
+    handleResolve(true, rememberFields);
+  }, [handleResolve]);
 
   const onStopped = useCallback((toolName) => {
     console.log('[onStopped] fired for', toolName);
@@ -122,6 +129,7 @@ export default function App() {
     const runId = ++runIdRef.current;
     setStopNotice(null);
     setApprovedDraft(null);
+    approvedFieldsRef.current = null;
     const live = (fn) => (...args) => { if (runIdRef.current === runId) return fn(...args); };
     const haltIfStopped = async (...args) => {
       const proceed = await callTool(...args);
@@ -145,6 +153,7 @@ export default function App() {
       onComplete: live(setCompletion),
       onStopped: live(onStopped),
       waitForDecision,
+      getApprovedFields: () => approvedFieldsRef.current,
     });
 
     if (runIdRef.current === runId) setIsRunning(false);
@@ -199,6 +208,13 @@ export default function App() {
                 remember={remember}
                 onRememberChange={setRemember}
                 onResolve={handleResolve}
+              />
+            ) : pendingRequest?.isCreep ? (
+              <CreepCard
+                key={pendingRequest.createdAt}
+                request={pendingRequest}
+                onKeep={() => handleResolve(false)}
+                onApprove={approveFields}
               />
             ) : pendingRequest ? (
               <StyledConsentCard
@@ -280,9 +296,9 @@ function CompletionView({ completion, onReset }) {
             {completion.tasks.map((task, i) => (
               <div
                 key={i}
-                className={`task-line ${task.done ? 'task-line--done' : task.manual ? 'task-line--manual' : 'task-line--pending'}`}
+                className={`task-line ${task.done ? 'task-line--done' : task.leftover ? 'task-line--leftover' : 'task-line--manual'}`}
               >
-                <span className="task-line__icon">{task.done ? '✓' : '⚠'}</span>
+                <span className="task-line__icon">{task.done ? '✓' : task.leftover ? '○' : '⚠'}</span>
                 <span>{task.label}</span>
               </div>
             ))}

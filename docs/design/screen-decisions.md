@@ -87,7 +87,10 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 ## Scope-creep card — issues.update
 - 2px terracotta frame. "issue-tracker wants to write 2 fields it didn't have before."
 - YOUR CURRENT GRANT trace (forest) → dashed terracotta → "+ assignee" (salmon half-fill, "Moves ownership to another team"), "+ labels" (open navy, "Tags only"), each unchecked.
-- Actions: Keep Current Grant · Approve Selected · 0 of 2.
+- Actions: Keep Current Grant · Approve Selected · 0 of 2. Clicking Approve Selected with nothing checked shows "Check at least one field first." inline.
+- Remember (unchecked) names the checked fields: "Remember assignee and labels for issue-tracker". Left unchecked, approval covers this update only and the grant stays as it was.
+- Consequence: "Keep Current Grant: the ticket updates with the 3 granted fields." Keep falls back in every scenario.
+- Approval covers only the checked fields: the call and the recorded grant both narrow to them. Unchecked fields are named as left for you.
 
 ## Destructive refund card — payments.refund
 - Film-red header panel. "$149.00" hero; "to customer cust-7291 · can't be undone".
@@ -100,7 +103,8 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 
 ## Completion — consent receipt
 - Navy header: CONSENT RECEIPT + timestamp; headline + outcome line.
-- Headline is the honest outcome. "Task complete." only when everything completed; otherwise the count, e.g. "2 of 3 done."
+- Headline is the honest outcome. "Task complete." when every task step happened, naming any leftover fields ("Assignee and labels left for you."). "N of 3 done." only when a task step didn't happen.
+- Leftover rows that aren't alerts are slate. Film red stays for what needs a person to act
 - WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist. Actions: Run Another Scenario · Export Receipt.
 
 ## Sidebar tag colors

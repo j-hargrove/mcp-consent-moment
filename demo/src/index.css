@@ -782,6 +782,11 @@ body {
   font-size: var(--font-size-14);
   flex-shrink: 0;
 }
+.task-line--leftover {
+  background: var(--color-neutral-surface);
+  border: var(--border-width-hairline) solid var(--color-neutral-border);
+  color: var(--color-role-text-secondary);
+}
 .task-line--done   .task-line__icon { color: var(--color-role-approved); }
 .task-line--manual .task-line__icon { color: var(--color-role-alert); }
 

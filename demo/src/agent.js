@@ -120,20 +120,10 @@ const ARGS = {
     assignee:        'support-ops',
     labels:          ['refund-issued', 'payment-error', 'resolved'],
   },
-  issuesUpdateNarrow: {
-    issue_id:        'ISS-1847',
-    status:          'resolved',
-    resolution_note: 'Refund of $149.00 issued (REF-8K2MNP). Customer notified by email.',
-  },
   issuesFallbackRefundDenied: {
     issue_id:        'ISS-1847',
     status:          'open',
     resolution_note: 'Refund denied by user — manual follow-up required.',
-  },
-  issuesFallbackCreepDenied: {
-    issue_id:        'ISS-1847',
-    status:          'resolved',
-    resolution_note: 'Refund issued. Scope change denied — assignee and labels require manual update.',
   },
 };
 
@@ -213,20 +203,80 @@ async function runIssuesCreate(ctx) {
   return true;
 }
 
+const NEW_FIELDS = ['assignee', 'labels'];
+
+function pickFields(source, keep) {
+  return Object.fromEntries(Object.entries(source).filter(([field]) => keep.includes(field)));
+}
+
+/**
+ * Beat 5. Returns the new fields left undone, which is empty only if all were approved.
+ * Approval covers just the fields the human checked, so the call and the recorded
+ * grant both narrow to those. Keep Current Grant writes the granted fields only.
+ */
 async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
-  const { callTool, emit, onStatusChange } = ctx;
+  const { callTool, emit, onStatusChange, grantedSchemas, getApprovedFields } = ctx;
   onStatusChange('wants to write 2 new fields on the ticket');
-  const tool = { ...getTool('issue-tracker', 'issues.update'), inputSchema: EXPANDED_UPDATE_SCHEMA };
+  const narrowTool = getTool('issue-tracker', 'issues.update');
+  const tool = { ...narrowTool, inputSchema: EXPANDED_UPDATE_SCHEMA };
   const args = { ...ARGS.issuesUpdateExpanded, ...extraArgs };
+  const newFields = NEW_FIELDS;
+  const grantedFields = Object.keys(NARROW_UPDATE_SCHEMA.properties);
   emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', label: 'Updating ticket with resolution' });
-  const ok = await callTool('issue-tracker', tool, args);
-  if (ok) {
-    await tool.call(args);
+
+  if (await callTool('issue-tracker', tool, args)) {
+    // No field list means the card wasn't a scope-creep card, so the whole call was approved
+    const approved = getApprovedFields() ?? newFields;
+    // gate() records the whole schema when the human chose to remember: keep only what they approved
+    if (grantedSchemas['issues.update'] === tool.inputSchema) {
+      grantedSchemas['issues.update'] = {
+        ...NARROW_UPDATE_SCHEMA,
+        properties: {
+          ...NARROW_UPDATE_SCHEMA.properties,
+          ...pickFields(EXPANDED_UPDATE_SCHEMA.properties, approved),
+        },
+      };
+    }
+    await tool.call(pickFields(args, [...grantedFields, ...approved]));
     emit({ id: 'b5', state: 'passed' });
-  } else {
-    emit({ id: 'b5', state: 'denied' });
+    return newFields.filter(field => !approved.includes(field));
   }
-  return ok;
+
+  emit({ id: 'b5', state: 'denied' });
+  onStatusChange('keeping the current grant');
+  await delay(700);
+  const narrowArgs = pickFields(args, grantedFields);
+  emit({ id: 'b5-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Updating ticket within existing scope' });
+  await callTool('issue-tracker', narrowTool, narrowArgs);
+  await narrowTool.call(narrowArgs);
+  emit({ id: 'b5-fb', state: 'fallback' });
+  return newFields;
+}
+
+function leftForYou(fields) {
+  const names = fields.join(' and ');
+  return `${names[0].toUpperCase()}${names.slice(1)} left for you`;
+}
+
+/** Closes a run whose refund went through: honest about any field left undone. */
+function finishAfterUpdate({ onStatusChange, onComplete }, left, insight) {
+  if (left.length === 0) {
+    onStatusChange('Task complete. Bug triaged, ticket filed, refund issued.');
+    onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight });
+    return;
+  }
+  const message = `Task complete. ${leftForYou(left)}.`;
+  onStatusChange(message);
+  onComplete({
+    type: 'partial',
+    message,
+    insight: 'The agent stayed inside the grant you chose and left the rest with you.',
+    tasks: [
+      { label: 'Bug triaged and ticket filed', done: true },
+      { label: 'Refund issued', done: true },
+      { label: leftForYou(left), done: false, leftover: true },
+    ],
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -251,12 +301,9 @@ async function runHappy(ctx) {
   emit({ id: 'b4', state: 'passed' });
   await delay(600);
 
-  const ok5 = await runIssuesUpdateExpanded(ctx);
-  if (!ok5) { onStopped?.('issues.update'); return; }
+  const left = await runIssuesUpdateExpanded(ctx);
   await delay(400);
-
-  onStatusChange('Task complete. Bug triaged, ticket filed, refund issued.');
-  onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight: 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.' });
+  finishAfterUpdate(ctx, left, 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.');
 }
 
 // ---------------------------------------------------------------------------
@@ -282,10 +329,9 @@ async function runPartial(ctx) {
     await refundTool.call(ARGS.paymentsRefund);
     emit({ id: 'b4', state: 'passed' });
     await delay(600);
-    const ok5 = await runIssuesUpdateExpanded(ctx);
-    if (!ok5) { onStopped?.('issues.update'); return; }
-    onStatusChange('Task complete. Bug triaged, ticket filed, refund issued.');
-    onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight: 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.' });
+    const left = await runIssuesUpdateExpanded(ctx);
+    await delay(400);
+    finishAfterUpdate(ctx, left, 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.');
     return;
   }
 
@@ -341,52 +387,9 @@ async function runScopeCreepDenied(ctx) {
   emit({ id: 'b4', state: 'passed' });
   await delay(600);
 
-  // Beat 5: scope creep card — includes a fallback hint so the user knows
-  // what happens before they decide (thesis 3: schema is the consent payload)
-  onStatusChange('wants to write 2 new fields on the ticket');
-  const expandedToolWithHint = {
-    ...getTool('issue-tracker', 'issues.update'),
-    inputSchema: EXPANDED_UPDATE_SCHEMA,
-    fallbackHint: "If denied, I'll update the ticket using the scope I already have.",
-  };
-  emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', label: 'Updating ticket with resolution' });
-  const ok5 = await callTool('issue-tracker', expandedToolWithHint, ARGS.issuesUpdateExpanded);
-
-  if (ok5) {
-    await expandedToolWithHint.call(ARGS.issuesUpdateExpanded);
-    emit({ id: 'b5', state: 'passed' });
-    onStatusChange('Task complete. Bug triaged, ticket filed, refund issued.');
-    onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight: 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.' });
-    return;
-  }
-
-  // Expansion denied — fall back to the narrow grant that's already in the budget
-  emit({ id: 'b5', state: 'denied' });
-  onStatusChange('Scope expansion denied — falling back to existing narrow grant.');
-  await delay(700);
-
-  const narrowTool = getTool('issue-tracker', 'issues.update');
-  emit({ id: 'b5-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Updating ticket within existing scope' });
-  const okFb = await callTool('issue-tracker', narrowTool, ARGS.issuesFallbackCreepDenied);
-  if (okFb) {
-    await narrowTool.call(ARGS.issuesFallbackCreepDenied);
-    emit({ id: 'b5-fb', state: 'fallback' });
-  } else {
-    emit({ id: 'b5-fb', state: 'denied' });
-  }
+  const left = await runIssuesUpdateExpanded(ctx);
   await delay(400);
-
-  onStatusChange('2 of 3 done. Assignee and labels left for you.');
-  onComplete({
-    type: 'partial',
-    message: '2 of 3 done. Assignee and labels left for you.',
-    insight: 'The agent adapted to the denied scope and completed the task within the grant it already held.',
-    tasks: [
-      { label: 'Bug triaged and ticket filed', done: true },
-      { label: 'Refund issued', done: true },
-      { label: 'Assignee and labels left for you', done: false, manual: true },
-    ],
-  });
+  finishAfterUpdate(ctx, left, 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.');
 }
 
 // ---------------------------------------------------------------------------
@@ -465,13 +468,11 @@ async function runToolError(ctx) {
     skipped: 'Refund skipped by user — manual processing required.',
     error:   'Refund failed after retries — manual intervention required.',
   };
-  const ok5 = await runIssuesUpdateExpanded(ctx, { resolution_note: noteByOutcome[refundOutcome] ?? noteByOutcome.passed });
-  if (!ok5) { onStopped?.('issues.update'); return; }
+  const left = await runIssuesUpdateExpanded(ctx, { resolution_note: noteByOutcome[refundOutcome] ?? noteByOutcome.passed });
   await delay(400);
 
   if (refundOutcome === 'passed') {
-    onStatusChange('Task complete. Bug triaged, ticket filed, refund issued.');
-    onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight: 'The agent surfaced the failure, recovered automatically on retry, and completed the task.' });
+    finishAfterUpdate(ctx, left, 'The agent surfaced the failure, recovered automatically on retry, and completed the task.');
   } else {
     const partialMsg = refundOutcome === 'skipped'
       ? '2 of 3 done. Refund skipped — manual processing required.'
@@ -488,6 +489,7 @@ async function runToolError(ctx) {
         { label: 'Bug triaged and ticket filed', done: true },
         { label: refundOutcome === 'skipped' ? 'Refund skipped — manual action needed' : 'Refund failed — manual intervention required', done: false, manual: true },
         { label: 'Ticket updated with resolution note', done: true },
+        ...(left.length ? [{ label: leftForYou(left), done: false, leftover: true }] : []),
       ],
     });
   }
