@@ -11,7 +11,7 @@ Decision (Nov 1, 2026): code first. Claude Code rebuilds the demo from docs/desi
 - Do not change consent-core's state machine logic unless a phase below requires it. Say so before you do.
 - Every color, border width, font and duration comes from tokens.json. No raw values in components.
 - Work one phase at a time. At the end of each phase: run the demo, take screenshots, stop, and wait for approval. No wholesale UI changes without review.
-- Commit after each approved phase.
+- Commit to main and push after each approved phase. The live demo updates as phases land.
 
 ## Phase 1 — Tokens
 - Generate CSS custom properties from tokens.json (a small script is fine; no new heavy dependencies).
@@ -39,6 +39,12 @@ top bar + thesis strip → landing → write card → scope-creep card → destr
 
 ## Phase 5 — Behavior and motion
 Per behavior-and-motion.md: focus and keyboard rules, deliberate beat, double-commit guard, agent light states, card scan line, trace draw, reduced motion.
+
+## Phase 6 — Release (replaces the old version completely)
+- Remove any leftover old styles, components and assets. Nothing from the old visual design ships.
+- Rewrite README.md from scratch with the new story: the five theses, the tier system, the causal trace, the token contract (docs/design/), and how it was built (designed system + token contract + human review gates, not a single autonomous session).
+- Update docs/a-consent-pattern-for-mcp.md to match the new design and the multi-hop path.
+- Show the new README for approval, then commit and push.
 
 ## Done when
 All five scenarios run end to end, every value traces to tokens.json, and reduced motion works.
