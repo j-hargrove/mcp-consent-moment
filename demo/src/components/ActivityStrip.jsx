@@ -4,6 +4,7 @@ const STATE_ICON = {
   passed:          '✓',
   denied:          '✕',
   skipped:         '⊘',
+  stopped:         '⊘',
   retrying:        '↺',
   fallback:        '⤵',
   error:           '⚠',
@@ -16,6 +17,7 @@ const STATE_LABEL = {
   passed:          'passed',
   denied:          'denied',
   skipped:         'skipped',
+  stopped:         'stopped',
   retrying:        'retrying…',
   fallback:        'fallback',
   error:           'error',
@@ -50,7 +52,7 @@ export function ActivityStrip({ events, pendingDecision, onDecision }) {
 }
 
 function ActivityRow({ event }) {
-  const { state, toolName, tier, thesis, label, isFallback, retryCount } = event;
+  const { state, toolName, tier, isFallback, retryCount } = event;
 
   return (
     <div
@@ -83,7 +85,6 @@ function ActivityRow({ event }) {
             {STATE_LABEL[state]}
           </span>
         )}
-        {thesis && <span className="activity-thesis">thesis {thesis}</span>}
       </div>
     </div>
   );

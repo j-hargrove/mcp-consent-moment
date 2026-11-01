@@ -169,6 +169,52 @@ export function AgentStatus({ state = 'working', children }) {
   );
 }
 
+const THESES = [
+  ['Defer the grant', 'Defer the grant to first meaningful use, not connection.'],
+  ['Tier by risk', 'Tier by risk, not by tool.'],
+  ['Schema is the payload', 'The tool schema is the consent payload.'],
+  ['Consent is a budget', 'Consent is a budget, not a switch.'],
+  ['Match the tempo', 'The system matches the human to the right tempo.'],
+];
+
+/** active: thesis numbers lit for the current step. */
+export function ThesisStrip({ active = [] }) {
+  return (
+    <ol className="cm-theses" aria-label="Theses">
+      {THESES.map(([label, full], i) => {
+        const n = i + 1;
+        const on = active.includes(n);
+        return (
+          <li key={n} className="cm-thesis" data-n={n} data-active={on || undefined} aria-current={on || undefined} title={full}>
+            {on && '● '}{n} · {label}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+/** Stop stays on every screen until the agent has stopped, then the slot reads as a fact. */
+export function TopBar({ state, status, notice, onStop }) {
+  return (
+    <header className="cm-topbar">
+      <span className="cm-topbar__title">CONSENT MOMENT</span>
+      <AgentStatus state={state}>{status}</AgentStatus>
+      <div className="cm-topbar__end">
+        {notice && <span className="cm-topbar__notice" role="status">{notice}</span>}
+        {state === 'stopped'
+          ? <span className="cm-topbar__stopped">Agent stopped</span>
+          : (
+            <button type="button" className="cm-stop" onClick={onStop}>
+              <span>Stop Agent</span>
+              <Icon name="stop-sign" />
+            </button>
+          )}
+      </div>
+    </header>
+  );
+}
+
 /**
  * tier: read | write | scope-creep | alert | destructive | receipt.
  * Pass tool for a standard header, or panel for the destructive and receipt panels.
@@ -234,15 +280,15 @@ export function Alert({ tone = 'action', title, primary, secondary, children }) 
   );
 }
 
-/** Completion record: what was decided, then what is left for the human. */
-export function ConsentReceipt({ timestamp, outcome, steps, left = [], onToggleLeft, primary, secondary }) {
+/** Completion record. headline stays "Task complete." only when everything completed. */
+export function ConsentReceipt({ headline = 'Task complete.', timestamp, outcome, steps, left = [], onToggleLeft, primary, secondary }) {
   const panel = (
     <>
       <div className="cm-panel__row cm-panel__row--between">
         <span className="cm-panel__label"><Icon name="security" /> CONSENT RECEIPT</span>
         <span className="cm-panel__time">{timestamp}</span>
       </div>
-      <div className="cm-panel__decision">Task complete.</div>
+      <div className="cm-panel__decision">{headline}</div>
       <div className="cm-panel__detail">{outcome}</div>
     </>
   );

@@ -1,8 +1,20 @@
 import { useState, useCallback, useRef } from 'react';
-import { useConsentGate, BudgetPanel } from '@mcp-consent/react';
+import { useConsentGate, BudgetPanel, ThesisStrip, TopBar } from '@mcp-consent/react';
+import { RiskTier } from '@mcp-consent/core';
 import { runDemo, MODE, MODE_META } from './agent.js';
 import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
+
+const IDLE_STATUS = 'idle → choose a scenario to run the consent flow';
+
+/** Which theses light up for the step the human is looking at. */
+function thesesFor({ pendingRequest, pendingDecision, completion, events }) {
+  if (completion) return [4];
+  if (pendingDecision) return [5];
+  if (!pendingRequest) return events.at(-1)?.tier === 'read' ? [2] : null;
+  if (pendingRequest.isCreep) return [4];
+  return pendingRequest.tier === RiskTier.DESTRUCTIVE ? [2, 3, 5] : [1, 2, 3];
+}
 
 export default function App() {
   const {
@@ -17,7 +29,7 @@ export default function App() {
     setRememberNextGrant,
   } = useConsentGate();
 
-  const [status, setStatus] = useState('Select a scenario to run the consent flow demo.');
+  const [status, setStatus] = useState(IDLE_STATUS);
   const [events, setEvents] = useState([]);
   const [completion, setCompletion] = useState(null);
   const [stopped, setStopped] = useState(null); // null | { toolName }
@@ -25,6 +37,10 @@ export default function App() {
   const [remember, setRemember] = useState(false);
   const [pendingDecision, setPendingDecision] = useState(null);
   const decisionResolveRef = useRef(null);
+  // Bumped by Stop Agent. Anything from an older run is ignored, and its next tool call never returns.
+  const runIdRef = useRef(0);
+  const litThesesRef = useRef([]);
+  const [stopNotice, setStopNotice] = useState(null);
 
   // Merge event updates by id; new events are appended
   const emit = useCallback((event) => {
@@ -65,8 +81,31 @@ export default function App() {
     setStatus(`Agent stopped. Consent denied for ${toolName}.`);
   }, []);
 
+  const stopAgent = useCallback(() => {
+    if (!isRunning) {
+      setStopNotice('No agent running.');
+      return;
+    }
+    runIdRef.current += 1;
+    resolve(false);
+    setPendingDecision(null);
+    decisionResolveRef.current = null;
+    setEvents(prev => prev.map(e => (e.state === 'running' ? { ...e, state: 'stopped' } : e)));
+    setIsRunning(false);
+    setStopped({ byUser: true });
+    setStatus('Agent stopped. Nothing else will run.');
+  }, [isRunning, resolve]);
+
   const startDemo = useCallback(async (mode) => {
     if (isRunning) return;
+    const runId = ++runIdRef.current;
+    setStopNotice(null);
+    const live = (fn) => (...args) => { if (runIdRef.current === runId) return fn(...args); };
+    const haltIfStopped = async (...args) => {
+      const proceed = await callTool(...args);
+      if (runIdRef.current !== runId) await new Promise(() => {});
+      return proceed;
+    };
     resetBudget();
     setEvents([]);
     setCompletion(null);
@@ -77,17 +116,17 @@ export default function App() {
 
     await runDemo({
       mode,
-      callTool,
+      callTool: haltIfStopped,
       budget,
       grantedSchemas,
-      emit,
-      onStatusChange: setStatus,
-      onComplete: setCompletion,
-      onStopped,
+      emit: live(emit),
+      onStatusChange: live(setStatus),
+      onComplete: live(setCompletion),
+      onStopped: live(onStopped),
       waitForDecision,
     });
 
-    setIsRunning(false);
+    if (runIdRef.current === runId) setIsRunning(false);
   }, [isRunning, callTool, budget, grantedSchemas, emit, waitForDecision, resetBudget, onStopped]);
 
   const handleReset = useCallback(() => {
@@ -96,25 +135,23 @@ export default function App() {
     setCompletion(null);
     setStopped(null);
     setPendingDecision(null);
-    setStatus('Select a scenario to run the consent flow demo.');
+    setStatus(IDLE_STATUS);
   }, [resetBudget]);
 
-  const isIdle = !isRunning && !pendingRequest && !completion;
+  const isIdle = !isRunning && !pendingRequest && !completion && !stopped;
+  const atGate = Boolean(pendingRequest || pendingDecision);
+  const agentState = completion || stopped ? 'stopped' : atGate || isIdle ? 'waiting' : 'working';
+
+  // Keep the last gate's theses lit while the agent runs between gates
+  const lit = thesesFor({ pendingRequest, pendingDecision, completion, events });
+  if (lit) litThesesRef.current = lit;
+  if (isIdle || stopped) litThesesRef.current = [];
 
   return (
     <div className="app">
 
-      {/* ── Header ── */}
-      <header className="app-header">
-        <div className="app-brand">
-          <span className="app-brand__mark">⬡</span>
-          <span className="app-brand__name">MCP Consent Moment</span>
-        </div>
-        <div className="status-bar">
-          <span className={`status-bar__dot ${isRunning || pendingRequest ? 'status-bar__dot--active' : ''}`} />
-          <span className="status-bar__text">{status}</span>
-        </div>
-      </header>
+      <TopBar state={agentState} status={atGate ? `paused → ${status}` : status} notice={stopNotice} onStop={stopAgent} />
+      <ThesisStrip active={litThesesRef.current} />
 
       {/* ── Body ── */}
       <div className="app-body">
@@ -182,7 +219,9 @@ function StoppedView({ stopped, onBack }) {
     <div className="stopped-view">
       <div className="stopped-view__icon">⊘</div>
       <div className="stopped-view__message">
-        Agent stopped. Consent denied for <span className="stopped-view__tool">{stopped.toolName}</span>.
+        {stopped.byUser
+          ? 'Agent stopped. Nothing else will run.'
+          : <>Agent stopped. Consent denied for <span className="stopped-view__tool">{stopped.toolName}</span>.</>}
       </div>
       <div className="outcome-insight">The agent halted cleanly. Nothing ran without your approval.</div>
       <button className="btn btn--reset" onClick={onBack}>

@@ -39,6 +39,32 @@ If you can't map a decision to a thesis, it's probably not in scope.
 
 ---
 
+## Source of truth
+
+Design decisions live in `docs/design/`. Read them before touching UI.
+- `tokens.json` — DTCG token contract. Every color, border width, font and motion value comes from here.
+- `theme-decisions.md` — principles, palette roles, type, icons, causal trace.
+- `screen-decisions.md` — layout, copy, buttons, each card.
+- `behavior-and-motion.md` — interaction rules and motion.
+
+---
+
+## Rules
+
+- No colors, sizes or durations outside `tokens.json`. A new value becomes a token first.
+- Do not make wholesale UI changes without showing them first. Propose, screenshot, wait for approval.
+- The primary button is always the narrowest choice. Destructive actions are never remembered.
+- Buttons in Title Case; body copy in sentence case; agent voice in lowercase mono.
+- Respect `prefers-reduced-motion`.
+
+---
+
+## Status (Nov 1, 2026)
+
+Design system locked. Code comes first: `docs/design/rebuild-directive.md` drives the rebuild, and Figma comes last, generated from code via Figma MCP. Approved phases go straight to main. Multi-hop fifth path is approved in principle but not built.
+
+---
+
 ## Repo structure
 
 ```
@@ -140,7 +166,7 @@ Before marking any task done:
 
 ## Microcopy principles
 
-- Status bar narrates the thesis number during the demo ("thesis 2–3: write action → schema-driven consent card")
+- Status line is plain language only. The thesis strip carries the thesis numbers
 - Cards describe what happens in plain language, not permission jargon
 - No "allow access to X" — always "what gets written" / "what gets sent"
 - Destructive cards never have a "remember" option — the absence is the message

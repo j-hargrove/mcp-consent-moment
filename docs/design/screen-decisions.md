@@ -20,7 +20,7 @@
 | Review variant (scope/refund) | — | Review Linked Changes · Review Payment Change |
 
 ## Layout (locked)
-- Top bar: Tektur "CONSENT MOMENT" (rust) + teal agent light + status line in teal mono + "Stop Agent" (film red, stop-sign icon) right-aligned on every screen. On completion it reads "Agent stopped" in slate.
+- Top bar: Tektur "CONSENT MOMENT" (rust) + teal agent light + status line in teal mono (plain language, no thesis numbers) + "Stop Agent" (film red, stop-sign icon) right-aligned on every screen. On completion it reads "Agent stopped" in slate.
 - Thesis strip directly under the top bar.
 - Agent task card, full width (bot icon on label).
 - Centered consent card with one-line intro above it.
@@ -34,7 +34,7 @@ No full-width decision banner.
 - Color ramp (cool → hot), 2px top rule on every cell: navy · slate · brown · terracotta · film red.
 - Inactive: slate text, regular. Active: text in thesis color, weight 600, "● " prefix. No fills.
 - Active thesis 4 text uses rust (terracotta text fails AA at 10px). Rule stays terracotta.
-- Mapping: write → 1, 2, 3 · scope creep → 4 · destructive → 2, 3, 5 · tool error → 5 · completion → 4 · landing none.
+- Mapping: reads → 2 · write → 1, 2, 3 · scope creep → 4 · destructive → 2, 3, 5 · tool error → 5 · completion → 4 · landing none. The last gate's theses stay lit between gates.
 
 ## The four paths (locked)
 Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket update → Complete.
@@ -73,6 +73,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 
 ## Landing (locked)
 - Status: "idle → choose a scenario to run the consent flow".
+- Stop Agent stays active; clicking with nothing running shows "No agent running." inline.
 - "Agents move fast. People decide slowly." + "The card gets heavier and warmer as the stakes go up."
 - Tier legend (cool → hot) with mini card-frame samples + chips. Footer: "Revoke any permission at any time. The agent asks again next time."
 - CHOOSE A SCENARIO: 2×2 — Happy path · Partial completion · Scope creep · Tool error.
@@ -97,8 +98,9 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Actions: Skip for Now · Try Refund Again.
 
 ## Completion — consent receipt
-- Navy header: CONSENT RECEIPT + timestamp; "Task complete." + outcome line.
+- Navy header: CONSENT RECEIPT + timestamp; headline + outcome line.
+- Headline is the honest outcome. "Task complete." only when everything completed; otherwise the count, e.g. "2 of 3 done."
 - WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist. Actions: Run Another Scenario · Export Receipt.
 
 ## Sidebar tag colors
-READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Passed = forest check · declined = slate close · running = teal · needs you = film-red warning · timestamps = brown.
+READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.

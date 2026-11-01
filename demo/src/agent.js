@@ -183,14 +183,14 @@ const delay = ms => new Promise(r => setTimeout(r, ms));
 
 async function runReads(ctx) {
   const { callTool, emit, onStatusChange } = ctx;
-  onStatusChange('thesis 1, 2, 5: read action → flowing silently, no prompt');
+  onStatusChange('reading docs and the customer record');
 
-  emit({ id: 'b1', state: 'running', toolName: 'docs.search', serverId: 'company-data', tier: 'read', thesis: '1, 2, 5', label: 'Searching documentation' });
+  emit({ id: 'b1', state: 'running', toolName: 'docs.search', serverId: 'company-data', tier: 'read', label: 'Searching documentation' });
   await callTool('company-data', getTool('company-data', 'docs.search'), ARGS.docsSearch);
   emit({ id: 'b1', state: 'passed' });
   await delay(500);
 
-  emit({ id: 'b2', state: 'running', toolName: 'customers.read', serverId: 'company-data', tier: 'read', thesis: '1, 2, 5', label: 'Reading customer record' });
+  emit({ id: 'b2', state: 'running', toolName: 'customers.read', serverId: 'company-data', tier: 'read', label: 'Reading customer record' });
   await callTool('company-data', getTool('company-data', 'customers.read'), ARGS.customersRead);
   emit({ id: 'b2', state: 'passed' });
   await delay(500);
@@ -198,8 +198,8 @@ async function runReads(ctx) {
 
 async function runIssuesCreate(ctx) {
   const { callTool, emit, onStatusChange } = ctx;
-  onStatusChange('thesis 1, 2, 3: write action → schema-driven consent card');
-  emit({ id: 'b3', state: 'running', toolName: 'issues.create', serverId: 'issue-tracker', tier: 'write', thesis: '1, 2, 3', label: 'Filing support ticket' });
+  onStatusChange('wants to file a support ticket');
+  emit({ id: 'b3', state: 'running', toolName: 'issues.create', serverId: 'issue-tracker', tier: 'write', label: 'Filing support ticket' });
   const ok = await callTool('issue-tracker', getTool('issue-tracker', 'issues.create'), ARGS.issuesCreate);
   emit({ id: 'b3', state: ok ? 'passed' : 'denied' });
   return ok;
@@ -207,10 +207,10 @@ async function runIssuesCreate(ctx) {
 
 async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
   const { callTool, emit, onStatusChange } = ctx;
-  onStatusChange('thesis 4: scope creep detected → re-prompting with diff');
+  onStatusChange('wants to write 2 new fields on the ticket');
   const tool = { ...getTool('issue-tracker', 'issues.update'), inputSchema: EXPANDED_UPDATE_SCHEMA };
   const args = { ...ARGS.issuesUpdateExpanded, ...extraArgs };
-  emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', thesis: '4', label: 'Updating ticket with resolution' });
+  emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', label: 'Updating ticket with resolution' });
   const ok = await callTool('issue-tracker', tool, args);
   if (ok) {
     await tool.call(args);
@@ -234,9 +234,9 @@ async function runHappy(ctx) {
   if (!ok3) { onStopped?.('issues.create'); return; }
   await delay(600);
 
-  onStatusChange('thesis 2, 3, 5: destructive action → hard gate every time');
+  onStatusChange('wants to refund $149.00');
   const refundTool = getTool('payments', 'payments.refund');
-  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', thesis: '2, 3, 5', label: 'Processing refund' });
+  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
   if (!ok4) { emit({ id: 'b4', state: 'denied' }); onStopped?.('payments.refund'); return; }
   await refundTool.call(ARGS.paymentsRefund);
@@ -264,9 +264,9 @@ async function runPartial(ctx) {
   if (!ok3) { onStopped?.('issues.create'); return; }
   await delay(600);
 
-  onStatusChange('thesis 2, 3, 5: destructive action → hard gate every time');
+  onStatusChange('wants to refund $149.00');
   const refundTool = getTool('payments', 'payments.refund');
-  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', thesis: '2, 3, 5', label: 'Processing refund' });
+  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
 
   if (ok4) {
@@ -288,7 +288,7 @@ async function runPartial(ctx) {
 
   // Fallback: issues.update with narrow schema (pre-granted, flows silently — thesis 4)
   const narrowTool = getTool('issue-tracker', 'issues.update');
-  emit({ id: 'b4-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', thesis: '4', label: 'Adding fallback note to ticket' });
+  emit({ id: 'b4-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Adding fallback note to ticket' });
   const okFb = await callTool('issue-tracker', narrowTool, ARGS.issuesFallbackRefundDenied);
   if (okFb) {
     await narrowTool.call(ARGS.issuesFallbackRefundDenied);
@@ -298,10 +298,10 @@ async function runPartial(ctx) {
   }
   await delay(400);
 
-  onStatusChange('2 of 3 tasks complete. Refund requires manual action.');
+  onStatusChange('2 of 3 done. Refund requires manual action.');
   onComplete({
     type: 'partial',
-    message: '2 of 3 tasks complete. Refund requires manual action.',
+    message: '2 of 3 done. Refund requires manual action.',
     insight: 'The agent adapted to your decision and completed what it could.',
     tasks: [
       { label: 'Bug triaged and ticket filed', done: true },
@@ -324,9 +324,9 @@ async function runScopeCreepDenied(ctx) {
   if (!ok3) { onStopped?.('issues.create'); return; }
   await delay(600);
 
-  onStatusChange('thesis 2, 3, 5: destructive action → hard gate every time');
+  onStatusChange('wants to refund $149.00');
   const refundTool = getTool('payments', 'payments.refund');
-  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', thesis: '2, 3, 5', label: 'Processing refund' });
+  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
   if (!ok4) { emit({ id: 'b4', state: 'denied' }); onStopped?.('payments.refund'); return; }
   await refundTool.call(ARGS.paymentsRefund);
@@ -335,13 +335,13 @@ async function runScopeCreepDenied(ctx) {
 
   // Beat 5: scope creep card — includes a fallback hint so the user knows
   // what happens before they decide (thesis 3: schema is the consent payload)
-  onStatusChange('thesis 4: scope creep detected → re-prompting with diff');
+  onStatusChange('wants to write 2 new fields on the ticket');
   const expandedToolWithHint = {
     ...getTool('issue-tracker', 'issues.update'),
     inputSchema: EXPANDED_UPDATE_SCHEMA,
     fallbackHint: "If denied, I'll update the ticket using the scope I already have.",
   };
-  emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', thesis: '4', label: 'Updating ticket with resolution' });
+  emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', label: 'Updating ticket with resolution' });
   const ok5 = await callTool('issue-tracker', expandedToolWithHint, ARGS.issuesUpdateExpanded);
 
   if (ok5) {
@@ -358,7 +358,7 @@ async function runScopeCreepDenied(ctx) {
   await delay(700);
 
   const narrowTool = getTool('issue-tracker', 'issues.update');
-  emit({ id: 'b5-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', thesis: '4', label: 'Updating ticket within existing scope' });
+  emit({ id: 'b5-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Updating ticket within existing scope' });
   const okFb = await callTool('issue-tracker', narrowTool, ARGS.issuesFallbackCreepDenied);
   if (okFb) {
     await narrowTool.call(ARGS.issuesFallbackCreepDenied);
@@ -368,8 +368,17 @@ async function runScopeCreepDenied(ctx) {
   }
   await delay(400);
 
-  onStatusChange('Task complete. Ticket updated — assignee and labels require manual update.');
-  onComplete({ type: 'done', message: 'Task complete. Ticket updated — assignee and labels require manual update.', insight: 'The agent adapted to the denied scope and completed the task within the grant it already held.' });
+  onStatusChange('2 of 3 done. Assignee and labels left for you.');
+  onComplete({
+    type: 'partial',
+    message: '2 of 3 done. Assignee and labels left for you.',
+    insight: 'The agent adapted to the denied scope and completed the task within the grant it already held.',
+    tasks: [
+      { label: 'Bug triaged and ticket filed', done: true },
+      { label: 'Refund issued', done: true },
+      { label: 'Assignee and labels left for you', done: false, manual: true },
+    ],
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -386,9 +395,9 @@ async function runToolError(ctx) {
   await delay(600);
 
   // Consent gate runs normally (user approves), then execution fails
-  onStatusChange('thesis 2, 3, 5: destructive action → hard gate every time');
+  onStatusChange('wants to refund $149.00');
   const errorTool = withTransientError(getTool('payments', 'payments.refund'), 2);
-  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', thesis: '2, 3, 5', label: 'Processing refund' });
+  emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', errorTool, ARGS.paymentsRefund);
   if (!ok4) { emit({ id: 'b4', state: 'denied' }); onStopped?.('payments.refund'); return; }
 
@@ -457,8 +466,8 @@ async function runToolError(ctx) {
     onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight: 'The agent surfaced the failure, recovered automatically on retry, and completed the task.' });
   } else {
     const partialMsg = refundOutcome === 'skipped'
-      ? 'Task complete. Refund skipped — manual processing required.'
-      : 'Task complete. Refund failed — manual intervention required.';
+      ? '2 of 3 done. Refund skipped — manual processing required.'
+      : '2 of 3 done. Refund failed — manual intervention required.';
     const partialInsight = refundOutcome === 'skipped'
       ? 'The agent surfaced the failure, respected your decision, and updated the ticket to reflect it.'
       : 'The agent escalated the failure cleanly. Nothing was silently abandoned.';

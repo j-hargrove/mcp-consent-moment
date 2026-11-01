@@ -226,6 +226,7 @@ export function Gallery() {
           />
           <ConsentReceipt
             timestamp="Nov 1, 2026 · 12:14 PM"
+            headline="2 of 3 done."
             outcome="Bug triaged and ticket filed. Refund not issued."
             steps={DECIDED_PARTIAL}
             left={left}

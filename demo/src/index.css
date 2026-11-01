@@ -20,72 +20,6 @@ body {
   overflow: hidden;
 }
 
-/* ── Header ── */
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-24);
-  padding: 0 var(--space-24);
-  height: var(--size-52);
-  border-bottom: var(--border-width-hairline) solid var(--color-neutral-border);
-  background: var(--color-neutral-surface);
-  flex-shrink: 0;
-}
-
-.app-brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  flex-shrink: 0;
-}
-.app-brand__mark {
-  font-size: var(--font-size-18);
-  color: var(--color-role-brand);
-}
-.app-brand__name {
-  font-family: var(--font-family-brand);
-  font-size: var(--font-size-13);
-  font-weight: var(--font-weight-brand);
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-role-brand);
-}
-
-/* Status bar */
-.status-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-11);
-  color: var(--color-role-agent);
-  overflow: hidden;
-}
-.status-bar__dot {
-  width: var(--size-6);
-  height: var(--size-6);
-  border-radius: var(--radius-circle);
-  background: var(--color-role-agent-stopped);
-  flex-shrink: 0;
-  transition: background var(--motion-duration-base) var(--motion-easing-standard);
-}
-.status-bar__dot--active {
-  background: var(--color-role-agent);
-  animation: pulse var(--motion-duration-breathe) var(--motion-easing-standard) infinite;
-}
-.status-bar__text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: var(--opacity-dim); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .status-bar__dot--active { animation: none; }
-}
-
 /* ── Body layout ── */
 .app-body {
   display: flex;
@@ -291,6 +225,7 @@ body {
 .activity-icon--passed        { color: var(--color-role-approved); }
 .activity-icon--denied        { color: var(--color-role-text-secondary); }
 .activity-icon--skipped       { color: var(--color-role-text-secondary); }
+.activity-icon--stopped       { color: var(--color-role-agent-stopped); }
 .activity-icon--fallback      { color: var(--color-role-text-secondary); }
 .activity-icon--error         { color: var(--color-role-alert); }
 .activity-icon--retry-waiting { color: var(--color-role-alert); }
@@ -357,17 +292,11 @@ body {
 .activity-state-label--passed        { color: var(--color-role-approved); }
 .activity-state-label--denied        { color: var(--color-role-text-secondary); }
 .activity-state-label--skipped       { color: var(--color-role-text-secondary); }
+.activity-state-label--stopped       { color: var(--color-role-agent-stopped); }
 .activity-state-label--fallback      { color: var(--color-role-text-secondary); }
 .activity-state-label--error         { color: var(--color-role-alert); }
 .activity-state-label--retrying      { color: var(--color-role-agent); }
 .activity-state-label--retry-waiting { color: var(--color-role-alert); }
-
-.activity-thesis {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-8);
-  color: var(--color-role-text-secondary);
-  white-space: nowrap;
-}
 
 /* ── Decision prompt (inline in activity area) ── */
 .decision-prompt {
