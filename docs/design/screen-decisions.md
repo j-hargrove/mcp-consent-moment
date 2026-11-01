@@ -28,11 +28,12 @@ No full-width decision banner.
 
 ## Thesis strip (locked)
 - One line, ~18px tall, under the top bar. Five equal cells, 10px IBM Plex Mono.
-- Labels: 1 · Decision first · 2 · Disclose before · 3 · Narrow by default · 4 · Ask before expanding · 5 · Friction if permanent.
+- Labels (Jon's original theses, short form): 1 · Defer the grant · 2 · Tier by risk · 3 · Schema is the payload · 4 · Consent is a budget · 5 · Match the tempo.
+- Full theses: (1) Defer the grant to first meaningful use, not connection. (2) Tier by risk, not by tool. (3) The tool schema is the consent payload. (4) Consent is a budget, not a switch. (5) The system matches the human to the right tempo.
 - Color ramp (cool → hot), 2px top rule on every cell: navy · slate · brown · terracotta · film red.
 - Inactive: slate text, regular. Active: text in thesis color, weight 600, "● " prefix. No fills.
 - Active thesis 4 text uses rust (terracotta text fails AA at 10px). Rule stays terracotta.
-- Mapping: write → 1, 2, 3 · scope creep → 4 · destructive → 2, 3, 5 · tool error → 1, 5 · completion → 2 · landing none.
+- Mapping: write → 1, 2, 3 · scope creep → 4 · destructive → 2, 3, 5 · tool error → 5 · completion → 4 · landing none.
 
 ## The four paths (locked)
 Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket update → Complete.
