@@ -22,8 +22,8 @@
 ## Layout (locked)
 - Top bar: Tektur "CONSENT MOMENT" (rust) + teal agent light + status line in teal mono (plain language, no thesis numbers) + "Stop Agent" (film red, stop-sign icon) right-aligned on every screen. On completion it reads "Agent stopped" in slate.
 - Thesis strip directly under the top bar.
-- Agent task card, full width (bot icon on label).
-- Centered consent card with one-line intro above it.
+- Agent task card, full width of the main column (bot icon on label). The main column caps at 1200px, left-aligned.
+- Consent card 640px wide, horizontally centered, top-aligned 32px under the Agent Task card, with a one-line intro above it. Decision sentence 22px Plex Sans 600.
 - Right sidebar: ACTIVITY (status icon + record-type icon + tier tag + tool) and WHAT YOU'VE AUTHORIZED (security icon, revoke). Brown only for timestamps.
 No full-width decision banner.
 
@@ -69,7 +69,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Payload treatment: create → draft preview · update / scope change → causal trace · destructive → hero value · failure → timeline · completion → causal trace as record.
 - Remember options always unchecked and name exactly what they remember. Destructive and cross-server changes are never remembered.
 - Every non-obvious choice states its consequence underneath.
-- Authorized list shows grants only after they happen.
+- Authorized list shows grants only after they happen. A grant from a prior session shows from landing, labeled "granted earlier"; revoking it there holds for the next run.
 
 ## Landing (locked)
 - Status: "idle → choose a scenario to run the consent flow".
@@ -81,7 +81,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 
 ## Write card — issues.create
 - 1.5px slate frame. WRITE chip + receipt icon. "Create a new high-priority ticket for PAY-503."
-- Draft preview: white, 1.5px dashed slate; on approve dashed → solid, real ID.
+- Draft preview: white, 1.5px dashed slate; on approve dashed → solid, real ID. The card stays up until the next gate, without actions, so the ID comes from the tool's result.
 - Remember (unchecked): "Don't ask again for new tickets on issue-tracker". Actions: Create This Ticket · Deny.
 
 ## Scope-creep card — issues.update
@@ -104,4 +104,4 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist. Actions: Run Another Scenario · Export Receipt.
 
 ## Sidebar tag colors
-READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.
+READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate = film-red pause, "waiting" · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.

@@ -169,6 +169,28 @@ export function AgentStatus({ state = 'working', children }) {
   );
 }
 
+function draftValue(value) {
+  if (value === null || value === undefined) return 'not set';
+  return Array.isArray(value) ? value.join(', ') : String(value);
+}
+
+/** Thesis 3: a create shows the record itself. Dashed until it exists, solid once it does. */
+export function DraftPreview({ id, fields, committed = false }) {
+  return (
+    <div className="cm-draft" data-committed={committed || undefined}>
+      <div className="cm-draft__id">{id}</div>
+      <dl className="cm-draft__fields">
+        {fields.map(field => (
+          <div key={field.name} className="cm-draft__row">
+            <dt>{field.name}</dt>
+            <dd>{draftValue(field.value)}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
 const THESES = [
   ['Defer the grant', 'Defer the grant to first meaningful use, not connection.'],
   ['Tier by risk', 'Tier by risk, not by tool.'],

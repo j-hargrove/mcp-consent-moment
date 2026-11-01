@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Alert, AgentStatus, ApprovalCheckbox, Button, CausalTrace, ConsentFrame, ConsentReceipt,
-  DestructivePanel, HopConnector, Icon, ICON_TONES, SectionLabel, TierChip, TraceNode,
+  DestructivePanel, DraftPreview, HopConnector, Icon, ICON_TONES, SectionLabel, TierChip, TraceNode,
 } from '@mcp-consent/react';
 import { ICON_PATHS } from '../../../packages/consent-react/icon-paths.js';
 
@@ -60,6 +60,11 @@ const HOP_STEPS = [
   { kind: 'granted', server: 'crm', field: 'contact.email', value: 'a@old.example → a@new.example', line: 'ends', hopTo: 'payments' },
   { kind: 'new-half', server: 'payments', field: '+ billing_contact', note: 'Follows the CRM email automatically', line: 'ends' },
   { kind: 'new-half', server: 'payments', field: '+ card_on_file.notify_to', note: 'Card receipts and fraud alerts go to the new address' },
+];
+
+const DRAFT_FIELDS = [
+  { name: 'title', value: 'Payment failure — PAY-503' },
+  { name: 'priority', value: 'high' },
 ];
 
 const DECIDED_ALL = [
@@ -196,6 +201,13 @@ export function Gallery() {
           >
             <p>Frame only. The full receipt is below.</p>
           </ConsentFrame>
+        </div>
+      </Section>
+
+      <Section title="DRAFT PREVIEW">
+        <div className="g-cards">
+          <div className="g-cell g-pane g-fill"><Cap>draft</Cap><DraftPreview id="ISS-new" fields={DRAFT_FIELDS} /></div>
+          <div className="g-cell g-pane g-fill"><Cap>created</Cap><DraftPreview id="ISS-1847" fields={DRAFT_FIELDS} committed /></div>
         </div>
       </Section>
 

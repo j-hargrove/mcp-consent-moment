@@ -51,3 +51,4 @@ body {
   background: var(--color-neutral-surface);
   border-radius: var(--radius-md);
 }
+.g-fill > .cm-draft { align-self: stretch; }

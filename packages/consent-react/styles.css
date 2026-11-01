@@ -14,7 +14,8 @@
 /* The sentence being decided: principle 1, decision first */
 .cm-decision {
   font-family: var(--font-family-sans);
-  font-size: var(--font-size-15);
+  font-size: var(--font-size-22);
+  line-height: var(--font-line-height-snug);
   font-weight: var(--font-weight-decision);
   color: var(--color-role-ink);
 }
@@ -362,7 +363,7 @@
 /* ── Consent card frame: escalates with tier ── */
 .cm-frame {
   width: 100%;
-  max-width: var(--size-520);
+  max-width: var(--size-640);
   background: var(--color-neutral-surface);
   border: var(--border-width-hairline) solid var(--color-tier-read-frame);
   border-radius: var(--radius-lg);
@@ -469,7 +470,7 @@
   align-items: flex-start;
   gap: var(--space-8);
   width: 100%;
-  max-width: var(--size-520);
+  max-width: var(--size-640);
   padding: var(--space-16) 0 0;
   background: var(--color-neutral-surface);
   border: var(--border-width-alert) solid var(--color-tier-alert-frame);
@@ -588,3 +589,50 @@
 .cm-thesis[data-n='3'][data-active] { color: var(--color-thesis-3-text); }
 .cm-thesis[data-n='4'][data-active] { color: var(--color-thesis-4-text); }
 .cm-thesis[data-n='5'][data-active] { color: var(--color-thesis-5-text); }
+
+/* ── Draft preview ── */
+.cm-draft {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--space-14);
+  background: var(--color-neutral-white);
+  border: var(--border-width-write) dashed var(--color-tier-write-draft-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--motion-duration-slow) var(--motion-easing-standard);
+}
+.cm-draft[data-committed] { border-color: transparent; }
+/* border-style can't animate, so the dashes fade out as a solid border fades in */
+.cm-draft::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--border-width-write));
+  border: var(--border-width-write) solid var(--color-tier-write-draft-border);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-duration-slow) var(--motion-easing-standard);
+}
+.cm-draft[data-committed]::after { opacity: 1; }
+.cm-draft__id {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-decision);
+  color: var(--color-role-ink);
+}
+.cm-draft__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.cm-draft__row {
+  display: grid;
+  grid-template-columns: var(--size-100) 1fr;
+  gap: var(--space-8);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-11);
+  line-height: var(--font-line-height-snug);
+}
+.cm-draft__row dt { color: var(--color-role-text-secondary); }
+.cm-draft__row dd { color: var(--color-role-ink); overflow-wrap: anywhere; }

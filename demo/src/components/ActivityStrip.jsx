@@ -31,7 +31,7 @@ const TIER_LABEL = {
   creep:       'CREEP',
 };
 
-export function ActivityStrip({ events, pendingDecision, onDecision }) {
+export function ActivityStrip({ events, gateOpen, pendingDecision, onDecision }) {
   if (!events.length && !pendingDecision) {
     return (
       <div className="activity-empty">No activity yet.</div>
@@ -41,7 +41,7 @@ export function ActivityStrip({ events, pendingDecision, onDecision }) {
   return (
     <div className="activity-strip">
       {events.map(event => (
-        <ActivityRow key={event.id} event={event} />
+        <ActivityRow key={event.id} event={event} gateOpen={gateOpen} />
       ))}
 
       {pendingDecision && (
@@ -51,8 +51,10 @@ export function ActivityStrip({ events, pendingDecision, onDecision }) {
   );
 }
 
-function ActivityRow({ event }) {
-  const { state, toolName, tier, isFallback, retryCount } = event;
+function ActivityRow({ event, gateOpen }) {
+  const { toolName, tier, isFallback, retryCount } = event;
+  // The agent runs nothing while a card is open: the row is waiting on the human
+  const state = gateOpen && event.state === 'running' ? 'retry-waiting' : event.state;
 
   return (
     <div

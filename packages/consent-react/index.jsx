@@ -108,6 +108,7 @@ export function useConsentGate(options = {}) {
     resolve,
     budget,
     grants,
+    refreshGrants,
     revokeGrant,
     resetBudget,
     grantedSchemas,
@@ -240,8 +241,9 @@ export function ConsentCard({ request, onResolve, remember = true, onRememberCha
  * Props:
  *   grants       Grant[] from useConsentGate
  *   onRevoke     (serverId, toolName) => void
+ *   sessionStart timestamp; grants older than this read "granted earlier"
  */
-export function BudgetPanel({ grants, onRevoke }) {
+export function BudgetPanel({ grants, onRevoke, sessionStart = 0 }) {
   if (!grants.length) {
     return <div data-budget-empty>No scopes granted yet.</div>;
   }
@@ -253,7 +255,9 @@ export function BudgetPanel({ grants, onRevoke }) {
           <div data-grant-scope>{g.toolName}</div>
           <div data-grant-server>{g.serverId}</div>
           <div data-grant-time>
-            {new Date(g.grantedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {g.grantedAt < sessionStart
+              ? 'granted earlier'
+              : new Date(g.grantedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
           <button
             data-revoke

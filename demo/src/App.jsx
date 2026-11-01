@@ -1,14 +1,19 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentGate, BudgetPanel, SectionLabel, ThesisStrip, TopBar } from '@mcp-consent/react';
 import { RiskTier } from '@mcp-consent/core';
-import { runDemo } from './agent.js';
+import { runDemo, seedGrants } from './agent.js';
 import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { Landing } from './components/Landing.jsx';
+import { WriteCard } from './components/WriteCard.jsx';
 
 const IDLE_STATUS = 'idle → choose a scenario to run the consent flow';
 
 /** Which theses light up for the step the human is looking at. */
+const SESSION_START = Date.now();
+
+const isFirstWrite = (request) => request?.tool.name === 'issues.create';
+
 function thesesFor({ pendingRequest, pendingDecision, completion, events }) {
   if (completion) return [4];
   if (pendingDecision) return [5];
@@ -24,8 +29,8 @@ export default function App() {
     resolve,
     budget,
     grants,
+    refreshGrants,
     revokeGrant,
-    resetBudget,
     grantedSchemas,
     setRememberNextGrant,
   } = useConsentGate();
@@ -42,6 +47,19 @@ export default function App() {
   const runIdRef = useRef(0);
   const litThesesRef = useRef([]);
   const [stopNotice, setStopNotice] = useState(null);
+  const [approvedDraft, setApprovedDraft] = useState(null);
+
+  const resetGrants = useCallback(() => {
+    seedGrants(budget, grantedSchemas);
+    refreshGrants();
+  }, [budget, grantedSchemas, refreshGrants]);
+
+  useEffect(resetGrants, [resetGrants]);
+
+  // The approved draft stays up until the next gate replaces it
+  useEffect(() => {
+    if (pendingRequest) setApprovedDraft(null);
+  }, [pendingRequest]);
 
   // Merge event updates by id; new events are appended
   const emit = useCallback((event) => {
@@ -72,6 +90,7 @@ export default function App() {
   const handleResolve = useCallback((allowed) => {
     // Creep cards have no checkbox: approving them is the decision to expand the grant.
     setRememberNextGrant(pendingRequest?.isCreep || remember);
+    if (allowed && isFirstWrite(pendingRequest)) setApprovedDraft(pendingRequest);
     resolve(allowed);
     setRemember(false);
   }, [resolve, remember, pendingRequest, setRememberNextGrant]);
@@ -92,6 +111,7 @@ export default function App() {
     setPendingDecision(null);
     decisionResolveRef.current = null;
     setEvents(prev => prev.map(e => (e.state === 'running' ? { ...e, state: 'stopped' } : e)));
+    setApprovedDraft(null);
     setIsRunning(false);
     setStopped({ byUser: true });
     setStatus('Agent stopped. Nothing else will run.');
@@ -101,13 +121,13 @@ export default function App() {
     if (isRunning) return;
     const runId = ++runIdRef.current;
     setStopNotice(null);
+    setApprovedDraft(null);
     const live = (fn) => (...args) => { if (runIdRef.current === runId) return fn(...args); };
     const haltIfStopped = async (...args) => {
       const proceed = await callTool(...args);
       if (runIdRef.current !== runId) await new Promise(() => {});
       return proceed;
     };
-    resetBudget();
     setEvents([]);
     setCompletion(null);
     setStopped(null);
@@ -128,19 +148,23 @@ export default function App() {
     });
 
     if (runIdRef.current === runId) setIsRunning(false);
-  }, [isRunning, callTool, budget, grantedSchemas, emit, waitForDecision, resetBudget, onStopped]);
+  }, [isRunning, callTool, budget, grantedSchemas, emit, waitForDecision, onStopped]);
 
   const handleReset = useCallback(() => {
-    resetBudget();
+    resetGrants();
     setEvents([]);
     setCompletion(null);
     setStopped(null);
     setPendingDecision(null);
+    setApprovedDraft(null);
     setStatus(IDLE_STATUS);
-  }, [resetBudget]);
+  }, [resetGrants]);
 
   const isIdle = !isRunning && !pendingRequest && !completion && !stopped;
   const atGate = Boolean(pendingRequest || pendingDecision);
+  const showDraft = approvedDraft && !pendingRequest && !completion && !stopped;
+  const writeRequest = isFirstWrite(pendingRequest) ? pendingRequest : showDraft ? approvedDraft : null;
+  const gateCard = Boolean(pendingRequest || writeRequest);
   const agentState = completion || stopped ? 'stopped' : atGate || isIdle ? 'waiting' : 'working';
 
   // Keep the last gate's theses lit while the agent runs between gates
@@ -166,8 +190,17 @@ export default function App() {
             </div>
           </div>
 
-          <div className={`main-stage${isIdle ? ' main-stage--top' : ''}`}>
-            {pendingRequest ? (
+          <div className={`main-stage${isIdle ? ' main-stage--top' : ''}${gateCard ? ' main-stage--top main-stage--gate' : ''}`}>
+            {writeRequest ? (
+              <WriteCard
+                request={writeRequest}
+                committed={!pendingRequest}
+                resultId={events.find(e => e.resultId)?.resultId}
+                remember={remember}
+                onRememberChange={setRemember}
+                onResolve={handleResolve}
+              />
+            ) : pendingRequest ? (
               <StyledConsentCard
                 request={pendingRequest}
                 onResolve={handleResolve}
@@ -195,6 +228,7 @@ export default function App() {
             <SectionLabel icon="recently-viewed">ACTIVITY</SectionLabel>
             <ActivityStrip
               events={events}
+              gateOpen={Boolean(pendingRequest)}
               pendingDecision={pendingDecision}
               onDecision={handleDecision}
             />
@@ -203,7 +237,7 @@ export default function App() {
           <div className="side-section">
             <SectionLabel icon="security">WHAT YOU'VE AUTHORIZED</SectionLabel>
             <div className="side-section__sublabel">Revoke anytime — agent re-prompts on next use.</div>
-            <BudgetPanel grants={grants} onRevoke={revokeGrant} />
+            <BudgetPanel grants={grants} onRevoke={revokeGrant} sessionStart={SESSION_START} />
           </div>
         </aside>
       </div>

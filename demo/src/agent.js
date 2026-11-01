@@ -59,7 +59,6 @@ export const MODE_META = {
  * @param {function} p.waitForDecision - async ({ message, options }) => value
  */
 export async function runDemo(p) {
-  setup(p.budget, p.grantedSchemas);
   const ctx = p;
   switch (p.mode) {
     case MODE.PARTIAL:            return runPartial(ctx);
@@ -162,12 +161,17 @@ function withTransientError(tool, failCount) {
   };
 }
 
-function setup(budget, grantedSchemas) {
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Start state for every scenario: issues.update was granted in a prior session with a
+ * narrow schema. Beat 5 presents the expanded schema, so scope creep fires.
+ * Runs at landing, not at run start, so revoking it there sticks for the next run.
+ */
+export function seedGrants(budget, grantedSchemas) {
   budget.clear();
   Object.keys(grantedSchemas).forEach(k => delete grantedSchemas[k]);
-  // Pre-seed: issues.update was granted in a prior session with a narrow schema.
-  // Beat 5 presents the expanded schema — scope creep fires.
-  budget.grant('issue-tracker', 'issues.update');
+  budget.grant('issue-tracker', 'issues.update', { grantedAt: Date.now() - ONE_DAY_MS });
   grantedSchemas['issues.update'] = NARROW_UPDATE_SCHEMA;
 }
 
@@ -196,9 +200,17 @@ async function runIssuesCreate(ctx) {
   const { callTool, emit, onStatusChange } = ctx;
   onStatusChange('wants to file a support ticket');
   emit({ id: 'b3', state: 'running', toolName: 'issues.create', serverId: 'issue-tracker', tier: 'write', label: 'Filing support ticket' });
-  const ok = await callTool('issue-tracker', getTool('issue-tracker', 'issues.create'), ARGS.issuesCreate);
-  emit({ id: 'b3', state: ok ? 'passed' : 'denied' });
-  return ok;
+  const tool = getTool('issue-tracker', 'issues.create');
+  const ok = await callTool('issue-tracker', tool, ARGS.issuesCreate);
+  if (!ok) {
+    emit({ id: 'b3', state: 'denied' });
+    return false;
+  }
+  const { issue_id } = await tool.call(ARGS.issuesCreate);
+  emit({ id: 'b3', state: 'passed', resultId: issue_id });
+  onStatusChange('ticket filed');
+  await delay(900); // Hold so the human sees the draft become a real ticket
+  return true;
 }
 
 async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {

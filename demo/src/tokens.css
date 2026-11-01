@@ -135,13 +135,16 @@
   --size-38: 38px;
   --size-48: 48px;
   --size-52: 52px;
+  --size-100: 100px;
   --size-140: 140px;
   --size-300: 300px;
   --size-360: 360px;
   --size-400: 400px;
   --size-520: 520px;
   --size-540: 540px;
+  --size-640: 640px;
   --size-720: 720px;
+  --size-1200: 1200px;
   --tracking-tight: -0.02em;
   --tracking-snug: 0.01em;
   --tracking-normal: 0.04em;
