@@ -647,3 +647,20 @@
 }
 .cm-fields__row dt { color: var(--color-role-text-secondary); }
 .cm-fields__row dd { color: var(--color-role-ink); overflow-wrap: anywhere; }
+
+/* ── Timeline ── */
+.cm-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  list-style: none;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-11);
+  color: var(--color-role-ink);
+}
+.cm-timeline__row {
+  display: grid;
+  grid-template-columns: var(--size-100) 1fr;
+  gap: var(--space-8);
+}
+.cm-timeline__time { color: var(--color-role-time); }

@@ -198,6 +198,20 @@ export function DraftPreview({ id, fields, committed = false }) {
   );
 }
 
+/** events: [{ time, label }]. Time and history are brown. */
+export function Timeline({ events }) {
+  return (
+    <ol className="cm-timeline">
+      {events.map(event => (
+        <li key={`${event.time}${event.label}`} className="cm-timeline__row">
+          <time className="cm-timeline__time">{event.time}</time>
+          <span>{event.label}</span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 const THESES = [
   ['Defer the grant', 'Defer the grant to first meaningful use, not connection.'],
   ['Tier by risk', 'Tier by risk, not by tool.'],

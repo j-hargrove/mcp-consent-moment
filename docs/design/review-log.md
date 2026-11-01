@@ -16,3 +16,4 @@ Things caught and fixed against docs/design/ during the rebuild, newest last.
 | Refund | Don't Refund stopped the agent in three scenarios | Four paths: agent notes refund not issued | Same fallback in every scenario |
 | Refund | Review checkbox would have done nothing | Behavior rule 4 | Confirm requires it, with an inline nudge and no disabled button |
 | Sidebar | Text glyphs and no record-type icon on activity rows | Layout: status icon + record-type icon + tier tag + tool; Icons: IBM Carbon | Rows use Carbon status and record icons with the tier chip |
+| Tool error | Decision sat in the sidebar, below the choice's weight | Principle 1; 2px film-red frame | Full alert card in the main column with a brown timeline |

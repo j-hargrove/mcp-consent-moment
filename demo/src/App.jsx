@@ -7,6 +7,7 @@ import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
 import { RefundCard } from './components/RefundCard.jsx';
+import { ToolErrorCard } from './components/ToolErrorCard.jsx';
 import { WriteCard } from './components/WriteCard.jsx';
 
 const IDLE_STATUS = 'idle → choose a scenario to run the consent flow';
@@ -174,7 +175,7 @@ export default function App() {
   const atGate = Boolean(pendingRequest || pendingDecision);
   const showDraft = approvedDraft && !pendingRequest && !completion && !stopped;
   const writeRequest = isFirstWrite(pendingRequest) ? pendingRequest : showDraft ? approvedDraft : null;
-  const gateCard = Boolean(pendingRequest || writeRequest);
+  const gateCard = Boolean(pendingRequest || pendingDecision || writeRequest);
   const agentState = completion || stopped ? 'stopped' : atGate || isIdle ? 'waiting' : 'working';
 
   // Keep the last gate's theses lit while the agent runs between gates
@@ -201,7 +202,9 @@ export default function App() {
           </div>
 
           <div className={`main-stage${isIdle ? ' main-stage--top' : ''}${gateCard ? ' main-stage--top main-stage--gate' : ''}`}>
-            {writeRequest ? (
+            {pendingDecision ? (
+              <ToolErrorCard decision={pendingDecision} onDecision={handleDecision} />
+            ) : writeRequest ? (
               <WriteCard
                 request={writeRequest}
                 committed={!pendingRequest}
@@ -248,8 +251,6 @@ export default function App() {
             <ActivityStrip
               events={events}
               gateOpen={Boolean(pendingRequest)}
-              pendingDecision={pendingDecision}
-              onDecision={handleDecision}
             />
           </div>
 

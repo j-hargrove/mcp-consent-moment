@@ -101,7 +101,8 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 
 ## Tool error card
 - 2px film-red frame, ALERT chip. "The $149.00 refund failed twice." / "No money moved…" Timeline (brown).
-- Actions: Skip for Now · Try Refund Again.
+- Actions: Skip for Now · Try Refund Again. Consequence: "Skip for Now: the refund stays with you to finish."
+- The card replaces the sidebar prompt. Timeline rows carry brown timestamps under WHAT HAPPENED.
 
 ## Completion — consent receipt
 - Navy header: CONSENT RECEIPT + timestamp; headline + outcome line.

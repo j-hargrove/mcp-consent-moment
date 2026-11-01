@@ -38,8 +38,8 @@ const STATE_LABEL = {
   'retry-waiting': 'waiting',
 };
 
-export function ActivityStrip({ events, gateOpen, pendingDecision, onDecision }) {
-  if (!events.length && !pendingDecision) {
+export function ActivityStrip({ events, gateOpen }) {
+  if (!events.length) {
     return (
       <div className="activity-empty">No activity yet.</div>
     );
@@ -50,10 +50,6 @@ export function ActivityStrip({ events, gateOpen, pendingDecision, onDecision })
       {events.map(event => (
         <ActivityRow key={event.id} event={event} gateOpen={gateOpen} />
       ))}
-
-      {pendingDecision && (
-        <DecisionPrompt decision={pendingDecision} onDecision={onDecision} />
-      )}
     </div>
   );
 }
@@ -93,25 +89,6 @@ function ActivityRow({ event, gateOpen }) {
             {STATE_LABEL[state]}
           </span>
         )}
-      </div>
-    </div>
-  );
-}
-
-function DecisionPrompt({ decision, onDecision }) {
-  return (
-    <div className="decision-prompt">
-      <div className="decision-prompt__message">{decision.message}</div>
-      <div className="decision-prompt__actions">
-        {decision.options.map(opt => (
-          <button
-            key={opt.value}
-            className={`decision-btn decision-btn--${opt.value}`}
-            onClick={() => onDecision(opt.value)}
-          >
-            {opt.label}
-          </button>
-        ))}
       </div>
     </div>
   );

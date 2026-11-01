@@ -412,6 +412,12 @@ async function runToolError(ctx) {
   const ok4 = await callTool('payments', errorTool, ARGS.paymentsRefund);
   if (!ok4) { await finishRefundDenied(ctx); return; }
 
+  const failures = [];
+  const logFailure = label => failures.push({
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    label,
+  });
+
   // Consent granted — now execute (will fail twice before succeeding)
   let refundOutcome = 'pending'; // 'passed' | 'skipped' | 'error'
 
@@ -420,8 +426,9 @@ async function runToolError(ctx) {
     emit({ id: 'b4', state: 'passed', label: 'Refund processed' });
     refundOutcome = 'passed';
   } catch {
+    logFailure('First attempt failed: gateway timeout');
     emit({ id: 'b4', state: 'error', label: 'Refund failed — retrying automatically…' });
-    onStatusChange('Refund failed — retrying automatically…');
+    onStatusChange('refund failed, retrying automatically');
     await delay(1300);
 
     try {
@@ -432,14 +439,13 @@ async function runToolError(ctx) {
     } catch {
       // Both auto-attempts failed — surface to user
       emit({ id: 'b4', state: 'retry-waiting', label: 'Refund failed after retry', retryCount: 1 });
-      onStatusChange('Refund failed after retry — do you want me to try again or skip?');
+      logFailure('Automatic retry failed: gateway timeout');
+      onStatusChange('refund failed twice, try again or skip?');
 
       const choice = await waitForDecision({
-        message: 'Refund failed after retry.',
-        options: [
-          { label: 'Skip',      value: 'skip' },
-          { label: 'Try again', value: 'retry' },
-        ],
+        title: 'The $149.00 refund failed twice.',
+        detail: "No money moved. The customer hasn't been refunded.",
+        timeline: failures,
       });
 
       if (choice === 'retry') {
