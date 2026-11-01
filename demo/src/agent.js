@@ -417,8 +417,8 @@ async function runToolError(ctx) {
       const choice = await waitForDecision({
         message: 'Refund failed after retry.',
         options: [
-          { label: 'Try again', value: 'retry' },
           { label: 'Skip',      value: 'skip' },
+          { label: 'Try again', value: 'retry' },
         ],
       });
 

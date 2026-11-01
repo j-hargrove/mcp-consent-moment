@@ -36,6 +36,24 @@ export function StyledConsentCard({ request, onResolve, remember, onRememberChan
 
   const tierKey = isCreep ? 'creep' : request.tier;
 
+  const deny = (
+    <button className="btn btn--deny" onClick={() => onResolve(false)}>
+      {isCreep ? 'Deny expansion' : 'Deny'}
+    </button>
+  );
+  const allow = (
+    <button
+      className={`btn btn--allow btn--allow-${tierKey}`}
+      onClick={() => onResolve(true)}
+    >
+      {isDestructive
+        ? `Confirm $${Number(request.args?.amount_usd ?? 0).toFixed(2)} refund`
+        : isCreep
+        ? 'Allow expanded scope'
+        : 'Allow'}
+    </button>
+  );
+
   return (
     <div className="consent-card-wrap">
       <div className="card-context-header">
@@ -142,20 +160,9 @@ export function StyledConsentCard({ request, onResolve, remember, onRememberChan
       )}
 
       {/* ── Actions ── */}
+      {/* Primary sits on the left. Deny is primary on creep and destructive cards. */}
       <div className="card-actions">
-        <button className="btn btn--deny" onClick={() => onResolve(false)}>
-          {isCreep ? 'Deny expansion' : 'Deny'}
-        </button>
-        <button
-          className={`btn btn--allow btn--allow-${tierKey}`}
-          onClick={() => onResolve(true)}
-        >
-          {isDestructive
-            ? `Confirm $${Number(request.args?.amount_usd ?? 0).toFixed(2)} refund`
-            : isCreep
-            ? 'Allow expanded scope'
-            : 'Allow'}
-        </button>
+        {isDestructive || isCreep ? <>{deny}{allow}</> : <>{allow}{deny}</>}
       </div>
     </div>
     </div>

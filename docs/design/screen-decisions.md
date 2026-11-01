@@ -63,6 +63,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Sidebar rows: status icon + record-type icon + tier tag + tool.
 
 ## Rules
+- Primary sits on the left on every card; secondary follows it.
 - Narrow-by-default = the primary action is the smallest scope that still does the task. For destructive actions, the smallest scope is doing nothing.
 - Card frame escalates with tier: read = gray hairline · write = 1.5px slate · scope creep = 2px terracotta · alert = 2px film red · destructive = film-red header panel · receipt = navy header panel.
 - Payload treatment: create → draft preview · update / scope change → causal trace · destructive → hero value · failure → timeline · completion → causal trace as record.
