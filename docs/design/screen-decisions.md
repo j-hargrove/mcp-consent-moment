@@ -15,7 +15,7 @@
 | Destructive refund | Don't Refund | Confirm $149.00 Refund |
 | Tool error | Skip for Now | Try Refund Again |
 | Completion | Run Another Scenario | Export Receipt |
-| Landing scenario cards | Run | — |
+| Landing scenario cards | — | Run |
 | Top bar (all) | Stop Agent | — |
 | Review variant (scope/refund) | — | Review Linked Changes · Review Payment Change |
 
@@ -76,7 +76,8 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Stop Agent stays active; clicking with nothing running shows "No agent running." inline.
 - "Agents move fast. People decide slowly." + "The card gets heavier and warmer as the stakes go up."
 - Tier legend (cool → hot) with mini card-frame samples + chips. Footer: "Revoke any permission at any time. The agent asks again next time."
-- CHOOSE A SCENARIO: 2×2 — Happy path · Partial completion · Scope creep · Tool error.
+- Content shares the Agent Task card's left edge and width, top-aligned.
+- CHOOSE A SCENARIO: 2×2, secondary Run buttons — Happy path · Partial completion · Scope creep · Tool error.
 
 ## Write card — issues.create
 - 1.5px slate frame. WRITE chip + receipt icon. "Create a new high-priority ticket for PAY-503."

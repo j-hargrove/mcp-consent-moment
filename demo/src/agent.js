@@ -28,24 +28,20 @@ export const MODE = {
 
 export const MODE_META = {
   [MODE.HAPPY]: {
-    label:       'Happy Path',
+    label:       'Happy path',
     description: 'All consents granted. Task completes end-to-end.',
-    watch:       'Watch reads flow silently in the activity strip, then the gate appear for each write and destructive action.',
   },
   [MODE.PARTIAL]: {
-    label:       'Partial Completion',
+    label:       'Partial completion',
     description: 'Deny the refund. Agent falls back — leaves a note, surfaces what\'s incomplete.',
-    watch:       'Watch the agent pivot after your denial — it completes what it can without stopping.',
   },
   [MODE.SCOPE_CREEP_DENIED]: {
-    label:       'Scope Creep Denied',
+    label:       'Scope creep',
     description: 'Deny the scope expansion. Agent falls back to the narrow grant it already holds.',
-    watch:       'Watch the agent fall back to its existing grant — no re-prompt, no silent expansion.',
   },
   [MODE.TOOL_ERROR]: {
-    label:       'Tool Error',
+    label:       'Tool error',
     description: 'Refund fails mid-flight after you approve. Agent retries, then asks what to do.',
-    watch:       'Watch the activity strip — the agent retries automatically, then hands control back to you inline.',
   },
 };
 

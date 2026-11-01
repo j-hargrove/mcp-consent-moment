@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
-import { useConsentGate, BudgetPanel, ThesisStrip, TopBar } from '@mcp-consent/react';
+import { useConsentGate, BudgetPanel, SectionLabel, ThesisStrip, TopBar } from '@mcp-consent/react';
 import { RiskTier } from '@mcp-consent/core';
-import { runDemo, MODE, MODE_META } from './agent.js';
+import { runDemo } from './agent.js';
 import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
+import { Landing } from './components/Landing.jsx';
 
 const IDLE_STATUS = 'idle → choose a scenario to run the consent flow';
 
@@ -159,13 +160,13 @@ export default function App() {
         {/* ── Main panel ── */}
         <main className="main-panel">
           <div className="task-card">
-            <div className="task-card__label">agent task</div>
+            <SectionLabel icon="bot">AGENT TASK</SectionLabel>
             <div className="task-card__text">
               Triage a customer payment error, file a support ticket, and issue a refund.
             </div>
           </div>
 
-          <div className="main-stage">
+          <div className={`main-stage${isIdle ? ' main-stage--top' : ''}`}>
             {pendingRequest ? (
               <StyledConsentCard
                 request={pendingRequest}
@@ -183,7 +184,7 @@ export default function App() {
                 <span className="agent-running__label">Agent running…</span>
               </div>
             ) : (
-              <ModePicker onSelect={startDemo} />
+              <Landing onSelect={startDemo} />
             )}
           </div>
         </main>
@@ -191,7 +192,7 @@ export default function App() {
         {/* ── Side panel ── */}
         <aside className="side-panel">
           <div className="side-section">
-            <div className="side-section__label">activity</div>
+            <SectionLabel icon="recently-viewed">ACTIVITY</SectionLabel>
             <ActivityStrip
               events={events}
               pendingDecision={pendingDecision}
@@ -200,7 +201,7 @@ export default function App() {
           </div>
 
           <div className="side-section">
-            <div className="side-section__label">What you've authorized</div>
+            <SectionLabel icon="security">WHAT YOU'VE AUTHORIZED</SectionLabel>
             <div className="side-section__sublabel">Revoke anytime — agent re-prompts on next use.</div>
             <BudgetPanel grants={grants} onRevoke={revokeGrant} />
           </div>
@@ -227,71 +228,6 @@ function StoppedView({ stopped, onBack }) {
       <button className="btn btn--reset" onClick={onBack}>
         Back to scenarios
       </button>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Mode picker
-// ---------------------------------------------------------------------------
-
-function ModePicker({ onSelect }) {
-  return (
-    <div className="mode-picker">
-      <div className="explainer">
-        <div className="explainer__headline">How this works</div>
-        <div className="explainer__framing">
-          Agents move fast. Humans decide slowly. This is the system that reconciles them.
-        </div>
-        <div className="explainer__tiers">
-          <div className="explainer-row">
-            <span className="explainer-row__dot explainer-row__dot--read" />
-            <div className="explainer-row__body">
-              <span className="explainer-row__label">Low stakes — reads and lookups</span>
-              <span className="explainer-row__desc">Flows silently. You can see what happened, after.</span>
-            </div>
-          </div>
-          <div className="explainer-row">
-            <span className="explainer-row__dot explainer-row__dot--write" />
-            <div className="explainer-row__body">
-              <span className="explainer-row__label">Write actions — creating, updating</span>
-              <span className="explainer-row__desc">Agent shows exactly what it will write before it runs. Approve once, it remembers.</span>
-            </div>
-          </div>
-          <div className="explainer-row">
-            <span className="explainer-row__dot explainer-row__dot--destructive" />
-            <div className="explainer-row__body">
-              <span className="explainer-row__label">High stakes — money, irreversible actions</span>
-              <span className="explainer-row__desc">Hard stop every time. No memory. Friction is the feature.</span>
-            </div>
-          </div>
-          <div className="explainer-row">
-            <span className="explainer-row__dot explainer-row__dot--creep" />
-            <div className="explainer-row__body">
-              <span className="explainer-row__label">Scope creep — growing beyond an existing grant</span>
-              <span className="explainer-row__desc">Any request that exceeds the current grant surfaces as a new decision. No silent expansion.</span>
-            </div>
-          </div>
-        </div>
-        <div className="explainer__footer">
-          Revoke any permission at any time — the agent re-prompts on next use.
-        </div>
-      </div>
-
-      <div className="mode-picker__prompt">Choose a scenario</div>
-      <div className="mode-picker__grid">
-        {Object.values(MODE).map(mode => (
-          <button
-            key={mode}
-            className={`mode-card mode-card--${mode}`}
-            onClick={() => onSelect(mode)}
-          >
-            <div className="mode-card__label">{MODE_META[mode].label}</div>
-            <div className="mode-card__description">{MODE_META[mode].description}</div>
-            <div className="mode-card__watch">{MODE_META[mode].watch}</div>
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

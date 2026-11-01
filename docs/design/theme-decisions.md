@@ -85,12 +85,12 @@ All surfaces flat.
 
 ## Components (draft, 12)
 1. Agent header (rust Tektur title, teal agent light + status, Stop Agent) + thesis strip
-2. Button — primary / secondary / ghost / override; on-surface and on-red. Label left + Carbon icon right. Title Case.
+2. Button — primary / secondary / ghost / override; on-surface and on-red. Label left + Carbon icon right. Title Case. Hover draws a ring, no tint.
 3. Tier chip — READ / WRITE / SCOPE CREEP / DESTRUCTIVE / ALERT
 4. Trace node — granted / new (half) / new (open) / high / declined
 5. Approval checkbox — off / on (forest) / review-first (film-red border + red view icon, no fill)
 6. Agent status line (mono, teal) + agent light (working / speaking / waiting / stopped)
-7. Scope row
+7. Scope row — folded into causal trace steps; each new-field step carries its own checkbox
 8. Causal trace card
 9. Consent card frame — read / write / scope creep / alert / destructive / receipt
 10. Alert — film-red frame, warning-alt chip, action required
