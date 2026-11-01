@@ -193,17 +193,18 @@ async function runIssuesCreate(ctx) {
   const tool = getTool('issue-tracker', 'issues.create');
   const ok = await callTool('issue-tracker', tool, ARGS.issuesCreate);
   if (!ok) {
-    emit({ id: 'b3', state: 'denied' });
+    emit({ id: 'b3', state: 'denied', decision: { kind: 'declined', value: 'Not created' } });
     return false;
   }
   const { issue_id } = await tool.call(ARGS.issuesCreate);
-  emit({ id: 'b3', state: 'passed', resultId: issue_id });
+  emit({ id: 'b3', state: 'passed', resultId: issue_id, decision: { kind: 'granted', value: issue_id } });
   onStatusChange('ticket filed');
   await delay(900); // Hold so the human sees the draft become a real ticket
   return true;
 }
 
 const NEW_FIELDS = ['assignee', 'labels'];
+const REFUND_SENT = { kind: 'high', value: '$149.00 to cust-7291' };
 
 function pickFields(source, keep) {
   return Object.fromEntries(Object.entries(source).filter(([field]) => keep.includes(field)));
@@ -238,11 +239,11 @@ async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
       };
     }
     await tool.call(pickFields(args, [...grantedFields, ...approved]));
-    emit({ id: 'b5', state: 'passed' });
+    emit({ id: 'b5', state: 'passed', decision: { kind: 'granted', value: `${approved.join(', ')} approved` } });
     return newFields.filter(field => !approved.includes(field));
   }
 
-  emit({ id: 'b5', state: 'denied' });
+  emit({ id: 'b5', state: 'denied', decision: { kind: 'declined', value: 'Kept the current grant' } });
   onStatusChange('keeping the current grant');
   await delay(700);
   const narrowArgs = pickFields(args, grantedFields);
@@ -281,7 +282,7 @@ function finishAfterUpdate({ onStatusChange, onComplete }, left, insight) {
 
 /** Don't Refund, in any scenario: the agent notes it on the ticket and leaves the refund to the human. */
 async function finishRefundDenied({ callTool, emit, onStatusChange, onComplete }) {
-  emit({ id: 'b4', state: 'denied' });
+  emit({ id: 'b4', state: 'denied', decision: { kind: 'declined', value: 'Not refunded' } });
   onStatusChange('refund not issued, leaving a note on the ticket');
   await delay(700);
 
@@ -325,7 +326,7 @@ async function runHappy(ctx) {
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
   if (!ok4) { await finishRefundDenied(ctx); return; }
   await refundTool.call(ARGS.paymentsRefund);
-  emit({ id: 'b4', state: 'passed' });
+  emit({ id: 'b4', state: 'passed', decision: REFUND_SENT });
   await delay(600);
 
   const left = await runIssuesUpdateExpanded(ctx);
@@ -354,7 +355,7 @@ async function runPartial(ctx) {
   if (ok4) {
     // User approved — run the rest as happy path
     await refundTool.call(ARGS.paymentsRefund);
-    emit({ id: 'b4', state: 'passed' });
+    emit({ id: 'b4', state: 'passed', decision: REFUND_SENT });
     await delay(600);
     const left = await runIssuesUpdateExpanded(ctx);
     await delay(400);
@@ -384,7 +385,7 @@ async function runScopeCreepDenied(ctx) {
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
   if (!ok4) { await finishRefundDenied(ctx); return; }
   await refundTool.call(ARGS.paymentsRefund);
-  emit({ id: 'b4', state: 'passed' });
+  emit({ id: 'b4', state: 'passed', decision: REFUND_SENT });
   await delay(600);
 
   const left = await runIssuesUpdateExpanded(ctx);
@@ -423,7 +424,7 @@ async function runToolError(ctx) {
 
   try {
     await errorTool.call(ARGS.paymentsRefund); // call 1 — throws
-    emit({ id: 'b4', state: 'passed', label: 'Refund processed' });
+    emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed' });
     refundOutcome = 'passed';
   } catch {
     logFailure('First attempt failed: gateway timeout');
@@ -434,7 +435,7 @@ async function runToolError(ctx) {
     try {
       emit({ id: 'b4', state: 'retrying', label: 'Retrying refund…', retryCount: 1 });
       await errorTool.call(ARGS.paymentsRefund); // call 2 — throws
-      emit({ id: 'b4', state: 'passed', label: 'Refund processed (retry)', retryCount: 1 });
+      emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed (retry)', retryCount: 1 });
       refundOutcome = 'passed';
     } catch {
       // Both auto-attempts failed — surface to user
@@ -453,14 +454,14 @@ async function runToolError(ctx) {
         await delay(900);
         try {
           await errorTool.call(ARGS.paymentsRefund); // call 3 — succeeds
-          emit({ id: 'b4', state: 'passed', label: 'Refund processed (retry 2)', retryCount: 2 });
+          emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed (retry 2)', retryCount: 2 });
           refundOutcome = 'passed';
         } catch {
-          emit({ id: 'b4', state: 'error', label: 'Refund failed — manual action required' });
+          emit({ id: 'b4', state: 'error', label: 'Refund failed — manual action required', decision: { kind: 'declined', value: 'Refund failed' } });
           refundOutcome = 'error';
         }
       } else {
-        emit({ id: 'b4', state: 'skipped', label: 'Refund skipped' });
+        emit({ id: 'b4', state: 'skipped', label: 'Refund skipped', decision: { kind: 'declined', value: 'Skipped after two failures' } });
         refundOutcome = 'skipped';
       }
     }

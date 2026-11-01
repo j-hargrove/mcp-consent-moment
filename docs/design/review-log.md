@@ -17,3 +17,6 @@ Things caught and fixed against docs/design/ during the rebuild, newest last.
 | Refund | Review checkbox would have done nothing | Behavior rule 4 | Confirm requires it, with an inline nudge and no disabled button |
 | Sidebar | Text glyphs and no record-type icon on activity rows | Layout: status icon + record-type icon + tier tag + tool; Icons: IBM Carbon | Rows use Carbon status and record icons with the tier chip |
 | Tool error | Decision sat in the sidebar, below the choice's weight | Principle 1; 2px film-red frame | Full alert card in the main column with a brown timeline |
+| Completion | Old end screens had no record of decisions | Receipt: causal trace as record | Agent records each decision and the receipt draws it |
+| Stopped | Stopped view still used old glyphs and copy casing | Icons: IBM Carbon; Title Case buttons | Stopped runs use the receipt too |
+| Sidebar | Fallback rows said "fallback" twice | Principle 5, no redundant marks | One label on the row |

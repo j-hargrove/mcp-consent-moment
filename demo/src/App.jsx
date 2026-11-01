@@ -6,6 +6,7 @@ import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
+import { ReceiptScreen } from './components/ReceiptScreen.jsx';
 import { RefundCard } from './components/RefundCard.jsx';
 import { ToolErrorCard } from './components/ToolErrorCard.jsx';
 import { WriteCard } from './components/WriteCard.jsx';
@@ -175,7 +176,7 @@ export default function App() {
   const atGate = Boolean(pendingRequest || pendingDecision);
   const showDraft = approvedDraft && !pendingRequest && !completion && !stopped;
   const writeRequest = isFirstWrite(pendingRequest) ? pendingRequest : showDraft ? approvedDraft : null;
-  const gateCard = Boolean(pendingRequest || pendingDecision || writeRequest);
+  const gateCard = Boolean(pendingRequest || pendingDecision || writeRequest || completion || stopped);
   const agentState = completion || stopped ? 'stopped' : atGate || isIdle ? 'waiting' : 'working';
 
   // Keep the last gate's theses lit while the agent runs between gates
@@ -229,10 +230,8 @@ export default function App() {
                 remember={remember}
                 onRememberChange={setRemember}
               />
-            ) : completion ? (
-              <CompletionView completion={completion} onReset={handleReset} />
-            ) : stopped ? (
-              <StoppedView stopped={stopped} onBack={handleReset} />
+            ) : completion || stopped ? (
+              <ReceiptScreen completion={completion} stopped={stopped} events={events} onReset={handleReset} />
             ) : isRunning ? (
               <div className="agent-running">
                 <div className="agent-running__pulse" />
@@ -261,65 +260,6 @@ export default function App() {
           </div>
         </aside>
       </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Stopped view
-// ---------------------------------------------------------------------------
-
-function StoppedView({ stopped, onBack }) {
-  return (
-    <div className="stopped-view">
-      <div className="stopped-view__icon">⊘</div>
-      <div className="stopped-view__message">
-        {stopped.byUser
-          ? 'Agent stopped. Nothing else will run.'
-          : <>Agent stopped. Consent denied for <span className="stopped-view__tool">{stopped.toolName}</span>.</>}
-      </div>
-      <div className="outcome-insight">The agent halted cleanly. Nothing ran without your approval.</div>
-      <button className="btn btn--reset" onClick={onBack}>
-        Back to scenarios
-      </button>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Completion views
-// ---------------------------------------------------------------------------
-
-function CompletionView({ completion, onReset }) {
-  if (completion.type === 'partial') {
-    return (
-      <div className="partial-completion">
-        <div className="partial-completion__summary">{completion.message}</div>
-        {completion.tasks && (
-          <div className="partial-completion__tasks">
-            {completion.tasks.map((task, i) => (
-              <div
-                key={i}
-                className={`task-line ${task.done ? 'task-line--done' : task.leftover ? 'task-line--leftover' : 'task-line--manual'}`}
-              >
-                <span className="task-line__icon">{task.done ? '✓' : task.leftover ? '○' : '⚠'}</span>
-                <span>{task.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-        {completion.insight && <div className="outcome-insight">{completion.insight}</div>}
-        <button className="btn btn--reset" onClick={onReset}>Run another scenario</button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="completion">
-      <div className="completion__icon">✓</div>
-      <div className="completion__text">{completion.message}</div>
-      {completion.insight && <div className="outcome-insight">{completion.insight}</div>}
-      <button className="btn btn--reset" onClick={onReset}>Run another scenario</button>
     </div>
   );
 }

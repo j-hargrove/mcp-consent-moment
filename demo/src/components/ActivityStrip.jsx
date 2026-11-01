@@ -33,7 +33,7 @@ const STATE_LABEL = {
   skipped:         'skipped',
   stopped:         'stopped',
   retrying:        'retrying…',
-  fallback:        'fallback',
+  fallback:        '',
   error:           'error',
   'retry-waiting': 'waiting',
 };

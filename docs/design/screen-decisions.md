@@ -108,7 +108,8 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Navy header: CONSENT RECEIPT + timestamp; headline + outcome line.
 - Headline is the honest outcome. "Task complete." when every task step happened, naming any leftover fields ("Assignee and labels left for you."). "N of 3 done." only when a task step didn't happen.
 - Leftover rows that aren't alerts are slate. Film red stays for what needs a person to act
-- WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist. Actions: Run Another Scenario · Export Receipt.
+- WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist: film-red review box if a person must act, plain box for leftover fields. Actions: Run Another Scenario · Export Receipt (JSON).
+- A stopped run uses the same receipt: "Agent stopped." with what was decided before it stopped.
 
 ## Sidebar tag colors
 READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate = film-red pause, "waiting" · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.

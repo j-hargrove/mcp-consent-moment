@@ -88,7 +88,7 @@ export function HopConnector({ server }) {
 }
 
 const STATE_WORD = {
-  granted: 'granted',
+  granted: 'approved',
   'new-half': 'new, higher consequence',
   'new-open': 'new, low consequence',
   high: 'high consequence',
@@ -326,6 +326,7 @@ export function Alert({ tone = 'action', title, primary, secondary, children }) 
 
 /** Completion record. headline stays "Task complete." only when everything completed. */
 export function ConsentReceipt({ headline = 'Task complete.', timestamp, outcome, steps, left = [], onToggleLeft, primary, secondary }) {
+  const decided = steps.length > 0;
   const panel = (
     <>
       <div className="cm-panel__row cm-panel__row--between">
@@ -338,24 +339,24 @@ export function ConsentReceipt({ headline = 'Task complete.', timestamp, outcome
   );
   return (
     <ConsentFrame tier="receipt" panel={panel} primary={primary} secondary={secondary}>
-      <SectionLabel icon="recently-viewed">WHAT YOU DECIDED</SectionLabel>
-      <CausalTrace steps={steps} />
-      <SectionLabel>LEFT FOR YOU</SectionLabel>
-      {left.length === 0
-        ? <p className="cm-muted">Nothing left for you.</p>
-        : (
-          <div className="cm-stack">
-            {left.map(item => (
-              <ApprovalCheckbox
-                key={item.label}
-                checked={item.done}
-                onChange={val => onToggleLeft?.(item.label, val)}
-              >
-                {item.label}
-              </ApprovalCheckbox>
-            ))}
-          </div>
-        )}
+      {decided && <SectionLabel icon="recently-viewed">WHAT YOU DECIDED</SectionLabel>}
+      {decided && <CausalTrace steps={steps} />}
+      {left && <SectionLabel>LEFT FOR YOU</SectionLabel>}
+      {left?.length === 0 && <p className="cm-muted">Nothing left for you.</p>}
+      {left?.length > 0 && (
+        <div className="cm-stack">
+          {left.map(item => (
+            <ApprovalCheckbox
+              key={item.label}
+              checked={item.done}
+              review={item.alert}
+              onChange={val => onToggleLeft?.(item.label, val)}
+            >
+              {item.label}
+            </ApprovalCheckbox>
+          ))}
+        </div>
+      )}
     </ConsentFrame>
   );
 }
