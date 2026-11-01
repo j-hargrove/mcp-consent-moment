@@ -174,19 +174,26 @@ function draftValue(value) {
   return Array.isArray(value) ? value.join(', ') : String(value);
 }
 
+/** Thesis 3: the exact fields and values, never truncated. */
+export function FieldRows({ fields }) {
+  return (
+    <dl className="cm-fields">
+      {fields.map(field => (
+        <div key={field.name} className="cm-fields__row">
+          <dt>{field.name}</dt>
+          <dd>{draftValue(field.value)}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 /** Thesis 3: a create shows the record itself. Dashed until it exists, solid once it does. */
 export function DraftPreview({ id, fields, committed = false }) {
   return (
     <div className="cm-draft" data-committed={committed || undefined}>
       <div className="cm-draft__id">{id}</div>
-      <dl className="cm-draft__fields">
-        {fields.map(field => (
-          <div key={field.name} className="cm-draft__row">
-            <dt>{field.name}</dt>
-            <dd>{draftValue(field.value)}</dd>
-          </div>
-        ))}
-      </dl>
+      <FieldRows fields={fields} />
     </div>
   );
 }
@@ -268,13 +275,14 @@ export function ConsentFrame({ tier, tool, server, icon, panel, decision, primar
 }
 
 /** Destructive header content: hero value on the film-red panel. */
-export function DestructivePanel({ tool, icon, value, detail }) {
+export function DestructivePanel({ tool, server, icon, value, detail }) {
   return (
     <>
       <div className="cm-panel__row">
         <TierChip tier="destructive" onPanel />
         {icon && <Icon name={icon} />}
         <span className="cm-frame__tool">{tool}</span>
+        {server && <span className="cm-frame__server">via {server}</span>}
       </div>
       <div className="cm-panel__hero">{value}</div>
       <div className="cm-panel__detail">{detail}</div>

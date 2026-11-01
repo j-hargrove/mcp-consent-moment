@@ -1,15 +1,29 @@
+import { Icon, ICON_TONES, TierChip } from '@mcp-consent/react';
+
 const STATE_ICON = {
-  pending:         '·',
-  running:         '↻',
-  passed:          '✓',
-  denied:          '✕',
-  skipped:         '⊘',
-  stopped:         '⊘',
-  retrying:        '↺',
-  fallback:        '⤵',
-  error:           '⚠',
-  'retry-waiting': '⏸',
+  running:         'renew',
+  passed:          'checkmark',
+  denied:          'close',
+  skipped:         'close',
+  stopped:         'stop-sign',
+  retrying:        'renew',
+  fallback:        'arrow-right',
+  error:           'warning-alt',
+  'retry-waiting': 'warning-alt',
 };
+
+const STATE_TONE = { running: 'agent', retrying: 'agent' };
+const SLATE_STATES = ['denied', 'skipped', 'stopped', 'fallback'];
+
+const RECORD_ICON = {
+  'docs.search':     'view',
+  'customers.read':  'view',
+  'issues.create':   'receipt',
+  'issues.update':   'receipt',
+  'payments.refund': 'purchase',
+};
+
+const CHIP_TIER = { creep: 'scope-creep' };
 
 const STATE_LABEL = {
   pending:         '',
@@ -22,13 +36,6 @@ const STATE_LABEL = {
   fallback:        'fallback',
   error:           'error',
   'retry-waiting': 'waiting',
-};
-
-const TIER_LABEL = {
-  read:        'READ',
-  write:       'WRITE',
-  destructive: 'DEST',
-  creep:       'CREEP',
 };
 
 export function ActivityStrip({ events, gateOpen, pendingDecision, onDecision }) {
@@ -65,13 +72,12 @@ function ActivityRow({ event, gateOpen }) {
         isFallback ? 'activity-row--fallback' : '',
       ].filter(Boolean).join(' ')}
     >
-      <span className={`activity-icon activity-icon--${state}`}>
-        {STATE_ICON[state] ?? '·'}
-      </span>
-
-      <span className={`activity-tier activity-tier--${tier}`}>
-        {TIER_LABEL[tier] ?? tier?.toUpperCase()}
-      </span>
+      <Icon
+        name={STATE_ICON[state] ?? 'renew'}
+        tone={SLATE_STATES.includes(state) ? undefined : STATE_TONE[state] ?? ICON_TONES[STATE_ICON[state]]}
+      />
+      <Icon name={RECORD_ICON[toolName] ?? 'receipt'} />
+      <TierChip tier={CHIP_TIER[tier] ?? tier} compact />
 
       <div className="activity-info">
         <span className="activity-tool">{toolName}</span>

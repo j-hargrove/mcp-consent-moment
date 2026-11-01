@@ -6,6 +6,7 @@ import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
+import { RefundCard } from './components/RefundCard.jsx';
 import { WriteCard } from './components/WriteCard.jsx';
 
 const IDLE_STATUS = 'idle → choose a scenario to run the consent flow';
@@ -216,6 +217,8 @@ export default function App() {
                 onKeep={() => handleResolve(false)}
                 onApprove={approveFields}
               />
+            ) : pendingRequest?.tier === RiskTier.DESTRUCTIVE ? (
+              <RefundCard key={pendingRequest.createdAt} request={pendingRequest} onResolve={handleResolve} />
             ) : pendingRequest ? (
               <StyledConsentCard
                 request={pendingRequest}

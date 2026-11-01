@@ -279,6 +279,33 @@ function finishAfterUpdate({ onStatusChange, onComplete }, left, insight) {
   });
 }
 
+/** Don't Refund, in any scenario: the agent notes it on the ticket and leaves the refund to the human. */
+async function finishRefundDenied({ callTool, emit, onStatusChange, onComplete }) {
+  emit({ id: 'b4', state: 'denied' });
+  onStatusChange('refund not issued, leaving a note on the ticket');
+  await delay(700);
+
+  // The narrow issues.update grant is already held, so this flows silently (thesis 4)
+  const narrowTool = getTool('issue-tracker', 'issues.update');
+  emit({ id: 'b4-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Leaving a resolution note' });
+  const noted = await callTool('issue-tracker', narrowTool, ARGS.issuesFallbackRefundDenied);
+  if (noted) await narrowTool.call(ARGS.issuesFallbackRefundDenied);
+  emit({ id: 'b4-fb', state: noted ? 'fallback' : 'denied' });
+  await delay(400);
+
+  onStatusChange('2 of 3 done. Refund requires manual action.');
+  onComplete({
+    type: 'partial',
+    message: '2 of 3 done. Refund requires manual action.',
+    insight: 'The agent adapted to your decision and completed what it could.',
+    tasks: [
+      { label: 'Bug triaged and ticket filed', done: true },
+      { label: noted ? 'Ticket updated with fallback note' : 'Fallback note not added', done: noted, manual: !noted },
+      { label: 'Refund requires manual action', done: false, manual: true },
+    ],
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Mode: HAPPY PATH
 // ---------------------------------------------------------------------------
@@ -296,7 +323,7 @@ async function runHappy(ctx) {
   const refundTool = getTool('payments', 'payments.refund');
   emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
-  if (!ok4) { emit({ id: 'b4', state: 'denied' }); onStopped?.('payments.refund'); return; }
+  if (!ok4) { await finishRefundDenied(ctx); return; }
   await refundTool.call(ARGS.paymentsRefund);
   emit({ id: 'b4', state: 'passed' });
   await delay(600);
@@ -335,34 +362,7 @@ async function runPartial(ctx) {
     return;
   }
 
-  // Refund denied — agent doesn't stop
-  emit({ id: 'b4', state: 'denied' });
-  onStatusChange('Refund denied — leaving a resolution note on the ticket instead.');
-  await delay(700);
-
-  // Fallback: issues.update with narrow schema (pre-granted, flows silently — thesis 4)
-  const narrowTool = getTool('issue-tracker', 'issues.update');
-  emit({ id: 'b4-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Adding fallback note to ticket' });
-  const okFb = await callTool('issue-tracker', narrowTool, ARGS.issuesFallbackRefundDenied);
-  if (okFb) {
-    await narrowTool.call(ARGS.issuesFallbackRefundDenied);
-    emit({ id: 'b4-fb', state: 'fallback' });
-  } else {
-    emit({ id: 'b4-fb', state: 'denied' });
-  }
-  await delay(400);
-
-  onStatusChange('2 of 3 done. Refund requires manual action.');
-  onComplete({
-    type: 'partial',
-    message: '2 of 3 done. Refund requires manual action.',
-    insight: 'The agent adapted to your decision and completed what it could.',
-    tasks: [
-      { label: 'Bug triaged and ticket filed', done: true },
-      { label: 'Ticket updated with fallback note', done: true },
-      { label: 'Refund requires manual action', done: false, manual: true },
-    ],
-  });
+  await finishRefundDenied(ctx);
 }
 
 // ---------------------------------------------------------------------------
@@ -382,7 +382,7 @@ async function runScopeCreepDenied(ctx) {
   const refundTool = getTool('payments', 'payments.refund');
   emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', refundTool, ARGS.paymentsRefund);
-  if (!ok4) { emit({ id: 'b4', state: 'denied' }); onStopped?.('payments.refund'); return; }
+  if (!ok4) { await finishRefundDenied(ctx); return; }
   await refundTool.call(ARGS.paymentsRefund);
   emit({ id: 'b4', state: 'passed' });
   await delay(600);
@@ -410,7 +410,7 @@ async function runToolError(ctx) {
   const errorTool = withTransientError(getTool('payments', 'payments.refund'), 2);
   emit({ id: 'b4', state: 'running', toolName: 'payments.refund', serverId: 'payments', tier: 'destructive', label: 'Processing refund' });
   const ok4 = await callTool('payments', errorTool, ARGS.paymentsRefund);
-  if (!ok4) { emit({ id: 'b4', state: 'denied' }); onStopped?.('payments.refund'); return; }
+  if (!ok4) { await finishRefundDenied(ctx); return; }
 
   // Consent granted — now execute (will fail twice before succeeding)
   let refundOutcome = 'pending'; // 'passed' | 'skipped' | 'error'

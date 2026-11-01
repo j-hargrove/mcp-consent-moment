@@ -190,8 +190,9 @@ body {
 }
 
 .activity-row {
+  color: var(--color-role-text-secondary);
   display: grid;
-  grid-template-columns: var(--size-16) var(--size-38) 1fr auto;
+  grid-template-columns: var(--size-16) var(--size-16) var(--size-38) 1fr auto;
   align-items: center;
   gap: var(--space-6);
   padding: var(--space-5) var(--space-6);
@@ -206,37 +207,7 @@ body {
 .activity-row--retrying     { background: var(--color-neutral-field); border-color: var(--color-neutral-border); }
 .activity-row--fallback     { margin-left: var(--space-14); border-left: var(--border-width-hairline) solid var(--color-role-text-secondary); }
 
-.activity-icon {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-11);
-  text-align: center;
-  color: var(--color-role-text-secondary);
-  flex-shrink: 0;
-}
-.activity-icon--running       { color: var(--color-role-agent); }
-.activity-icon--retrying      { color: var(--color-role-agent); }
-.activity-icon--passed        { color: var(--color-role-approved); }
-.activity-icon--denied        { color: var(--color-role-text-secondary); }
-.activity-icon--skipped       { color: var(--color-role-text-secondary); }
-.activity-icon--stopped       { color: var(--color-role-agent-stopped); }
-.activity-icon--fallback      { color: var(--color-role-text-secondary); }
-.activity-icon--error         { color: var(--color-role-alert); }
-.activity-icon--retry-waiting { color: var(--color-role-alert); }
 
-.activity-tier {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-10);
-  font-weight: var(--font-weight-decision);
-  letter-spacing: var(--tracking-normal);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-xs);
-  text-align: center;
-  flex-shrink: 0;
-}
-.activity-tier--read        { color: var(--color-tier-read-chip-text); border: var(--border-width-hairline) solid var(--color-tier-read-chip-border); }
-.activity-tier--write       { color: var(--color-tier-write-chip-text); background: var(--color-tier-write-chip-bg); }
-.activity-tier--destructive { color: var(--color-tier-destructive-chip-text); background: var(--color-tier-destructive-chip-bg); }
-.activity-tier--creep       { color: var(--color-tier-scope-creep-chip-text); border: var(--border-width-scope-creep) solid var(--color-tier-scope-creep-chip-border); padding: var(--space-2) var(--space-1); }
 
 .activity-info {
   display: flex;
@@ -328,6 +299,10 @@ body {
   background: var(--color-role-button-primary-bg);
   color: var(--color-role-button-primary-text);
   border-color: var(--color-role-button-primary-bg);
+}
+.decision-btn--skip:hover {
+  background: var(--color-palette-slate);
+  border-color: var(--color-palette-slate);
 }
 
 /* ── Budget panel (styles for BudgetPanel data-* elements) ── */
@@ -629,6 +604,7 @@ body {
   background: var(--color-role-button-primary-bg);
   color: var(--color-role-button-primary-text);
 }
+.btn--allow-write:hover { background: var(--color-palette-slate); }
 .btn--allow-destructive {
   background: transparent;
   border: var(--border-width-hairline) solid var(--color-role-stop);

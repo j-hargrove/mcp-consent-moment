@@ -56,9 +56,7 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   cursor: pointer;
-  outline: var(--border-width-hairline) solid transparent;
-  outline-offset: var(--space-2);
-  transition: outline-color var(--motion-duration-fast) var(--motion-easing-standard);
+  transition: background var(--motion-duration-fast) var(--motion-easing-standard);
 }
 .cm-btn[data-variant='primary'] {
   background: var(--color-role-button-primary-bg);
@@ -85,12 +83,21 @@
 }
 .cm-btn[data-surface='red'][data-variant='ghost'] { color: var(--color-tier-destructive-panel-text-secondary); }
 
-/* Hover draws a ring, so no tint is needed */
+/* Hover shifts the background only. Border and text stay put */
 .cm-btn:hover,
-.cm-btn[data-force='hover'] { outline-color: currentColor; }
+.cm-btn[data-force='hover'] { background: var(--color-neutral-field); }
+.cm-btn[data-variant='primary']:hover,
+.cm-btn[data-variant='primary'][data-force='hover'] { background: var(--color-palette-slate); }
+.cm-btn[data-surface='red']:hover,
+.cm-btn[data-surface='red'][data-force='hover'] { background: var(--color-tier-destructive-panel-chip-bg); }
+.cm-btn[data-surface='red'][data-variant='primary']:hover,
+.cm-btn[data-surface='red'][data-variant='primary'][data-force='hover'] { background: var(--color-neutral-field); }
+
+/* The double outline is keyboard focus only */
 .cm-btn:focus-visible,
 .cm-btn[data-force='focus'] {
   outline: var(--border-width-focus) solid var(--color-role-ink);
+  outline-offset: var(--space-2);
 }
 .cm-btn[data-surface='red']:focus-visible,
 .cm-btn[data-surface='red'][data-force='focus'] {
@@ -119,6 +126,7 @@
   font-size: var(--font-size-10);
   letter-spacing: var(--tracking-normal);
 }
+.cm-chip[data-compact][data-tier='scope-creep'] { padding: var(--space-2) var(--space-1); }
 .cm-chip[data-tier='read'] {
   border-color: var(--color-tier-read-chip-border);
   color: var(--color-tier-read-chip-text);
@@ -426,6 +434,8 @@
 .cm-frame[data-tier='destructive'],
 .cm-frame[data-tier='receipt'] { outline: var(--border-width-hairline) solid var(--color-neutral-border); outline-offset: calc(-1 * var(--border-width-hairline)); }
 
+.cm-frame__panel .cm-frame__server { color: var(--color-tier-destructive-panel-text-secondary); }
+
 .cm-panel__row {
   display: flex;
   align-items: center;
@@ -549,12 +559,13 @@
   color: var(--color-role-stop);
   white-space: nowrap;
   cursor: pointer;
-  outline: var(--border-width-hairline) solid transparent;
-  outline-offset: var(--space-2);
-  transition: outline-color var(--motion-duration-fast) var(--motion-easing-standard);
+  transition: background var(--motion-duration-fast) var(--motion-easing-standard);
 }
-.cm-stop:hover { outline-color: currentColor; }
-.cm-stop:focus-visible { outline: var(--border-width-focus) solid var(--color-role-ink); }
+.cm-stop:hover { background: var(--color-neutral-field); }
+.cm-stop:focus-visible {
+  outline: var(--border-width-focus) solid var(--color-role-ink);
+  outline-offset: var(--space-2);
+}
 
 /* ── Thesis strip ── */
 .cm-theses {
@@ -621,12 +632,12 @@
   font-weight: var(--font-weight-decision);
   color: var(--color-role-ink);
 }
-.cm-draft__fields {
+.cm-fields {
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
 }
-.cm-draft__row {
+.cm-fields__row {
   display: grid;
   grid-template-columns: var(--size-100) 1fr;
   gap: var(--space-8);
@@ -634,5 +645,5 @@
   font-size: var(--font-size-11);
   line-height: var(--font-line-height-snug);
 }
-.cm-draft__row dt { color: var(--color-role-text-secondary); }
-.cm-draft__row dd { color: var(--color-role-ink); overflow-wrap: anywhere; }
+.cm-fields__row dt { color: var(--color-role-text-secondary); }
+.cm-fields__row dd { color: var(--color-role-ink); overflow-wrap: anywhere; }

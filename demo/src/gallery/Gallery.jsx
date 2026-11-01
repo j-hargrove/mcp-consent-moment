@@ -182,7 +182,7 @@ export function Gallery() {
           />
           <ConsentFrame
             tier="destructive"
-            panel={<DestructivePanel tool="payments.refund" icon="purchase" value="$149.00" detail="to customer cust-7291 · can't be undone" />}
+            panel={<DestructivePanel tool="payments.refund" server="payments" icon="purchase" value="$149.00" detail="to customer cust-7291 · can't be undone" />}
             primary={<Button icon="close">Don't Refund</Button>}
             secondary={<Button variant="override" icon="arrow-right">Confirm $149.00 Refund</Button>}
           >
