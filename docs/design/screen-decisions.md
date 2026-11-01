@@ -1,0 +1,93 @@
+# MCP Consent Moment — Screen decisions
+
+## Copy casing (locked)
+- Buttons: Title Case. Short articles, conjunctions and prepositions (a, an, the, and, for, of, to, on) stay lowercase unless first.
+- Decision sentences, body copy, consequences, intro lines: sentence case.
+- Tier chips and section labels: uppercase mono.
+- Status line: lowercase mono (agent voice).
+
+### Button inventory
+| Screen | Primary | Secondary / other |
+|---|---|---|
+| Write | Create This Ticket | Deny |
+| Scope creep | Keep Current Grant | Approve Selected · 0 of 2 |
+| Destructive refund | Don't Refund | Confirm $149.00 Refund |
+| Tool error | Skip for Now | Try Refund Again |
+| Completion | Run Another Scenario | Export Receipt |
+| Landing scenario cards | Run | — |
+| Top bar (all) | Stop Agent | — |
+| Review variant (scope/refund) | — | Review Linked Changes · Review Payment Change |
+
+## Layout (locked)
+- Top bar: Tektur "CONSENT MOMENT" (rust) + teal agent light + status line in teal mono + "Stop Agent" (film red, stop-sign icon) right-aligned on every screen. On completion it reads "Agent stopped" in slate.
+- Thesis strip directly under the top bar.
+- Agent task card, full width (bot icon on label).
+- Centered consent card with one-line intro above it.
+- Right sidebar: ACTIVITY (status icon + record-type icon + tier tag + tool) and WHAT YOU'VE AUTHORIZED (security icon, revoke). Brown only for timestamps.
+No full-width decision banner.
+
+## Thesis strip (locked)
+- One line, ~18px tall, under the top bar. Five equal cells, 10px IBM Plex Mono.
+- Labels: 1 · Decision first · 2 · Disclose before · 3 · Narrow by default · 4 · Ask before expanding · 5 · Friction if permanent.
+- Color ramp (cool → hot), 2px top rule on every cell: navy · slate · brown · terracotta · film red.
+- Inactive: slate text, regular. Active: text in thesis color, weight 600, "● " prefix. No fills.
+- Active thesis 4 text uses rust (terracotta text fails AA at 10px). Rule stays terracotta.
+- Mapping: write → 1, 2, 3 · scope creep → 4 · destructive → 2, 3, 5 · tool error → 1, 5 · completion → 2 · landing none.
+
+## The four paths (locked)
+Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket update → Complete.
+| Path | Decision | Ticket update step | Outcome / left for you |
+|---|---|---|---|
+| Happy path | grant everything | scope creep: approve 2 of 2 | nothing left |
+| Partial completion | Don't Refund | agent notes refund not issued | refund |
+| Scope creep | Keep Current Grant | fallback writes 3 granted fields | assignee, labels |
+| Tool error | refund fails twice → Skip for Now / Try Refund Again | — | refund pending |
+
+## Fifth path: multi-hop (approved in principle, card under visual review)
+CRM email change → payments billing contact → card-on-file notifications. Not final — do not build until the card is locked.
+
+## Icon placement (all screens)
+- Section labels: AGENT TASK = bot · ACTIVITY / WHAT HAPPENED / WHAT YOU DECIDED / YOUR CURRENT GRANT = recently-viewed · WHAT YOU'VE AUTHORIZED / CONSENT RECEIPT = security · WHAT GETS SENT = purchase.
+- Card header: tier chip + record-type icon + tool name.
+- Buttons: label left, Carbon icon right — arrow-right = commit, view = review, close = deny, renew = retry, checkmark = approve selected, download = export.
+- Sidebar rows: status icon + record-type icon + tier tag + tool.
+
+## Rules
+- Narrow-by-default = the primary action is the smallest scope that still does the task. For destructive actions, the smallest scope is doing nothing.
+- Card frame escalates with tier: read = gray hairline · write = 1.5px slate · scope creep = 2px terracotta · alert = 2px film red · destructive = film-red header panel · receipt = navy header panel.
+- Payload treatment: create → draft preview · update / scope change → causal trace · destructive → hero value · failure → timeline · completion → causal trace as record.
+- Remember options always unchecked and name exactly what they remember. Destructive never remembered.
+- Every non-obvious choice states its consequence underneath.
+- Authorized list shows grants only after they happen.
+
+## Landing (locked)
+- Status: "idle → choose a scenario to run the consent flow".
+- "Agents move fast. People decide slowly." + "The card gets heavier and warmer as the stakes go up."
+- Tier legend (cool → hot) with mini card-frame samples + chips. Footer: "Revoke any permission at any time. The agent asks again next time."
+- CHOOSE A SCENARIO: 2×2 — Happy path · Partial completion · Scope creep · Tool error.
+
+## Write card — issues.create
+- 1.5px slate frame. WRITE chip + receipt icon. "Create a new high-priority ticket for PAY-503."
+- Draft preview: white, 1.5px dashed slate; on approve dashed → solid, real ID.
+- Remember (unchecked): "Don't ask again for new tickets on issue-tracker". Actions: Create This Ticket · Deny.
+
+## Scope-creep card — issues.update
+- 2px terracotta frame. "issue-tracker wants to write 2 fields it didn't have before."
+- YOUR CURRENT GRANT trace (forest) → dashed terracotta → "+ assignee" (salmon half-fill, "Moves ownership to another team"), "+ labels" (open navy, "Tags only"), each unchecked.
+- Actions: Keep Current Grant · Approve Selected · 0 of 2.
+
+## Destructive refund card — payments.refund
+- Film-red header panel. "$149.00" hero; "to customer cust-7291 · can't be undone".
+- WHAT GETS SENT rows. Review checkbox "I've checked the amount and the customer." · "Not remembered. Every refund asks again."
+- Actions: Don't Refund · Confirm $149.00 Refund.
+
+## Tool error card
+- 2px film-red frame, ALERT chip. "The $149.00 refund failed twice." / "No money moved…" Timeline (brown).
+- Actions: Skip for Now · Try Refund Again.
+
+## Completion — consent receipt
+- Navy header: CONSENT RECEIPT + timestamp; "Task complete." + outcome line.
+- WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist. Actions: Run Another Scenario · Export Receipt.
+
+## Sidebar tag colors
+READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Passed = forest check · declined = slate close · running = teal · needs you = film-red warning · timestamps = brown.
