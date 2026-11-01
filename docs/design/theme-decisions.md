@@ -25,7 +25,7 @@ Reason: write / scope creep / destructive were all warm reds and blurred togethe
 ### Source swatches (left → right)
 | # | Swatch | Hex | Role |
 |---|---|---|---|
-| 1 | Oxblood | #370405 | High node, scope-creep chip text, ink on white-on-red buttons, DESTRUCTIVE chip on red panel |
+| 1 | Oxblood | #370405 | High node, scope-creep chip text, ink on white-on-red buttons, DESTRUCTIVE chip on the landing legend's red sample |
 | 2 | Film red | #74080A | Destructive tier + alerts needing human action: refund panel, alert frame, high trace, scope-expanded mark, Stop Agent |
 | 3 | Rust | #7B230D | Brand frame: Tektur title, hero accents, case-study markers; active thesis 4 text. Not in working UI |
 | 4 | Brown | #824828 | Time and history: timestamps, timelines; thesis 3 |

@@ -288,12 +288,12 @@ export function ConsentFrame({ tier, tool, server, icon, panel, decision, primar
   );
 }
 
-/** Destructive header content: hero value on the film-red panel. */
+/** Destructive header content. The panel and "can't be undone" carry the tier, so no chip. */
 export function DestructivePanel({ tool, server, icon, value, detail }) {
   return (
     <>
       <div className="cm-panel__row">
-        <TierChip tier="destructive" onPanel />
+        <span className="cm-visually-hidden">Destructive</span>
         {icon && <Icon name={icon} />}
         <span className="cm-frame__tool">{tool}</span>
         {server && <span className="cm-frame__server">via {server}</span>}

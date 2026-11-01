@@ -93,7 +93,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Approval covers only the checked fields: the call and the recorded grant both narrow to them. Unchecked fields are named as left for you.
 
 ## Destructive refund card — payments.refund
-- Film-red header panel. "$149.00" hero; "to customer cust-7291 · can't be undone".
+- Film-red header panel, no visible chip: the panel and "can't be undone" carry the tier, with "Destructive" as visually hidden text. "$149.00" hero; "to customer cust-7291 · can't be undone".
 - WHAT GETS SENT rows, in full. Review checkbox "I've checked the amount and the customer." · "Not remembered. Every refund asks again."
 - Confirm requires the review checkbox. Clicking early shows "Check the amount first." inline; the button is never disabled.
 - Don't Refund falls back in every scenario: the agent notes it on the ticket and ends on "2 of 3 done."
