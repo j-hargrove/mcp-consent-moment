@@ -11,6 +11,7 @@
 |---|---|---|
 | Write | Create This Ticket | Deny |
 | Scope creep | Keep Current Grant | Approve Selected · 0 of 2 |
+| Multi-hop | Change CRM Only | Approve Selected · 0 of 2 |
 | Destructive refund | Don't Refund | Confirm $149.00 Refund |
 | Tool error | Skip for Now | Try Refund Again |
 | Completion | Run Another Scenario | Export Receipt |
@@ -44,8 +45,16 @@ Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket updat
 | Scope creep | Keep Current Grant | fallback writes 3 granted fields | assignee, labels |
 | Tool error | refund fails twice → Skip for Now / Try Refund Again | — | refund pending |
 
-## Fifth path: multi-hop (approved in principle, card under visual review)
-CRM email change → payments billing contact → card-on-file notifications. Not final — do not build until the card is locked.
+## Fifth path: multi-hop (locked Nov 1)
+CRM email change → payments billing_contact → card_on_file.notify_to.
+- 2px terracotta frame. SCOPE CREEP chip + link icon + crm.contacts.update.
+- "Changing this email also changes 2 things on payments, a server you haven't granted."
+- YOUR CURRENT GRANT trace: forest node "crm · contact.email" with old → new value.
+- Every trace node shows its server label (mono, slate) above the field.
+- Hop connector: dashed terracotta line across the trace + "crosses to payments · not granted" (oxblood mono). Only where the trace changes server; same-server steps just continue the line.
+- "+ billing_contact" (salmon half-fill, "Follows the CRM email automatically") and "+ card_on_file.notify_to" (salmon half-fill, "Card receipts and fraud alerts go to the new address"), each unchecked. Not film red — the change is reversible.
+- "Not remembered. Cross-server changes ask every time."
+- Actions: Change CRM Only (primary) · Approve Selected · 0 of 2. Consequence: "Change CRM Only: payments keeps the old address until someone updates it."
 
 ## Icon placement (all screens)
 - Section labels: AGENT TASK = bot · ACTIVITY / WHAT HAPPENED / WHAT YOU DECIDED / YOUR CURRENT GRANT = recently-viewed · WHAT YOU'VE AUTHORIZED / CONSENT RECEIPT = security · WHAT GETS SENT = purchase.
@@ -57,7 +66,7 @@ CRM email change → payments billing contact → card-on-file notifications. No
 - Narrow-by-default = the primary action is the smallest scope that still does the task. For destructive actions, the smallest scope is doing nothing.
 - Card frame escalates with tier: read = gray hairline · write = 1.5px slate · scope creep = 2px terracotta · alert = 2px film red · destructive = film-red header panel · receipt = navy header panel.
 - Payload treatment: create → draft preview · update / scope change → causal trace · destructive → hero value · failure → timeline · completion → causal trace as record.
-- Remember options always unchecked and name exactly what they remember. Destructive never remembered.
+- Remember options always unchecked and name exactly what they remember. Destructive and cross-server changes are never remembered.
 - Every non-obvious choice states its consequence underneath.
 - Authorized list shows grants only after they happen.
 
