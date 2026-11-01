@@ -223,7 +223,6 @@ function summarizeDataLeaves(tool, args) {
  */
 export async function gate({ serverId, tool, args, budget, prompt, options = {} }) {
   const {
-    rememberGrants = true,
     classifyTool: classify = classifyTool,
     grantedSchemas = {},
   } = options;
@@ -254,7 +253,7 @@ export async function gate({ serverId, tool, args, budget, prompt, options = {} 
     if (isCreep && budget.isGranted(serverId, tool.name)) {
       const request = buildConsentRequest({ serverId, tool, args, tier, grantedSchema });
       const allowed = await prompt(request); // UI should render creep card
-      if (allowed && rememberGrants) {
+      if (allowed && shouldRemember(options)) {
         budget.revoke(serverId, tool.name); // revoke old narrow scope
         budget.grant(serverId, tool.name, { inputHash: hashSchema(tool.inputSchema) });
         grantedSchemas[tool.name] = tool.inputSchema;
@@ -273,7 +272,7 @@ export async function gate({ serverId, tool, args, budget, prompt, options = {} 
     // First use: prompt (thesis 1)
     const request = buildConsentRequest({ serverId, tool, args, tier, grantedSchema: null });
     const allowed = await prompt(request);
-    if (allowed && rememberGrants) {
+    if (allowed && shouldRemember(options)) {
       budget.grant(serverId, tool.name, { inputHash: hashSchema(tool.inputSchema) });
       grantedSchemas[tool.name] = tool.inputSchema;
     }
@@ -290,6 +289,11 @@ export async function gate({ serverId, tool, args, budget, prompt, options = {} 
 // ---------------------------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------------------------
+
+/** Read after the prompt resolves: the human sets this during the prompt. */
+function shouldRemember(options) {
+  return options.rememberGrants ?? true;
+}
 
 /** Lightweight schema fingerprint for creep detection. Not cryptographic. */
 function hashSchema(schema) {

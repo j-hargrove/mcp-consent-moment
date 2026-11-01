@@ -22,7 +22,7 @@ export default function App() {
   const [completion, setCompletion] = useState(null);
   const [stopped, setStopped] = useState(null); // null | { toolName }
   const [isRunning, setIsRunning] = useState(false);
-  const [remember, setRemember] = useState(true);
+  const [remember, setRemember] = useState(false);
   const [pendingDecision, setPendingDecision] = useState(null);
   const decisionResolveRef = useRef(null);
 
@@ -53,10 +53,11 @@ export default function App() {
   }, []);
 
   const handleResolve = useCallback((allowed) => {
-    setRememberNextGrant(remember);
+    // Creep cards have no checkbox: approving them is the decision to expand the grant.
+    setRememberNextGrant(pendingRequest?.isCreep || remember);
     resolve(allowed);
-    setRemember(true);
-  }, [resolve, remember, setRememberNextGrant]);
+    setRemember(false);
+  }, [resolve, remember, pendingRequest, setRememberNextGrant]);
 
   const onStopped = useCallback((toolName) => {
     console.log('[onStopped] fired for', toolName);
@@ -71,7 +72,7 @@ export default function App() {
     setCompletion(null);
     setStopped(null);
     setIsRunning(true);
-    setRemember(true);
+    setRemember(false);
     setStatus('Starting…');
 
     await runDemo({
