@@ -22,3 +22,4 @@ Things caught and fixed against docs/design/ during the rebuild, newest last.
 | Sidebar | Fallback rows said "fallback" twice | Principle 5, no redundant marks | One label on the row |
 | Refund | DESTRUCTIVE chip on the red panel repeated what the panel already says | Principle 4: risk changes structure, not just labels | Chip removed from the card and kept as visually hidden text; the panel and "can't be undone" carry the tier |
 | Refund | Eye icon in the review checkbox made it read as a button, not a checkbox | Principle 4; standard controls | Standard box: 2px film-red border off, forest with white check on |
+| Sidebar | Waiting rows were film red on every tier, spending the alert color on routine gates | Principle 5, one job per color; red is proportion-controlled | Waiting rows take the tier color; scope-creep label stays oxblood for AA |

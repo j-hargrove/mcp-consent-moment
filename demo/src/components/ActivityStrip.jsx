@@ -13,7 +13,7 @@ const STATE_ICON = {
 };
 
 const STATE_TONE = { running: 'agent', retrying: 'agent' };
-const SLATE_STATES = ['denied', 'skipped', 'stopped', 'fallback'];
+const UNTONED_STATES = ['denied', 'skipped', 'stopped', 'fallback', 'retry-waiting'];
 
 const RECORD_ICON = {
   'docs.search':     'view',
@@ -70,7 +70,8 @@ function ActivityRow({ event, gateOpen }) {
     >
       <Icon
         name={STATE_ICON[state] ?? 'renew'}
-        tone={SLATE_STATES.includes(state) ? undefined : STATE_TONE[state] ?? ICON_TONES[STATE_ICON[state]]}
+        className="activity-status"
+        tone={UNTONED_STATES.includes(state) ? undefined : STATE_TONE[state] ?? ICON_TONES[STATE_ICON[state]]}
       />
       <Icon name={RECORD_ICON[toolName] ?? 'receipt'} />
       <TierChip tier={CHIP_TIER[tier] ?? tier} compact />

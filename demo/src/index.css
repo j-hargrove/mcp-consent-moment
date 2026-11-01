@@ -139,7 +139,22 @@ body {
 }
 .activity-row--running      { background: var(--color-neutral-field); border-color: var(--color-neutral-border); }
 .activity-row--error        { border-color: var(--color-tier-alert-frame); }
-.activity-row--retry-waiting{ border-color: var(--color-tier-alert-frame); }
+/* A row waiting on the human takes its tier's color */
+.activity-row--retry-waiting {
+  --waiting-color: var(--color-tier-alert-frame);
+  --waiting-text: var(--color-tier-alert-frame);
+  border-color: var(--waiting-color);
+}
+.activity-row--retry-waiting.activity-row--write {
+  --waiting-color: var(--color-tier-write-frame);
+  --waiting-text: var(--color-tier-write-frame);
+}
+/* Terracotta text fails AA at this size, so the label uses the chip's text color */
+.activity-row--retry-waiting.activity-row--creep {
+  --waiting-color: var(--color-tier-scope-creep-frame);
+  --waiting-text: var(--color-tier-scope-creep-chip-text);
+}
+.activity-row--retry-waiting .activity-status { color: var(--waiting-color); }
 .activity-row--retrying     { background: var(--color-neutral-field); border-color: var(--color-neutral-border); }
 .activity-row--fallback     { margin-left: var(--space-14); border-left: var(--border-width-hairline) solid var(--color-role-text-secondary); }
 
@@ -196,7 +211,7 @@ body {
 .activity-state-label--fallback      { color: var(--color-role-text-secondary); }
 .activity-state-label--error         { color: var(--color-role-alert); }
 .activity-state-label--retrying      { color: var(--color-role-agent); }
-.activity-state-label--retry-waiting { color: var(--color-role-alert); }
+.activity-state-label--retry-waiting { color: var(--waiting-text); }
 
 /* ── Budget panel (styles for BudgetPanel data-* elements) ── */
 [data-budget-empty] {

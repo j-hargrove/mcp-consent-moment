@@ -112,4 +112,4 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - A stopped run uses the same receipt: "Agent stopped." with what was decided before it stopped.
 
 ## Sidebar tag colors
-READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate = film-red pause, "waiting" · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.
+READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate takes the tier color (write slate, scope creep terracotta with oxblood label for contrast, destructive film red) with a warning icon · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.
