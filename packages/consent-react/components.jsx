@@ -132,7 +132,7 @@ export function CausalTrace({ steps }) {
   );
 }
 
-/** Off and on are forest. review marks a check the human must make: film-red border, view icon. */
+/** On is forest with a white check. review marks a check the human must make: 2px film-red border while off. */
 export function ApprovalCheckbox({ checked, onChange, review = false, consequence, children }) {
   const id = useId();
   return (
@@ -147,7 +147,7 @@ export function ApprovalCheckbox({ checked, onChange, review = false, consequenc
       />
       <label htmlFor={id} className="cm-check__label">
         <span className="cm-check__box">
-          {checked ? <Icon name="checkmark" /> : review ? <Icon name="view" /> : null}
+          {checked && <Icon name="checkmark" />}
         </span>
         <span>{children}</span>
       </label>

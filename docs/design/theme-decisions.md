@@ -88,7 +88,7 @@ All surfaces flat.
 2. Button — primary / secondary / ghost / override; on-surface and on-red. Label left + Carbon icon right. Title Case. Hover shifts the background over 120ms: primary navy → slate; secondary, ghost, override → field; border and text unchanged. The double outline is :focus-visible only.
 3. Tier chip — READ / WRITE / SCOPE CREEP / DESTRUCTIVE / ALERT
 4. Trace node — granted / new (half) / new (open) / high / declined
-5. Approval checkbox — off / on (forest) / review-first (film-red border + red view icon, no fill)
+5. Approval checkbox — off / on (forest) / review-first (2px film-red border, no fill; checked matches on)
 6. Agent status line (mono, teal) + agent light (working / speaking / waiting / stopped)
 7. Scope row — folded into causal trace steps; each new-field step carries its own checkbox
 8. Causal trace card

@@ -319,8 +319,7 @@
   outline-offset: var(--space-2);
 }
 .cm-check[data-review] .cm-check__input:not(:checked) + .cm-check__label .cm-check__box {
-  border-color: var(--color-role-alert);
-  color: var(--color-role-alert);
+  border: var(--border-width-alert) solid var(--color-role-alert);
 }
 .cm-check__consequence {
   margin: var(--space-4) 0 0 var(--size-26);
