@@ -52,7 +52,7 @@ Design decisions live in `docs/design/`. Read them before touching UI.
 ## Rules
 
 - No colors, sizes or durations outside `tokens.json`. A new value becomes a token first.
-- Do not make wholesale UI changes without showing them first. Propose, screenshot, wait for approval.
+- No screenshots for review and no approval stops. Self-check against docs/design/, fix, commit, push, keep going. Stop only for a decision the docs don't answer. Jon approves at the end.
 - The primary button is always the narrowest choice. Destructive actions are never remembered.
 - Buttons in Title Case; body copy in sentence case; agent voice in lowercase mono.
 - Never write to ~/Desktop. Self-check screenshots stay in temp; don’t surface them unless asked.
@@ -62,7 +62,7 @@ Design decisions live in `docs/design/`. Read them before touching UI.
 
 ## Status (Nov 1, 2026)
 
-Design system locked. Code comes first: `docs/design/rebuild-directive.md` drives the rebuild, and Figma comes last, generated from code via Figma MCP. Approved phases go straight to main. Multi-hop fifth path is approved in principle but not built.
+Design system locked. Code comes first: `docs/design/rebuild-directive.md` drives the rebuild, and Figma comes last, generated from code via Figma MCP. Work goes straight to main. Multi-hop fifth path is approved in principle but not built.
 
 ---
 
