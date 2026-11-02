@@ -34,9 +34,9 @@ A small teal light in the top bar, left of the status line. Original form: solid
 - Stopped: slate gray, static. No farewell motion.
 The first of two looping animations in the product. The second is the sidebar waiting pulse.
 
-## Sidebar waiting pulse
-The second and last looping animation. On a waiting row, the pause icon and "waiting" label pulse together: opacity 100% → 55% → 100%, motion.duration.breathe (3.2s), motion.easing.standard. The row itself stays still.
-Runs only while the gate is open and stops instantly when it resolves, with no fade out. Off under reduced motion.
+## Sidebar waiting pulse (approved)
+The second and last looping animation, after the agent light. Slow and barely noticeable. On a waiting row, the pause icon and "waiting" label pulse together: opacity 100% → 55% → 100%, motion.duration.breathe (3.2s), motion.easing.standard. The row itself stays still.
+Runs only while a gate is open and stops instantly when it resolves, with no fade out. Static under prefers-reduced-motion.
 
 ## Signature moments
 - Card resolves like a display: 200ms opacity in + a 1px teal scan line sweeps top → bottom (~450ms).
@@ -47,7 +47,7 @@ Runs only while the gate is open and stops instantly when it resolves, with no f
 - Receipt replays: causal trace rows stagger in quickly (~40ms each).
 
 ## Animated icons — only to illustrate an action
-Rule: an icon moves only if the motion explains what the action does. Plays once (hover, press, or triggering event), ≤450ms, never loops.
+Rule: an icon moves only if the motion explains what the action does. Plays once (hover, press, or triggering event), ≤450ms, never loops. One exception: the sidebar waiting pulse on the pause icon, which loops while a gate is open.
 | Icon | Action | Motion |
 |---|---|---|
 | arrow-right | commit / continue | nudges forward 4px |
