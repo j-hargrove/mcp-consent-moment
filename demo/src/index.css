@@ -213,6 +213,19 @@ body {
 .activity-state-label--retrying      { color: var(--color-role-agent); }
 .activity-state-label--retry-waiting { color: var(--waiting-text); }
 
+/* Second looping animation: the row is waiting on the human. Ends with the state class. */
+@keyframes waiting-pulse {
+  50% { opacity: var(--opacity-pulse); }
+}
+.activity-row--retry-waiting .activity-status,
+.activity-state-label--retry-waiting {
+  animation: waiting-pulse var(--motion-duration-breathe) var(--motion-easing-standard) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .activity-row--retry-waiting .activity-status,
+  .activity-state-label--retry-waiting { animation: none; }
+}
+
 /* ── Budget panel (styles for BudgetPanel data-* elements) ── */
 [data-budget-empty] {
   font-size: var(--font-size-12);

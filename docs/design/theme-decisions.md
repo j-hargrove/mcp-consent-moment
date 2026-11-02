@@ -71,7 +71,7 @@ All surfaces flat.
 
 ## Icons: IBM Carbon (locked)
 - Ink or slate by default. Exceptions: agent (teal); alert marks and Stop Agent (film red); approved-state marks (forest); time icon (brown).
-- Core set: bot, email, link, purchase, receipt, maximize, view, security, recently-viewed, stop-sign, arrow-right, close, checkmark, warning-alt, renew, download.
+- Core set: bot, email, link, purchase, receipt, maximize, view, security, recently-viewed, stop-sign, arrow-right, close, checkmark, warning-alt, pause, renew, download.
 - Button icons name the action; animated only to illustrate the action (see behavior-and-motion.md).
 
 ## Signature pattern: Causal trace (locked)

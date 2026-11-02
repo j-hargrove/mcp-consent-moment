@@ -120,7 +120,7 @@ export default function App() {
     resolve(false);
     setPendingDecision(null);
     decisionResolveRef.current = null;
-    setEvents(prev => prev.map(e => (e.state === 'running' ? { ...e, state: 'stopped' } : e)));
+    setEvents(prev => prev.map(e => (['running', 'retry-waiting'].includes(e.state) ? { ...e, state: 'stopped' } : e)));
     setApprovedDraft(null);
     setIsRunning(false);
     setStopped({ byUser: true });

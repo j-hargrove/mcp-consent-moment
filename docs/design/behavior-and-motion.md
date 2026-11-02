@@ -24,7 +24,7 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 | motion.duration.speak | 900ms | agent light, speaking |
 | motion.type.charDelay | 22ms | status line types on |
 | motion.easing.standard | cubic-bezier(0.2, 0, 0, 1) | everything |
-Reduced motion: all transitions become instant crossfades; no drawing, no typing, no icon motion, agent light static.
+Reduced motion: all transitions become instant crossfades; no drawing, no typing, no icon motion, agent light static, no waiting pulse.
 
 ## Agent presence (the light)
 A small teal light in the top bar, left of the status line. Original form: solid core + thin ring, no lens styling, no blur/glow.
@@ -32,7 +32,11 @@ A small teal light in the top bar, left of the status line. Original form: solid
 - Speaking: quickens (0.9s) while the status line types itself in IBM Plex Mono, character by character.
 - Waiting for you: goes completely still (core solid, ring at low opacity). The agent holds its breath while the human decides.
 - Stopped: slate gray, static. No farewell motion.
-The only looping animation in the product.
+The first of two looping animations in the product. The second is the sidebar waiting pulse.
+
+## Sidebar waiting pulse
+The second and last looping animation. On a waiting row, the pause icon and "waiting" label pulse together: opacity 100% → 55% → 100%, motion.duration.breathe (3.2s), motion.easing.standard. The row itself stays still.
+Runs only while the gate is open and stops instantly when it resolves, with no fade out. Off under reduced motion.
 
 ## Signature moments
 - Card resolves like a display: 200ms opacity in + a 1px teal scan line sweeps top → bottom (~450ms).
@@ -54,4 +58,4 @@ Rule: an icon moves only if the motion explains what the action does. Plays once
 | download | export receipt | arrow drops into tray |
 | maximize | scope expanded (event) | arrows push outward once — plays on detection, no hover needed |
 | stop-sign | stop agent | never moves |
-Status icons in the sidebar and record-type icons do not animate.
+Status icons in the sidebar and record-type icons do not animate, except the waiting pulse above.

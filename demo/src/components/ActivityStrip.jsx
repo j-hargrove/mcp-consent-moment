@@ -9,7 +9,7 @@ const STATE_ICON = {
   retrying:        'renew',
   fallback:        'arrow-right',
   error:           'warning-alt',
-  'retry-waiting': 'warning-alt',
+  'retry-waiting': 'pause',
 };
 
 const STATE_TONE = { running: 'agent', retrying: 'agent' };
