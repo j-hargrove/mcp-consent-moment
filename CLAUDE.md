@@ -55,6 +55,7 @@ Design decisions live in `docs/design/`. Read them before touching UI.
 - Do not make wholesale UI changes without showing them first. Propose, screenshot, wait for approval.
 - The primary button is always the narrowest choice. Destructive actions are never remembered.
 - Buttons in Title Case; body copy in sentence case; agent voice in lowercase mono.
+- Never write to ~/Desktop. Self-check screenshots stay in temp; don’t surface them unless asked.
 - Respect `prefers-reduced-motion`.
 
 ---
