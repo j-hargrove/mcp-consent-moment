@@ -1,6 +1,6 @@
 # Review log
 
-Things caught and fixed against docs/design/ during the rebuild, newest last.
+Things caught and fixed against docs/design/ during the rebuild, newest last. New entries go in the final table: what was wrong → principle → fix.
 
 | Screen | Caught | Rule | Fix |
 |---|---|---|---|
@@ -23,3 +23,15 @@ Things caught and fixed against docs/design/ during the rebuild, newest last.
 | Refund | DESTRUCTIVE chip on the red panel repeated what the panel already says | Principle 4: risk changes structure, not just labels | Chip removed from the card and kept as visually hidden text; the panel and "can't be undone" carry the tier |
 | Refund | Eye icon in the review checkbox made it read as a button, not a checkbox | Principle 4; standard controls | Standard box: 2px film-red border off, forest with white check on |
 | Sidebar | Waiting rows were film red on every tier, spending the alert color on routine gates | Principle 5, one job per color; red is proportion-controlled | Waiting rows take the tier color; scope-creep label stays oxblood for AA |
+| Scope creep | Remember read "Remember selected fields for issue-tracker" with nothing checked; checked fields listed in click order; consequence said the agent asks again | Remember options name exactly what they remember | "Remember for issue-tracker" until a field is checked, then the fields in card order; consequence per screen-decisions.md |
+| Completion | Leftover rows that aren't alerts used ink text | Leftover rows are slate; film red only for what needs a person | Slate label on leftover rows; alert rows unchanged |
+| Completion | Leftover rows said "left for you" under the LEFT FOR YOU label | Principle 5, no redundant marks | Rows name the item only |
+| Revoke | Next use re-asked on the old pre-rebuild card, with "Allow" and "remember for this server" | Remember options name what they remember; Title Case buttons; no old visual design | New revoked-write card on the write frame; old card deleted |
+| Revoke | The re-ask offered all 5 fields in one click, so revoking a 3-field grant could lead to a broader one | Thesis 4: scope never silently expands; principle 3, narrow by default | Agent re-asks for the 3 narrow fields only; assignee and labels are left for the human |
+| Revoke | Denying the re-ask asked a second time, said "Kept the current grant" with no grant held, then wrote to the ticket anyway | Thesis 4: consent is a budget; a denied call must not run | Deny ends the update; nothing is written; "Ticket update" is left for the human |
+| Refund | When the note was denied after Don't Refund, a row that needs no action showed as an alert | Red only for alerts that require a person | Note row is a slate leftover |
+| Tool error | Skip still showed the scope-creep card, with status "resolved" and a "refund-issued" label for a refund that didn't happen | Thesis 3: the card shows what will be written; four paths table | Skip writes a note inside the grant with status open, no creep card, and ends on "2 of 3 done." |
+| Tool error | Sidebar row needing a person showed the waiting pause icon | Sidebar: needs you = film-red warning | Separate needs-you state with warning-alt; pause stays for gates |
+| Tool error | First failure flashed film red during an automatic retry | Alert rule: passive notices use slate; film red needs a person | First failure shows as retrying in teal; film red waits for the second failure |
+| Sidebar | Retry badge cut the tool name to "payments.re…" | Sidebar rows: status + record type + tier + tool | Badge removed; the timeline carries the retry history |
+| Directive | Pause was in the theme doc's core set but missing from the Phase 2 list | Icons: IBM Carbon core set | Added to rebuild-directive.md |

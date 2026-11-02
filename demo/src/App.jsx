@@ -2,13 +2,13 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentGate, BudgetPanel, SectionLabel, ThesisStrip, TopBar } from '@mcp-consent/react';
 import { RiskTier } from '@mcp-consent/core';
 import { runDemo, seedGrants } from './agent.js';
-import { StyledConsentCard } from './components/StyledConsentCard.jsx';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
 import { ReceiptScreen } from './components/ReceiptScreen.jsx';
 import { RefundCard } from './components/RefundCard.jsx';
 import { ToolErrorCard } from './components/ToolErrorCard.jsx';
+import { UpdateCard } from './components/UpdateCard.jsx';
 import { WriteCard } from './components/WriteCard.jsx';
 
 const IDLE_STATUS = 'idle → choose a scenario to run the consent flow';
@@ -106,7 +106,6 @@ export default function App() {
   }, [handleResolve]);
 
   const onStopped = useCallback((toolName) => {
-    console.log('[onStopped] fired for', toolName);
     setStopped({ toolName });
     setStatus(`Agent stopped. Consent denied for ${toolName}.`);
   }, []);
@@ -120,7 +119,7 @@ export default function App() {
     resolve(false);
     setPendingDecision(null);
     decisionResolveRef.current = null;
-    setEvents(prev => prev.map(e => (['running', 'retry-waiting'].includes(e.state) ? { ...e, state: 'stopped' } : e)));
+    setEvents(prev => prev.map(e => (['running', 'retrying', 'needs-you'].includes(e.state) ? { ...e, state: 'stopped' } : e)));
     setApprovedDraft(null);
     setIsRunning(false);
     setStopped({ byUser: true });
@@ -224,11 +223,11 @@ export default function App() {
             ) : pendingRequest?.tier === RiskTier.DESTRUCTIVE ? (
               <RefundCard key={pendingRequest.createdAt} request={pendingRequest} onResolve={handleResolve} />
             ) : pendingRequest ? (
-              <StyledConsentCard
+              <UpdateCard
                 request={pendingRequest}
-                onResolve={handleResolve}
                 remember={remember}
                 onRememberChange={setRemember}
+                onResolve={handleResolve}
               />
             ) : completion || stopped ? (
               <ReceiptScreen completion={completion} stopped={stopped} events={events} onReset={handleReset} />

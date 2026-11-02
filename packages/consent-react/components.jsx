@@ -132,11 +132,14 @@ export function CausalTrace({ steps }) {
   );
 }
 
-/** On is forest with a white check. review marks a check the human must make: 2px film-red border while off. */
-export function ApprovalCheckbox({ checked, onChange, review = false, consequence, children }) {
+/**
+ * On is forest with a white check. review marks a check the human must make: 2px film-red border while off.
+ * muted is a leftover row that isn't an alert: slate label.
+ */
+export function ApprovalCheckbox({ checked, onChange, review = false, muted = false, consequence, children }) {
   const id = useId();
   return (
-    <div className="cm-check" data-review={review || undefined}>
+    <div className="cm-check" data-review={review || undefined} data-muted={muted || undefined}>
       <input
         id={id}
         className="cm-check__input"
@@ -350,6 +353,7 @@ export function ConsentReceipt({ headline = 'Task complete.', timestamp, outcome
               key={item.label}
               checked={item.done}
               review={item.alert}
+              muted={!item.alert}
               onChange={val => onToggleLeft?.(item.label, val)}
             >
               {item.label}

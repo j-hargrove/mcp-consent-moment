@@ -24,7 +24,7 @@ export function CreepCard({ request, onKeep, onApprove }) {
 
   const toggle = (field, on) => {
     setNudge(false);
-    setSelected(prev => (on ? [...prev, field] : prev.filter(f => f !== field)));
+    setSelected(prev => newFields.filter(f => (f === field ? on : prev.includes(f))));
   };
 
   const approve = () => {
@@ -76,9 +76,9 @@ export function CreepCard({ request, onKeep, onApprove }) {
         <ApprovalCheckbox
           checked={remember}
           onChange={setRemember}
-          consequence="Left unchecked, approval covers this update only and the agent asks again next time."
+          consequence="Left unchecked, approval covers this update only and the grant stays as it was."
         >
-          Remember {selected.length ? selected.join(' and ') : 'selected fields'} for {request.serverId}
+          Remember {selected.length ? `${selected.join(' and ')} ` : ''}for {request.serverId}
         </ApprovalCheckbox>
         <p className="cm-muted">
           Keep Current Grant: the ticket updates with the {grantedFields.length} granted fields.

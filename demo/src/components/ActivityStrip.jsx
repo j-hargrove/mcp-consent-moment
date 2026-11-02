@@ -9,11 +9,12 @@ const STATE_ICON = {
   retrying:        'renew',
   fallback:        'arrow-right',
   error:           'warning-alt',
-  'retry-waiting': 'pause',
+  waiting:         'pause',
+  'needs-you':     'warning-alt',
 };
 
 const STATE_TONE = { running: 'agent', retrying: 'agent' };
-const UNTONED_STATES = ['denied', 'skipped', 'stopped', 'fallback', 'retry-waiting'];
+const UNTONED_STATES = ['denied', 'skipped', 'stopped', 'fallback', 'waiting'];
 
 const RECORD_ICON = {
   'docs.search':     'view',
@@ -35,7 +36,8 @@ const STATE_LABEL = {
   retrying:        'retrying…',
   fallback:        '',
   error:           'error',
-  'retry-waiting': 'waiting',
+  waiting:         'waiting',
+  'needs-you':     'needs you',
 };
 
 export function ActivityStrip({ events, gateOpen }) {
@@ -55,9 +57,9 @@ export function ActivityStrip({ events, gateOpen }) {
 }
 
 function ActivityRow({ event, gateOpen }) {
-  const { toolName, tier, isFallback, retryCount } = event;
+  const { toolName, tier, isFallback } = event;
   // The agent runs nothing while a card is open: the row is waiting on the human
-  const state = gateOpen && event.state === 'running' ? 'retry-waiting' : event.state;
+  const state = gateOpen && event.state === 'running' ? 'waiting' : event.state;
 
   return (
     <div
@@ -79,9 +81,6 @@ function ActivityRow({ event, gateOpen }) {
       <div className="activity-info">
         <span className="activity-tool">{toolName}</span>
         {isFallback && <span className="activity-fallback-badge">fallback</span>}
-        {retryCount != null && retryCount > 0 && (
-          <span className="activity-retry-badge">retry {retryCount}</span>
-        )}
       </div>
 
       <div className="activity-meta">

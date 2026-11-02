@@ -10,6 +10,7 @@
 | Screen | Primary | Secondary / other |
 |---|---|---|
 | Write | Create This Ticket | Deny |
+| Revoked write | Update This Ticket | Deny |
 | Scope creep | Keep Current Grant | Approve Selected · 0 of 2 |
 | Multi-hop | Change CRM Only | Approve Selected · 0 of 2 |
 | Destructive refund | Don't Refund | Confirm $149.00 Refund |
@@ -43,7 +44,7 @@ Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket updat
 | Happy path | grant everything | scope creep: approve 2 of 2 | nothing left |
 | Partial completion | Don't Refund | agent notes refund not issued | refund |
 | Scope creep | Keep Current Grant | fallback writes 3 granted fields | assignee, labels |
-| Tool error | refund fails twice → Skip for Now / Try Refund Again | — | refund pending |
+| Tool error | refund fails twice → Skip for Now / Try Refund Again | Skip: agent notes it inside the grant, no scope-creep card. Try Refund Again: same as happy path | refund pending, ending on "2 of 3 done." |
 
 ## Fifth path: multi-hop (locked Nov 1)
 CRM email change → payments billing_contact → card_on_file.notify_to.
@@ -84,11 +85,17 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Draft preview: white, 1.5px dashed slate; on approve dashed → solid, real ID. The card stays up until the next gate, without actions, so the ID comes from the tool's result.
 - Remember (unchecked): "Don't ask again for new tickets on issue-tracker". Actions: Create This Ticket · Deny.
 
+## Revoked write — issues.update
+- Revoke holds, so the next use asks again. The agent asks for the narrow scope only: a revoke never leads to a broader grant.
+- 1.5px slate frame. WRITE chip + receipt icon. "Update ticket ISS-1847." WHAT GETS WRITTEN as a causal trace of open nodes: nothing is granted yet.
+- Remember (unchecked): "Don't ask again for ticket updates on issue-tracker". Consequence: "Deny: nothing is written to the ticket."
+- Approving leaves assignee and labels for the human. Deny leaves the ticket update for the human.
+
 ## Scope-creep card — issues.update
 - 2px terracotta frame. "issue-tracker wants to write 2 fields it didn't have before."
 - YOUR CURRENT GRANT trace (forest) → dashed terracotta → "+ assignee" (salmon half-fill, "Moves ownership to another team"), "+ labels" (open navy, "Tags only"), each unchecked.
 - Actions: Keep Current Grant · Approve Selected · 0 of 2. Clicking Approve Selected with nothing checked shows "Check at least one field first." inline.
-- Remember (unchecked) names the checked fields: "Remember assignee and labels for issue-tracker". Left unchecked, approval covers this update only and the grant stays as it was.
+- Remember (unchecked) names the checked fields: "Remember assignee and labels for issue-tracker". With none checked it reads "Remember for issue-tracker". Left unchecked, approval covers this update only and the grant stays as it was.
 - Consequence: "Keep Current Grant: the ticket updates with the 3 granted fields." Keep falls back in every scenario.
 - Approval covers only the checked fields: the call and the recorded grant both narrow to them. Unchecked fields are named as left for you.
 
@@ -108,7 +115,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Navy header: CONSENT RECEIPT + timestamp; headline + outcome line.
 - Headline is the honest outcome. "Task complete." when every task step happened, naming any leftover fields ("Assignee and labels left for you."). "N of 3 done." only when a task step didn't happen.
 - Leftover rows that aren't alerts are slate. Film red stays for what needs a person to act
-- WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist: film-red review box if a person must act, plain box for leftover fields. Actions: Run Another Scenario · Export Receipt (JSON).
+- WHAT YOU DECIDED trace as record. LEFT FOR YOU checklist: film-red review box if a person must act, plain box for leftover fields. Rows name the item only; the section label already says it's left for you. Actions: Run Another Scenario · Export Receipt (JSON).
 - A stopped run uses the same receipt: "Agent stopped." with what was decided before it stopped.
 
 ## Sidebar tag colors

@@ -125,6 +125,11 @@ const ARGS = {
     status:          'open',
     resolution_note: 'Refund denied by user — manual follow-up required.',
   },
+  issuesFallbackRefundPending: {
+    issue_id:        'ISS-1847',
+    status:          'open',
+    resolution_note: 'Refund failed twice and was skipped — manual processing required.',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -216,13 +221,28 @@ function pickFields(source, keep) {
  * grant both narrow to those. Keep Current Grant writes the granted fields only.
  */
 async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
-  const { callTool, emit, onStatusChange, grantedSchemas, getApprovedFields } = ctx;
-  onStatusChange('wants to write 2 new fields on the ticket');
+  const { budget, callTool, emit, onStatusChange, grantedSchemas, getApprovedFields } = ctx;
   const narrowTool = getTool('issue-tracker', 'issues.update');
   const tool = { ...narrowTool, inputSchema: EXPANDED_UPDATE_SCHEMA };
   const args = { ...ARGS.issuesUpdateExpanded, ...extraArgs };
   const newFields = NEW_FIELDS;
   const grantedFields = Object.keys(NARROW_UPDATE_SCHEMA.properties);
+  const narrowArgs = pickFields(args, grantedFields);
+
+  // Revoked: the agent re-asks for the narrow scope only, so a revoke can't lead to a broader grant
+  if (!budget.isGranted('issue-tracker', 'issues.update')) {
+    onStatusChange('wants to update the ticket');
+    emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Updating ticket with resolution' });
+    if (await callTool('issue-tracker', narrowTool, narrowArgs)) {
+      await narrowTool.call(narrowArgs);
+      emit({ id: 'b5', state: 'passed', decision: { kind: 'granted', value: 'Approved after revoke' } });
+      return newFields;
+    }
+    emit({ id: 'b5', state: 'denied', decision: { kind: 'declined', value: 'Not updated' } });
+    return ['ticket update'];
+  }
+
+  onStatusChange('wants to write 2 new fields on the ticket');
   emit({ id: 'b5', state: 'running', toolName: 'issues.update', serverId: 'issue-tracker', tier: 'creep', label: 'Updating ticket with resolution' });
 
   if (await callTool('issue-tracker', tool, args)) {
@@ -246,7 +266,6 @@ async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
   emit({ id: 'b5', state: 'denied', decision: { kind: 'declined', value: 'Kept the current grant' } });
   onStatusChange('keeping the current grant');
   await delay(700);
-  const narrowArgs = pickFields(args, grantedFields);
   emit({ id: 'b5-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Updating ticket within existing scope' });
   await callTool('issue-tracker', narrowTool, narrowArgs);
   await narrowTool.call(narrowArgs);
@@ -254,9 +273,10 @@ async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
   return newFields;
 }
 
-function leftForYou(fields) {
+/** "Assignee and labels", for the outcome line and the LEFT FOR YOU row. */
+function leftoverName(fields) {
   const names = fields.join(' and ');
-  return `${names[0].toUpperCase()}${names.slice(1)} left for you`;
+  return `${names[0].toUpperCase()}${names.slice(1)}`;
 }
 
 /** Closes a run whose refund went through: honest about any field left undone. */
@@ -266,7 +286,7 @@ function finishAfterUpdate({ onStatusChange, onComplete }, left, insight) {
     onComplete({ type: 'done', message: 'Task complete. Bug triaged, ticket filed, refund issued.', insight });
     return;
   }
-  const message = `Task complete. ${leftForYou(left)}.`;
+  const message = `Task complete. ${leftoverName(left)} left for you.`;
   onStatusChange(message);
   onComplete({
     type: 'partial',
@@ -275,36 +295,41 @@ function finishAfterUpdate({ onStatusChange, onComplete }, left, insight) {
     tasks: [
       { label: 'Bug triaged and ticket filed', done: true },
       { label: 'Refund issued', done: true },
-      { label: leftForYou(left), done: false, leftover: true },
+      { label: leftoverName(left), done: false, leftover: true },
     ],
   });
 }
 
-/** Don't Refund, in any scenario: the agent notes it on the ticket and leaves the refund to the human. */
-async function finishRefundDenied({ callTool, emit, onStatusChange, onComplete }) {
-  emit({ id: 'b4', state: 'denied', decision: { kind: 'declined', value: 'Not refunded' } });
+/** The refund didn't happen: the agent notes it on the ticket and leaves the refund to the human. */
+async function finishWithoutRefund({ callTool, emit, onStatusChange, onComplete }, note, message) {
   onStatusChange('refund not issued, leaving a note on the ticket');
   await delay(700);
 
   // The narrow issues.update grant is already held, so this flows silently (thesis 4)
   const narrowTool = getTool('issue-tracker', 'issues.update');
   emit({ id: 'b4-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Leaving a resolution note' });
-  const noted = await callTool('issue-tracker', narrowTool, ARGS.issuesFallbackRefundDenied);
-  if (noted) await narrowTool.call(ARGS.issuesFallbackRefundDenied);
+  const noted = await callTool('issue-tracker', narrowTool, note);
+  if (noted) await narrowTool.call(note);
   emit({ id: 'b4-fb', state: noted ? 'fallback' : 'denied' });
   await delay(400);
 
-  onStatusChange('2 of 3 done. Refund requires manual action.');
+  onStatusChange(message);
   onComplete({
     type: 'partial',
-    message: '2 of 3 done. Refund requires manual action.',
+    message,
     insight: 'The agent adapted to your decision and completed what it could.',
     tasks: [
       { label: 'Bug triaged and ticket filed', done: true },
-      { label: noted ? 'Ticket updated with fallback note' : 'Fallback note not added', done: noted, manual: !noted },
+      { label: noted ? 'Ticket updated with a note' : 'Ticket note', done: noted, leftover: !noted },
       { label: 'Refund requires manual action', done: false, manual: true },
     ],
   });
+}
+
+/** Don't Refund, in any scenario. */
+function finishRefundDenied(ctx) {
+  ctx.emit({ id: 'b4', state: 'denied', decision: { kind: 'declined', value: 'Not refunded' } });
+  return finishWithoutRefund(ctx, ARGS.issuesFallbackRefundDenied, '2 of 3 done. Refund requires manual action.');
 }
 
 // ---------------------------------------------------------------------------
@@ -420,7 +445,7 @@ async function runToolError(ctx) {
   });
 
   // Consent granted — now execute (will fail twice before succeeding)
-  let refundOutcome = 'pending'; // 'passed' | 'skipped' | 'error'
+  let refundOutcome = 'pending'; // 'passed' | 'skipped'
 
   try {
     await errorTool.call(ARGS.paymentsRefund); // call 1 — throws
@@ -428,18 +453,18 @@ async function runToolError(ctx) {
     refundOutcome = 'passed';
   } catch {
     logFailure('First attempt failed: gateway timeout');
-    emit({ id: 'b4', state: 'error', label: 'Refund failed — retrying automatically…' });
+    // Passive until it needs a person: alert color waits for the second failure
+    emit({ id: 'b4', state: 'retrying', label: 'Retrying refund…', retryCount: 1 });
     onStatusChange('refund failed, retrying automatically');
     await delay(1300);
 
     try {
-      emit({ id: 'b4', state: 'retrying', label: 'Retrying refund…', retryCount: 1 });
       await errorTool.call(ARGS.paymentsRefund); // call 2 — throws
       emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed (retry)', retryCount: 1 });
       refundOutcome = 'passed';
     } catch {
       // Both auto-attempts failed — surface to user
-      emit({ id: 'b4', state: 'retry-waiting', label: 'Refund failed after retry', retryCount: 1 });
+      emit({ id: 'b4', state: 'needs-you', label: 'Refund failed after retry', retryCount: 1 });
       logFailure('Automatic retry failed: gateway timeout');
       onStatusChange('refund failed twice, try again or skip?');
 
@@ -452,14 +477,9 @@ async function runToolError(ctx) {
       if (choice === 'retry') {
         emit({ id: 'b4', state: 'retrying', label: 'Retrying refund…', retryCount: 2 });
         await delay(900);
-        try {
-          await errorTool.call(ARGS.paymentsRefund); // call 3 — succeeds
-          emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed (retry 2)', retryCount: 2 });
-          refundOutcome = 'passed';
-        } catch {
-          emit({ id: 'b4', state: 'error', label: 'Refund failed — manual action required', decision: { kind: 'declined', value: 'Refund failed' } });
-          refundOutcome = 'error';
-        }
+        await errorTool.call(ARGS.paymentsRefund); // call 3 — succeeds
+        emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed (retry 2)', retryCount: 2 });
+        refundOutcome = 'passed';
       } else {
         emit({ id: 'b4', state: 'skipped', label: 'Refund skipped', decision: { kind: 'declined', value: 'Skipped after two failures' } });
         refundOutcome = 'skipped';
@@ -469,35 +489,13 @@ async function runToolError(ctx) {
 
   await delay(600);
 
-  // Beat 5 always runs — note is adjusted based on refund outcome
-  const noteByOutcome = {
-    passed:  'Refund of $149.00 issued (REF-8K2MNP). Customer notified by email.',
-    skipped: 'Refund skipped by user — manual processing required.',
-    error:   'Refund failed after retries — manual intervention required.',
-  };
-  const left = await runIssuesUpdateExpanded(ctx, { resolution_note: noteByOutcome[refundOutcome] ?? noteByOutcome.passed });
-  await delay(400);
-
   if (refundOutcome === 'passed') {
+    const left = await runIssuesUpdateExpanded(ctx);
+    await delay(400);
     finishAfterUpdate(ctx, left, 'The agent surfaced the failure, recovered automatically on retry, and completed the task.');
-  } else {
-    const partialMsg = refundOutcome === 'skipped'
-      ? '2 of 3 done. Refund skipped — manual processing required.'
-      : '2 of 3 done. Refund failed — manual intervention required.';
-    const partialInsight = refundOutcome === 'skipped'
-      ? 'The agent surfaced the failure, respected your decision, and updated the ticket to reflect it.'
-      : 'The agent escalated the failure cleanly. Nothing was silently abandoned.';
-    onStatusChange(partialMsg);
-    onComplete({
-      type: 'partial',
-      message: partialMsg,
-      insight: partialInsight,
-      tasks: [
-        { label: 'Bug triaged and ticket filed', done: true },
-        { label: refundOutcome === 'skipped' ? 'Refund skipped — manual action needed' : 'Refund failed — manual intervention required', done: false, manual: true },
-        { label: 'Ticket updated with resolution note', done: true },
-        ...(left.length ? [{ label: leftForYou(left), done: false, leftover: true }] : []),
-      ],
-    });
+    return;
   }
+
+  // No refund, so no "resolved" ticket and no refund-issued label: the note stays inside the grant
+  await finishWithoutRefund(ctx, ARGS.issuesFallbackRefundPending, '2 of 3 done. Refund pending.');
 }

@@ -321,6 +321,7 @@
 .cm-check[data-review] .cm-check__input:not(:checked) + .cm-check__label .cm-check__box {
   border: var(--border-width-alert) solid var(--color-role-alert);
 }
+.cm-check[data-muted] .cm-check__label { color: var(--color-role-text-secondary); }
 .cm-check__consequence {
   margin: var(--space-4) 0 0 var(--size-26);
   font-family: var(--font-family-sans);
