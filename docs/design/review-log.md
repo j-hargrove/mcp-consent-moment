@@ -92,3 +92,12 @@ Per Nathan Curtis, *Naming Tokens in Design Systems* and *Space in Design System
 | Figma | Slot content inside instances (field lists, timelines, decision and muted text) wasn't rebound: its layer IDs read as inherited | Every value binds to a token | Rebound slot content directly; no old variable left before deletion |
 | Activity row | Chip column hugs, so tool names no longer share one left edge across READ / WRITE / CREEP rows | Approved trade-off (fixed sizes hug) | Left as is; flag for review |
 | Figma, no token | Trace node half-fill height 8 and declined strike width 8 (geometry inside the 12 node); field row default width 400; activity state label box height 13 | Report, don't invent | Left raw |
+
+## Token consolidation follow-ups (Nov 5, 2026)
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Activity sidebar | Tool names started at different x per chip once the chip column hugged | Sidebar rows: status + record + tier + tool, aligned | New size.chip-column = 42, the widest compact chip. Measured in the browser: WRITE 42, CREEP 40, READ and DEST 35.6 (WRITE's 4px squish padding outweighs CREEP's 2px padding + 2px border). In Figma WRITE and CREEP are both 40, so 42 holds every sidebar chip. Chips keep their own width (justify-self start). All rows now share a left edge (x 1264); the fallback row stays 8px indented by design |
+| Tokens | space.inset.s and space.inset.l had no uses | Only tokens a use needs | Removed from tokens.json, tokens.css and Figma (no bindings on either page). Parity 161 ↔ 161, zero |
+| Thesis strip | Height check after it went to hug | Thesis strip ~18px | Code 17, Figma 19: both within 2px of 18, so no size.thesis-strip-height |
+| Hero shot | docs/case-study/hero-refund-2x.png showed the old spacing | Hero: refund card, $149.00, film-red panel, review checkbox, Don't Refund / Confirm | Re-shot from the live card at 2520 × 1260 (2:1, deviceScaleFactor 2) on the page field. The card is taller under the new tokens (406 vs 378), so its zoom is 1.39 instead of 1.5 to keep the same margin |

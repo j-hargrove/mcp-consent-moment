@@ -112,7 +112,7 @@ body {
 .activity-row {
   color: var(--color-role-text-secondary);
   display: grid;
-  grid-template-columns: var(--size-icon) var(--size-icon) auto 1fr auto;
+  grid-template-columns: var(--size-icon) var(--size-icon) var(--size-chip-column) 1fr auto;
   align-items: center;
   gap: var(--space-inline-s);
   padding: var(--space-inset-squish-xs-vertical) var(--space-inset-squish-xs-horizontal);
@@ -121,6 +121,8 @@ body {
   border: var(--border-width-hairline) solid transparent;
   transition: background var(--motion-duration-fast) var(--motion-easing-standard);
 }
+/* Chips keep their own width inside the shared column */
+.activity-row > .cm-chip { justify-self: start; }
 .activity-row--running      { background: var(--color-neutral-field); border-color: var(--color-neutral-border); }
 .activity-row--error        { border-color: var(--color-tier-alert-frame); }
 .activity-row--needs-you    { border-color: var(--color-tier-alert-frame); }

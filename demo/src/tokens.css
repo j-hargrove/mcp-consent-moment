@@ -106,10 +106,8 @@
   --space-xl: 32px;
   --space-inset-xxs: var(--space-xxs);
   --space-inset-xs: var(--space-xs);
-  --space-inset-s: var(--space-s);
   --space-inset-sm: var(--space-sm);
   --space-inset-m: var(--space-m);
-  --space-inset-l: var(--space-l);
   --space-inset-xl: var(--space-xl);
   --space-inset-squish-xxs-vertical: var(--space-xxs);
   --space-inset-squish-xxs-horizontal: var(--space-xs);
@@ -134,6 +132,7 @@
   --space-inline-l: var(--space-l);
   --size-icon: 16px;
   --size-checkbox: 18px;
+  --size-chip-column: 42px;
   --size-node: 12px;
   --size-label-column: 100px;
   --size-sidebar-width: 300px;
