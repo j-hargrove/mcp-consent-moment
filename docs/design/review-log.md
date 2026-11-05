@@ -101,3 +101,21 @@ Per Nathan Curtis, *Naming Tokens in Design Systems* and *Space in Design System
 | Tokens | space.inset.s and space.inset.l had no uses | Only tokens a use needs | Removed from tokens.json, tokens.css and Figma (no bindings on either page). Parity 161 ↔ 161, zero |
 | Thesis strip | Height check after it went to hug | Thesis strip ~18px | Code 17, Figma 19: both within 2px of 18, so no size.thesis-strip-height |
 | Hero shot | docs/case-study/hero-refund-2x.png showed the old spacing | Hero: refund card, $149.00, film-red panel, review checkbox, Don't Refund / Confirm | Re-shot from the live card at 2520 × 1260 (2:1, deviceScaleFactor 2) on the page field. The card is taller under the new tokens (406 vs 378), so its zoom is 1.39 instead of 1.5 to keep the same margin |
+
+## Phase 4a — multi-hop, Figma first (Nov 5, 2026)
+
+Built in Figma only; no code changes. Jon edits the card and picks the landing layout.
+
+- Components: trace steps already carry a server label (mono, slate, above the field) and the Hop connector exists; nothing was missing. The Causal trace multi-hop example now uses real-shaped addresses.
+- Screens: new frame "multi-hop" (1440), cloned from the scope-creep shell and rebuilt with instances: SCOPE CREEP + link icon + crm.contacts.update; decision sentence; YOUR CURRENT GRANT trace with crm · contact.email (dana.reyes@northwind.example → dana@reyesdesign.example); hop connector "crosses to payments · not granted"; + billing_contact and + card_on_file.notify_to as salmon half-fill nodes, unchecked; "Not remembered. Cross-server changes ask every time." with no remember checkbox; Change CRM Only · Approve Selected · 0 of 2; consequence line.
+- Screens: new frame "landing — 5 scenarios" with two options side by side, undecided: A = 2×2 + Multi-hop full width; B = 3 + 2.
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Multi-hop trace | The crm step (Line=none) sat flush against the hop rule | Code only drops the step's bottom padding on the last step | That step's bottom padding bound to stack-m, in the screen and the component example |
+| Landing (all three frames) | Tier legend showed only READ and WRITE: each legend card had taken the card frame's card-width (640) binding and was clipped | Legend: four equal columns | Legend cards unbound from card-width and set to fill |
+| Scenario card | In the 3-across layout the description ran past the card | Text wraps inside its card | Label and description fill the card and wrap (main component) |
+| Multi-hop sidebar | "crm.contacts.update" doesn't fit next to "waiting"; it cuts to "crm.contacts.upda" (code would ellipsize the same way) | Sidebar rows show the tool | Open for Phase 4: decide how long tool names fit the 300 sidebar |
+| Landing option B | Row 2 cards fill wider than row 1; cards in a row hug to different heights | Layout undecided | Left for Jon's pick and auto-layout pass |
+| Placeholders to confirm | Multi-hop task card, intro, status line, sidebar rows (crm.contacts.read, crm.contacts.update with email icon), the granted-earlier grant, and the Multi-hop scenario card copy | Not in screen-decisions.md | Written plainly in house style; Jon to edit |
+| No token | Screen frames 1440 × 900; dash pattern 6/4 on the hop rule and dashed trace lines | Report, don't invent | Left raw |
