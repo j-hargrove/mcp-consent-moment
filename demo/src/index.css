@@ -330,6 +330,8 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: var(--space-stack-sm) var(--space-inline-sm);
 }
+/* Option A: the four shared-spine scenarios 2×2, multi-hop full width below */
+.landing-scenario--wide { grid-column: 1 / -1; }
 .landing-scenario {
   display: flex;
   flex-direction: column;

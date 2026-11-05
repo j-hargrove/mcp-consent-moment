@@ -44,7 +44,8 @@ Decision (Nov 1): Figma moves up. PMs and hiring managers expect a Figma file; c
 ## Phase 4 — Multi-hop path
 Designed in Figma first (the locked card in screen-decisions.md), then built in code from the Figma frames via Figma MCP — one feature that shows the Figma → code direction.
 - Add the fifth scenario (crm email → payments billing_contact → card_on_file.notify_to). Add the crm/payments mock servers or fields if they don't exist.
-- Landing: show five scenarios. The layout isn't decided: stop and ask.
+- Landing: show five scenarios. Decided Nov 5: Option A, the four existing scenarios 2×2 with Multi-hop full width below.
+- Built Nov 5 (Phase 4b) from the Figma "multi-hop" and "landing — 5 scenarios" frames. See screen-decisions.md "Fifth path" and review-log.md.
 
 ## Phase 5 — Behavior and motion
 Per behavior-and-motion.md: animated icons (play once, ≤450ms, never loop), focus and keyboard rules, deliberate beat, double-commit guard, agent light states, card scan line, trace draw, reduced motion.

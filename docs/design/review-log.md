@@ -119,3 +119,25 @@ Built in Figma only; no code changes. Jon edits the card and picks the landing l
 | Landing option B | Row 2 cards fill wider than row 1; cards in a row hug to different heights | Layout undecided | Left for Jon's pick and auto-layout pass |
 | Placeholders to confirm | Multi-hop task card, intro, status line, sidebar rows (crm.contacts.read, crm.contacts.update with email icon), the granted-earlier grant, and the Multi-hop scenario card copy | Not in screen-decisions.md | Written plainly in house style; Jon to edit |
 | No token | Screen frames 1440 × 900; dash pattern 6/4 on the hop rule and dashed trace lines | Report, don't invent | Left raw |
+
+## Phase 4b — multi-hop, Figma → code (Nov 5, 2026)
+
+Built from the Figma "multi-hop" frame and "landing — 5 scenarios" Option A via Figma MCP design context. screen-decisions.md updated where Figma differed.
+
+- Figma first: Jon's hand edits lived only on the screen. The forest line was a loose page-level Line (bound to trace/granted and border-width/trace) laid over the frame, and the hop's inline/s left padding was an instance override. Pushed into the components: the crm step now uses Trace step Line=granted (lands on the same pixels, 442 → 491, ending on the hop rule); Hop connector main binds paddingLeft to inline/s and hugs its label (rule fills); the Causal trace multi-hop example matches. Loose line deleted. Both component descriptions updated.
+- Code: crm mock server (crm.contacts.read, crm.contacts.update) and payments.customers.update, so billing_contact and card_on_file.notify_to are real payments schema fields. The CRM's linked schema carries them with x-mcp-server: payments; gate() sees them as scope creep. MultiHopCard renders the card; isCrossServer() picks it over the scope-creep card. Hop connector CSS: inline-s left padding, stack-xs gap, width max-content.
+- Paths checked in the browser (headless Chromium, 1440 × 900), all zero console errors: Happy path · Partial completion · Scope creep · Tool error (Skip for Now and Try Refund Again) · Multi-hop Change CRM Only · nudge then 1 of 2 · 2 of 2 · revoked CRM approve · revoked CRM deny. Landing: four cards 532 wide in 2×2, Multi-hop 1076 full width.
+- gate() checked directly: READ silent, WRITE first use, WRITE remembered, WRITE creep, DESTRUCTIVE every time, cross-server asks every time, cross-server approval leaves the CRM grant narrow and records nothing for payments.
+- Shot 4: docs/case-study/multihop-figma-vs-code.png, Figma card (left) and running card (right) at 1× on the page field. 1× because the Figma MCP screenshot caps at the node's natural size; both sides match so the comparison is fair.
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Multi-hop receipt | Change CRM Only gave two crm.contacts.update steps the same React key (declined + fallback decision) | Receipt records decisions; scope creep records only the declined one | Fallback row carries no decision, same as scope creep |
+| Revoked CRM write | Card header showed the ticket receipt icon; the sidebar row shows email for the same tool | Card header: tier chip + record-type icon + tool | UpdateCard copy per tool, including icon (email for crm) |
+| Revoked CRM write | UpdateCard copy was ticket-only ("Update ticket …", "Update This Ticket") | Cards describe what happens in plain language | Copy keyed by tool: "Change the email on contact ct-4821.", Change This Email, "Deny: the contact keeps its current email." |
+| Multi-hop sidebar | "crm.contacts.update" ellipsizes to "crm.contacts.up…" next to waiting (open since 4a) | Sidebar rows show the tool | Full name in a title attribute; width decision still open for Jon |
+| Multi-hop authorized list | Figma shows only crm.contacts.update; code shows issues.update too | Prior-session grants seed at landing so a revoke there holds | Both seeded (thesis 4: the whole budget is visible). Figma sidebar is the placeholder |
+| Shot 4: card height | Code card 698 vs Figma 648. Three shared-component differences, same on every trace card: trace text line-height (code body 1.5, Figma normal); checkbox stack-xs top margin inside a trace step; action buttons size to their label (Figma splits 50/50) | Figma is the source for this card | Not changed: fixing them on one card would split it from the scope-creep card. Open for Jon: align the shared components one way or the other |
+| Hop rule length | Figma screen had a hand-set 236 width (rule 228); now hugs the 238 label in both Figma and code | Every use matches | Hug in both; 10px longer than the hand edit |
+| Placeholders confirmed | Multi-hop task, intro, status, read row, scenario card copy from 4a | Figma is the source for this card | Used as written in Figma; logged in screen-decisions.md |
+| Completion copy, no Figma frame | Multi-hop receipt headlines and LEFT FOR YOU rows | Honest outcome; rows name the item only | "Task complete. N payments field(s) left for you." / "Task complete. Email changed on the CRM and payments." / "0 of 1 done. Email change left for you." Rows "payments · <field>" |

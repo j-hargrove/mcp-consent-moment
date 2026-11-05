@@ -62,7 +62,7 @@ Design decisions live in `docs/design/`. Read them before touching UI.
 
 ## Status (Nov 1, 2026)
 
-Design system locked. Code comes first: `docs/design/rebuild-directive.md` drives the rebuild. Figma is Phase 3.5, after the hero and before Phase 4, generated from code via Figma MCP. Work goes straight to main. Multi-hop fifth path is approved in principle but not built.
+Design system locked. Code comes first: `docs/design/rebuild-directive.md` drives the rebuild. Figma is Phase 3.5, after the hero and before Phase 4, generated from code via Figma MCP. Work goes straight to main. Multi-hop fifth path built from Figma (Phase 4b, Nov 5); landing is Option A.
 
 ---
 
@@ -78,7 +78,7 @@ mcp-consent-moment/
 ├── demo/                   # interactive demo (Vite + React)
 │   └── src/
 │       ├── App.jsx          # host shell
-│       ├── servers.js       # three mock MCP servers with real-shaped schemas
+│       ├── servers.js       # four mock MCP servers (incl. crm) with real-shaped schemas
 │       ├── agent.js         # scripted deterministic tool-call timeline
 │       └── components/      # styled consent card, activity strip, budget panel
 ├── docs/

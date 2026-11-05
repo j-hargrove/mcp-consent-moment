@@ -11,6 +11,8 @@
  *   PARTIAL            — refund denied; agent notes the ticket and surfaces partial state
  *   SCOPE_CREEP_DENIED — scope expansion denied; agent falls back to narrow grant
  *   TOOL_ERROR         — refund fails mid-flight; agent retries, then asks user
+ *   MULTI_HOP          — a CRM email change carries 2 fields across to payments;
+ *                        cross-server changes ask every time and are never remembered
  */
 
 import { servers } from './servers.js';
@@ -24,7 +26,13 @@ export const MODE = {
   PARTIAL:            'partial',
   SCOPE_CREEP_DENIED: 'scope-creep-denied',
   TOOL_ERROR:         'tool-error',
+  MULTI_HOP:          'multi-hop',
 };
+
+const TRIAGE_TASK = 'Triage a customer payment error, file a support ticket, and issue a refund.';
+
+/** The Agent Task card: the landing shows the triage task the first four scenarios share. */
+export const DEFAULT_TASK = TRIAGE_TASK;
 
 export const MODE_META = {
   [MODE.HAPPY]: {
@@ -43,7 +51,14 @@ export const MODE_META = {
     label:       'Tool error',
     description: 'Refund fails mid-flight after you approve. Agent retries, then asks what to do.',
   },
+  [MODE.MULTI_HOP]: {
+    label:       'Multi-hop',
+    description: "Change a CRM email that payments also uses. The change crosses to a server you haven't granted.",
+    task:        "Update a customer's email address in the CRM.",
+  },
 };
+
+export const taskFor = mode => MODE_META[mode]?.task ?? TRIAGE_TASK;
 
 /**
  * Run the demo in the given mode.
@@ -64,6 +79,7 @@ export async function runDemo(p) {
     case MODE.PARTIAL:            return runPartial(ctx);
     case MODE.SCOPE_CREEP_DENIED: return runScopeCreepDenied(ctx);
     case MODE.TOOL_ERROR:         return runToolError(ctx);
+    case MODE.MULTI_HOP:          return runMultiHop(ctx);
     default:                      return runHappy(ctx);
   }
 }
@@ -92,6 +108,30 @@ const EXPANDED_UPDATE_SCHEMA = {
     labels:          { type: 'array', items: { type: 'string' }, description: 'Labels to apply' },
   },
   required: ['issue_id'],
+};
+
+/** Granted in a prior session: the contact email, on the CRM only. */
+const CRM_NARROW_SCHEMA = servers.crm.tools.find(t => t.name === 'crm.contacts.update').inputSchema;
+
+const PAYMENTS_LINKED_TOOL = servers.payments.tools.find(t => t.name === 'payments.customers.update');
+
+/** The fields on payments that follow the CRM email. */
+const LINKED_FIELDS = ['billing_contact', 'card_on_file.notify_to'];
+
+/**
+ * The CRM's linked update: the granted CRM fields plus the payments fields that follow them.
+ * Each linked field keeps the payments server's own schema and names that server (x-mcp-server),
+ * so the card can show where it lands and gate() sees new fields as scope creep.
+ */
+const CRM_LINKED_SCHEMA = {
+  ...CRM_NARROW_SCHEMA,
+  properties: {
+    ...CRM_NARROW_SCHEMA.properties,
+    ...Object.fromEntries(LINKED_FIELDS.map(field => [
+      field,
+      { ...PAYMENTS_LINKED_TOOL.inputSchema.properties[field], 'x-mcp-server': 'payments' },
+    ])),
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -124,6 +164,11 @@ const ARGS = {
     issue_id:        'ISS-1847',
     status:          'open',
     resolution_note: 'Refund denied by user — manual follow-up required.',
+  },
+  crmContactsRead: { contact_id: 'ct-4821' },
+  crmEmail: {
+    contact_id: 'ct-4821',
+    email:      'dana@reyesdesign.example',
   },
   issuesFallbackRefundPending: {
     issue_id:        'ISS-1847',
@@ -168,6 +213,9 @@ export function seedGrants(budget, grantedSchemas) {
   Object.keys(grantedSchemas).forEach(k => delete grantedSchemas[k]);
   budget.grant('issue-tracker', 'issues.update', { grantedAt: Date.now() - ONE_DAY_MS });
   grantedSchemas['issues.update'] = NARROW_UPDATE_SCHEMA;
+  // Multi-hop: the CRM email was granted earlier. Payments never was
+  budget.grant('crm', 'crm.contacts.update', { grantedAt: Date.now() - ONE_DAY_MS });
+  grantedSchemas['crm.contacts.update'] = CRM_NARROW_SCHEMA;
 }
 
 const delay = ms => new Promise(r => setTimeout(r, ms));
@@ -498,4 +546,102 @@ async function runToolError(ctx) {
 
   // No refund, so no "resolved" ticket and no refund-issued label: the note stays inside the grant
   await finishWithoutRefund(ctx, ARGS.issuesFallbackRefundPending, '2 of 3 done. Refund pending.');
+}
+
+// ---------------------------------------------------------------------------
+// Mode: MULTI-HOP
+// ---------------------------------------------------------------------------
+
+/** LEFT FOR YOU rows name the item only. */
+const linkedRow = field => `payments · ${field}`;
+
+/**
+ * The CRM email is granted; the 2 payments fields that follow it are not.
+ * Change CRM Only writes the email alone and leaves payments for the human.
+ * Approve Selected narrows the call to the checked fields. Nothing cross-server is remembered.
+ */
+async function runMultiHop(ctx) {
+  const { budget, callTool, emit, onStatusChange, onComplete, getApprovedFields } = ctx;
+
+  onStatusChange('reading the contact record');
+  const readTool = getTool('crm', 'crm.contacts.read');
+  emit({ id: 'm1', state: 'running', toolName: 'crm.contacts.read', serverId: 'crm', tier: 'read', label: 'Reading contact record' });
+  await callTool('crm', readTool, ARGS.crmContactsRead);
+  const contact = await readTool.call(ARGS.crmContactsRead);
+  emit({ id: 'm1', state: 'passed' });
+  await delay(500);
+
+  const narrowTool = getTool('crm', 'crm.contacts.update');
+  const before = { email: contact.email };
+  const narrowArgs = ARGS.crmEmail;
+  const linkedArgs = {
+    ...narrowArgs,
+    ...Object.fromEntries(LINKED_FIELDS.map(field => [field, narrowArgs.email])),
+  };
+
+  const finish = (approved) => {
+    const left = LINKED_FIELDS.filter(field => !approved.includes(field));
+    const message = left.length === 0
+      ? 'Task complete. Email changed on the CRM and payments.'
+      : `Task complete. ${left.length} payments ${left.length === 1 ? 'field' : 'fields'} left for you.`;
+    onStatusChange(message);
+    onComplete({
+      type: left.length ? 'partial' : 'done',
+      message,
+      tasks: [
+        { label: 'CRM email changed', done: true },
+        ...left.map(field => ({ label: linkedRow(field), done: false, leftover: true })),
+      ],
+    });
+  };
+
+  // Revoked: the agent re-asks for the CRM email only. A revoke never leads to a broader grant
+  if (!budget.isGranted('crm', 'crm.contacts.update')) {
+    onStatusChange('wants to change a contact email');
+    emit({ id: 'm2', state: 'running', toolName: 'crm.contacts.update', serverId: 'crm', tier: 'write', label: 'Changing contact email', before });
+    if (await callTool('crm', narrowTool, narrowArgs)) {
+      await narrowTool.call(narrowArgs);
+      emit({ id: 'm2', state: 'passed', decision: { kind: 'granted', value: 'Email changed after revoke' } });
+      await delay(400);
+      finish([]);
+      return;
+    }
+    emit({ id: 'm2', state: 'denied', decision: { kind: 'declined', value: 'Email not changed' } });
+    await delay(400);
+    const message = '0 of 1 done. Email change left for you.';
+    onStatusChange(message);
+    onComplete({
+      type: 'partial',
+      message,
+      tasks: [{ label: 'CRM email change', done: false, manual: true }],
+    });
+    return;
+  }
+
+  onStatusChange('wants to change a contact email');
+  emit({ id: 'm2', state: 'running', toolName: 'crm.contacts.update', serverId: 'crm', tier: 'creep', label: 'Changing contact email', before });
+  const linkedTool = { ...narrowTool, inputSchema: CRM_LINKED_SCHEMA };
+
+  if (await callTool('crm', linkedTool, linkedArgs)) {
+    // Approval covers only the checked fields. gate() was told not to remember, so the grant stays narrow
+    const approved = getApprovedFields() ?? [];
+    await narrowTool.call(narrowArgs);
+    const paymentsArgs = { customer_id: contact.linked.payments_customer_id, ...pickFields(linkedArgs, approved) };
+    if (approved.length) await PAYMENTS_LINKED_TOOL.call(paymentsArgs);
+    emit({ id: 'm2', state: 'passed', decision: { kind: 'granted', value: `Email changed · ${approved.join(', ')} on payments, not remembered` } });
+    await delay(400);
+    finish(approved);
+    return;
+  }
+
+  // Change CRM Only: the email alone, inside the grant the CRM already holds
+  emit({ id: 'm2', state: 'denied', decision: { kind: 'declined', value: 'Payments not changed' } });
+  onStatusChange('changing the crm email only');
+  await delay(700);
+  emit({ id: 'm2-fb', state: 'running', isFallback: true, toolName: 'crm.contacts.update', serverId: 'crm', tier: 'write', label: 'Changing the CRM email only' });
+  await callTool('crm', narrowTool, narrowArgs);
+  await narrowTool.call(narrowArgs);
+  emit({ id: 'm2-fb', state: 'fallback' });
+  await delay(400);
+  finish([]);
 }

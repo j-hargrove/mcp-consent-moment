@@ -1,12 +1,13 @@
 /**
- * Three mock MCP servers with real-shaped tool schemas.
+ * Four mock MCP servers with real-shaped tool schemas.
  *
  * "Simulated ≠ fake. The schemas are real MCP shapes.
  *  The state machine runs against them." — CLAUDE.md
  *
  * Server 1: company-data  — docs.search, customers.read  (READ)
  * Server 2: issue-tracker — issues.create, issues.update  (WRITE / WRITE+CREEP)
- * Server 3: payments      — payments.refund               (DESTRUCTIVE)
+ * Server 3: payments      — payments.refund (DESTRUCTIVE), payments.customers.update (linked write)
+ * Server 4: crm           — crm.contacts.read, crm.contacts.update  (READ / WRITE+CREEP, multi-hop)
  */
 
 export const servers = {
@@ -240,6 +241,123 @@ export const servers = {
             status: 'processed',
             amount_usd: args.amount_usd,
           };
+        },
+      },
+
+      {
+        // Linked to the CRM: a contact email change can carry these fields across.
+        // Only ever reached through the CRM card, never remembered (multi-hop).
+        name: 'payments.customers.update',
+        description: 'Change contact details on a billing customer',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            customer_id: {
+              type: 'string',
+              description: 'Billing customer identifier',
+            },
+            billing_contact: {
+              type: 'string',
+              format: 'email',
+              description: 'Address that receives invoices',
+            },
+            'card_on_file.notify_to': {
+              type: 'string',
+              format: 'email',
+              description: 'Address that receives card receipts and fraud alerts',
+            },
+          },
+          required: ['customer_id'],
+        },
+        outputSchema: {
+          type: 'object',
+          properties: {
+            customer_id: { type: 'string' },
+            updated: { type: 'array', items: { type: 'string' } },
+          },
+        },
+        async call(args) {
+          return {
+            customer_id: args.customer_id,
+            updated: Object.keys(args).filter(field => field !== 'customer_id'),
+          };
+        },
+      },
+    ],
+  },
+
+  crm: {
+    id: 'crm',
+    displayName: 'CRM',
+    tier: 'write',
+    tools: [
+      {
+        name: 'crm.contacts.read',
+        description: 'Read a contact record by ID',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            contact_id: {
+              type: 'string',
+              description: 'Unique contact identifier',
+            },
+          },
+          required: ['contact_id'],
+        },
+        outputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            linked: {
+              type: 'object',
+              description: 'Records on other servers that follow this contact',
+              properties: {
+                payments_customer_id: { type: 'string' },
+              },
+            },
+          },
+        },
+        async call(args) {
+          return {
+            id: args.contact_id,
+            name: 'Dana Reyes',
+            email: 'dana.reyes@northwind.example',
+            linked: { payments_customer_id: 'cust-3307' },
+          };
+        },
+      },
+
+      {
+        name: 'crm.contacts.update',
+        description: 'Update fields on a CRM contact',
+        // The NARROW schema granted in a prior session. The agent presents the linked
+        // schema for the multi-hop beat, which carries payments fields across servers.
+        inputSchema: {
+          type: 'object',
+          properties: {
+            contact_id: {
+              type: 'string',
+              description: 'Unique contact identifier',
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Primary contact email',
+            },
+          },
+          required: ['contact_id'],
+        },
+        outputSchema: {
+          type: 'object',
+          properties: {
+            contact_id: { type: 'string' },
+            updated: { type: 'boolean' },
+          },
+        },
+        async call(args) {
+          return { contact_id: args.contact_id, updated: true };
         },
       },
     ],

@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentGate, BudgetPanel, SectionLabel, ThesisStrip, TopBar } from '@mcp-consent/react';
 import { RiskTier } from '@mcp-consent/core';
-import { runDemo, seedGrants } from './agent.js';
+import { DEFAULT_TASK, runDemo, seedGrants, taskFor } from './agent.js';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
+import { MultiHopCard, isCrossServer } from './components/MultiHopCard.jsx';
 import { ReceiptScreen } from './components/ReceiptScreen.jsx';
 import { RefundCard } from './components/RefundCard.jsx';
 import { ToolErrorCard } from './components/ToolErrorCard.jsx';
@@ -54,6 +55,7 @@ export default function App() {
   const approvedFieldsRef = useRef(null);
   const [stopNotice, setStopNotice] = useState(null);
   const [approvedDraft, setApprovedDraft] = useState(null);
+  const [task, setTask] = useState(DEFAULT_TASK);
 
   const resetGrants = useCallback(() => {
     seedGrants(budget, grantedSchemas);
@@ -131,6 +133,7 @@ export default function App() {
     const runId = ++runIdRef.current;
     setStopNotice(null);
     setApprovedDraft(null);
+    setTask(taskFor(mode));
     approvedFieldsRef.current = null;
     const live = (fn) => (...args) => { if (runIdRef.current === runId) return fn(...args); };
     const haltIfStopped = async (...args) => {
@@ -168,6 +171,7 @@ export default function App() {
     setStopped(null);
     setPendingDecision(null);
     setApprovedDraft(null);
+    setTask(DEFAULT_TASK);
     setStatus(IDLE_STATUS);
   }, [resetGrants]);
 
@@ -197,7 +201,7 @@ export default function App() {
           <div className="task-card">
             <SectionLabel icon="bot">AGENT TASK</SectionLabel>
             <div className="task-card__text">
-              Triage a customer payment error, file a support ticket, and issue a refund.
+              {task}
             </div>
           </div>
 
@@ -212,6 +216,14 @@ export default function App() {
                 remember={remember}
                 onRememberChange={setRemember}
                 onResolve={handleResolve}
+              />
+            ) : isCrossServer(pendingRequest) ? (
+              <MultiHopCard
+                key={pendingRequest.createdAt}
+                request={pendingRequest}
+                before={events.find(e => e.toolName === pendingRequest.tool.name)?.before}
+                onKeep={() => handleResolve(false, false)}
+                onApprove={approveFields}
               />
             ) : pendingRequest?.isCreep ? (
               <CreepCard

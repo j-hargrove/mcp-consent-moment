@@ -13,6 +13,7 @@
 | Revoked write | Update This Ticket | Deny |
 | Scope creep | Keep Current Grant | Approve Selected · 0 of 2 |
 | Multi-hop | Change CRM Only | Approve Selected · 0 of 2 |
+| Revoked CRM write | Change This Email | Deny |
 | Destructive refund | Don't Refund | Confirm $149.00 Refund |
 | Tool error | Skip for Now | Try Refund Again |
 | Completion | Run Another Scenario | Export Receipt |
@@ -35,7 +36,7 @@ No full-width decision banner.
 - Color ramp (cool → hot), 2px top rule on every cell: navy · slate · brown · terracotta · film red.
 - Inactive: slate text, regular. Active: text in thesis color, weight 600, "● " prefix. No fills.
 - Active thesis 4 text uses rust (terracotta text fails AA at 10px). Rule stays terracotta.
-- Mapping: reads → 2 · write → 1, 2, 3 · scope creep → 4 · destructive → 2, 3, 5 · tool error → 5 · completion → 4 · landing none. The last gate's theses stay lit between gates.
+- Mapping: reads → 2 · write → 1, 2, 3 · scope creep (incl. multi-hop) → 4 · destructive → 2, 3, 5 · tool error → 5 · completion → 4 · landing none. The last gate's theses stay lit between gates.
 
 ## The four paths (locked)
 Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket update → Complete.
@@ -46,16 +47,23 @@ Shared spine: Reads → Ticket (write) → Refund (destructive) → Ticket updat
 | Scope creep | Keep Current Grant | fallback writes 3 granted fields | assignee, labels |
 | Tool error | refund fails twice → Skip for Now / Try Refund Again | Skip: agent notes it inside the grant, no scope-creep card. Try Refund Again: same as happy path | refund pending, ending on "2 of 3 done." |
 
-## Fifth path: multi-hop (locked Nov 1)
-CRM email change → payments billing_contact → card_on_file.notify_to.
-- 2px terracotta frame. SCOPE CREEP chip + link icon + crm.contacts.update.
+## Fifth path: multi-hop (locked Nov 1; built from Figma Nov 5)
+CRM email change → payments billing_contact → card_on_file.notify_to. Figma's "multi-hop" frame is the source for this card.
+- Task: "Update a customer's email address in the CRM." Status: "wants to change a contact email". Intro: "The agent wants to change a customer's email address."
+- Run: crm.contacts.read (READ, silent) → crm.contacts.update. The CRM email was granted earlier (seeded at landing next to issues.update); payments never was.
+- 2px terracotta frame. SCOPE CREEP chip + link icon + crm.contacts.update, "via crm".
 - "Changing this email also changes 2 things on payments, a server you haven't granted."
-- YOUR CURRENT GRANT trace: forest node "crm · contact.email" with old → new value.
+- YOUR CURRENT GRANT trace: forest node "crm · contact.email" with old → new value (dana.reyes@northwind.example → dana@reyesdesign.example).
 - Every trace node shows its server label (mono, slate) above the field.
-- Hop connector: dashed terracotta line across the trace + "crosses to payments · not granted" (oxblood mono). Only where the trace changes server; same-server steps just continue the line.
-- "+ billing_contact" (salmon half-fill, "Follows the CRM email automatically") and "+ card_on_file.notify_to" (salmon half-fill, "Card receipts and fraud alerts go to the new address"), each unchecked. Not film red — the change is reversible.
-- "Not remembered. Cross-server changes ask every time."
-- Actions: Change CRM Only (primary) · Approve Selected · 0 of 2. Consequence: "Change CRM Only: payments keeps the old address until someone updates it."
+- The crm step keeps its solid forest line (trace/granted, border-width/trace) down to the hop rule.
+- Hop connector: dashed terracotta rule + "crosses to payments · not granted" (oxblood mono), inset inline-s from the trace line; the rule spans the label. Only where the trace changes server; same-server steps just continue the line.
+- "+ billing_contact" (salmon half-fill, "Follows the CRM email automatically") and "+ card_on_file.notify_to" (salmon half-fill, "Card receipts and fraud alerts go to the new address"), each with old → new and unchecked. Dashed terracotta between them. Not film red — the change is reversible.
+- "Not remembered. Cross-server changes ask every time." No remember checkbox: the absence is the message.
+- Actions: Change CRM Only (primary) · Approve Selected · N of 2. Consequence: "Change CRM Only: payments keeps the old address until someone updates it." Approve Selected with nothing checked shows "Check at least one field first." inline.
+- Change CRM Only: only the CRM email changes, inside the existing grant (fallback row). Payments is left for the human: "Task complete. 2 payments fields left for you." LEFT FOR YOU rows "payments · billing_contact", "payments · card_on_file.notify_to" (plain boxes).
+- Approve Selected narrows to the checked fields: the CRM email plus those payments fields only. Unchecked fields are left for you ("1 payments field left for you."); all checked reads "Task complete. Email changed on the CRM and payments."
+- Never remembered: the CRM grant stays narrow and nothing is recorded for payments, so the next run asks again.
+- Revoked CRM grant: the agent re-asks for the CRM email only (write card, email icon, "Change the email on contact ct-4821.", Change This Email · Deny). Payments is left for you; a revoke never leads to a cross-server ask. Deny ends on "0 of 1 done. Email change left for you."
 
 ## Icon placement (all screens)
 - Section labels: AGENT TASK = bot · ACTIVITY / WHAT HAPPENED / WHAT YOU DECIDED / YOUR CURRENT GRANT = recently-viewed · WHAT YOU'VE AUTHORIZED / CONSENT RECEIPT = security · WHAT GETS SENT = purchase.
@@ -70,7 +78,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - Payload treatment: create → draft preview · update / scope change → causal trace · destructive → hero value · failure → timeline · completion → causal trace as record.
 - Remember options always unchecked and name exactly what they remember. Destructive and cross-server changes are never remembered.
 - Every non-obvious choice states its consequence underneath.
-- Authorized list shows grants only after they happen. A grant from a prior session shows from landing, labeled "granted earlier"; revoking it there holds for the next run.
+- Authorized list shows grants only after they happen. A grant from a prior session shows from landing, labeled "granted earlier"; revoking it there holds for the next run. Two are seeded: issues.update (issue-tracker) and crm.contacts.update (crm).
 
 ## Landing (locked)
 - Status: "idle → choose a scenario to run the consent flow".
@@ -78,7 +86,8 @@ CRM email change → payments billing_contact → card_on_file.notify_to.
 - "Agents move fast. People decide slowly." + "The card gets heavier and warmer as the stakes go up."
 - Tier legend (cool → hot) with mini card-frame samples + chips. Footer: "Revoke any permission at any time. The agent asks again next time."
 - Content shares the Agent Task card's left edge and width, top-aligned.
-- CHOOSE A SCENARIO: 2×2, secondary Run buttons — Happy path · Partial completion · Scope creep · Tool error.
+- CHOOSE A SCENARIO (Option A, locked Nov 5): the four shared-spine scenarios 2×2 — Happy path · Partial completion · Scope creep · Tool error — then Multi-hop full width below. Secondary Run buttons. Gaps stack-sm / inline-sm.
+- Multi-hop card: "Change a CRM email that payments also uses. The change crosses to a server you haven't granted."
 
 ## Write card — issues.create
 - 1.5px slate frame. WRITE chip + receipt icon. "Create a new high-priority ticket for PAY-503."

@@ -22,6 +22,8 @@ const RECORD_ICON = {
   'issues.create':   'receipt',
   'issues.update':   'receipt',
   'payments.refund': 'purchase',
+  'crm.contacts.read':   'view',
+  'crm.contacts.update': 'email',
 };
 
 const CHIP_TIER = { creep: 'scope-creep' };
@@ -79,7 +81,7 @@ function ActivityRow({ event, gateOpen }) {
       <TierChip tier={CHIP_TIER[tier] ?? tier} compact />
 
       <div className="activity-info">
-        <span className="activity-tool">{toolName}</span>
+        <span className="activity-tool" title={toolName}>{toolName}</span>
         {isFallback && <span className="activity-fallback-badge">fallback</span>}
       </div>
 

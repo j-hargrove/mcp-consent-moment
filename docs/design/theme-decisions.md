@@ -81,6 +81,7 @@ All surfaces flat.
 - New field requested: terracotta-outlined node, salmon half-fill (higher consequence) or navy open node (low consequence).
 - Destructive / high: film-red heavy line, solid oxblood node.
 - Declined: navy outline node with strike.
+- Crossing servers: the step before the hop keeps its forest line down to a dashed terracotta hop rule + oxblood mono label, inset inline-s from the trace line. Every node carries its server label.
 - Reuse: completion receipt and audit trail ("WHAT YOU DECIDED").
 
 ## Components (draft, 12)

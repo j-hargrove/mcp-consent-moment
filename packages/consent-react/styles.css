@@ -263,8 +263,13 @@
 .cm-trace__body .cm-check { margin-top: var(--space-stack-xs); }
 
 /* ── Hop connector ── */
+/* Sits inline-s right of the trace line; the rule hugs the label. The step above keeps its line down to the rule */
 .cm-hop {
-  padding: 0 0 var(--space-stack-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-xs);
+  width: max-content;
+  padding: 0 0 var(--space-stack-sm) var(--space-inline-s);
 }
 .cm-hop__rule {
   display: block;
@@ -272,7 +277,6 @@
 }
 .cm-hop__label {
   display: block;
-  margin-top: var(--space-stack-xs);
   font-family: var(--font-family-mono);
   font-size: var(--font-size-s);
   color: var(--color-trace-hop-text);

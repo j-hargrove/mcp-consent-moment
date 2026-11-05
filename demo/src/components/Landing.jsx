@@ -41,7 +41,7 @@ export function Landing({ onSelect }) {
         <div className="landing__choose-label">CHOOSE A SCENARIO</div>
         <div className="landing__grid">
           {Object.values(MODE).map(mode => (
-            <section key={mode} className="landing-scenario">
+            <section key={mode} className={`landing-scenario${mode === MODE.MULTI_HOP ? ' landing-scenario--wide' : ''}`}>
               <h2 className="landing-scenario__label">{MODE_META[mode].label}</h2>
               <p className="landing-scenario__description">{MODE_META[mode].description}</p>
               <Button variant="secondary" icon="arrow-right" onClick={() => onSelect(mode)}>Run</Button>
