@@ -2,6 +2,8 @@
 
 Things caught and fixed against docs/design/ during the rebuild, newest last. New entries go in the final table: what was wrong → principle → fix.
 
+**Nov 5, 2026: Jon approved Phase 3, the hero shot and the final review.** Phase 3.5 (Figma system) starts.
+
 | Screen | Caught | Rule | Fix |
 |---|---|---|---|
 | All | Buttons and scenario cards rendered in a system font | Typography: Plex Sans for all UI | Buttons inherit the font family |
@@ -35,3 +37,8 @@ Things caught and fixed against docs/design/ during the rebuild, newest last. Ne
 | Tool error | First failure flashed film red during an automatic retry | Alert rule: passive notices use slate; film red needs a person | First failure shows as retrying in teal; film red waits for the second failure |
 | Sidebar | Retry badge cut the tool name to "payments.re…" | Sidebar rows: status + record type + tier + tool | Badge removed; the timeline carries the retry history |
 | Directive | Pause was in the theme doc's core set but missing from the Phase 2 list | Icons: IBM Carbon core set | Added to rebuild-directive.md |
+| Figma · Button | Label and arrow touched: space-between ignores the gap on a hugging frame | Buttons: label left, Carbon icon right, 12px gap | Packed left with the 12px gap |
+| Figma · Button | Focus ring didn't render on outline buttons: Figma draws no spread shadow on a frame with no fill | Double outline is keyboard focus only, on every variant | Focus variants take the fill of the surface they sit on (surface or film-red panel); the ring is two bound shadows |
+| Figma · Trace node | Declined strike leaned "/" and sat off center | Trace: declined = outline node with strike, matching code (rotate 45° = "\") | Strike re-centered at -45° |
+| Figma · Write screen | Decision sentence was hidden on the write card | Principle 1: decision first, largest text in the body | Restored "Create a new high-priority ticket for PAY-503." |
+| Figma · Landing | Legend's destructive sample needs the on-panel chip, which the refund card no longer carries | Landing tier legend: mini frames + chips; refund card has no visible chip | Hidden "legend only" chip on the destructive frame's panel row, shown only in the legend |
