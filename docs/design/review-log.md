@@ -47,3 +47,48 @@ Things caught and fixed against docs/design/ during the rebuild, newest last. Ne
 | Figma · Variables | Parity check. Figma → tokens: all 104 variables matched on name, alias target, value and code syntax; Tiers 26 = read 3 · write 4 · scope creep 3 · destructive 9 · alert 3 · receipt 4, same as tokens.json; nothing to delete. Tokens → Figma: 66 tokens had no variable (space, size, radius, opacity, tracking, font family / weight / line height, easing) | Every value traces to tokens.json; Figma variables mirror the token contract | Added the 66 as variables (Space, Size, Radius, Opacity, Tracking, Typography, Motion easing). Final diff 170 ↔ 170, zero. tokens.json unchanged; tokens.css regenerated with no diff. Reference-only (no scope), because Figma can't bind them as written: tracking and space.inline (em), line heights (unitless), opacity (Figma reads a bound 0.4 as 0.4%), easing (no curve type, stored as its CSS string). Font family variables hold the first family only, without the CSS fallback |
 | Figma · Layout values | Padding, gap, corner radius and fixed sizes were raw numbers | Every value traces to tokens.json | Bound only exact matches: 1,778 bindings (Components 1,173 · Screens 605): padding and gap → Space, corner radius → Radius, fixed width/height → Size. The checkbox consequence indent (26) binds to Size/26, the token the code uses for that margin. Instance sublayers that aren't overridden inherit from their main components, so no new overrides were created. Tracking, line height, opacity and easing stay reference-only |
 | Figma · Layout values | No exact token, left raw (no rounding, no new tokens) | Report, don't invent | Screens: frames 1440 × 900. Top bar and thesis strip 1440; thesis cell 288. Activity row 268 (fallback 254). Draft preview and trace step default width 578; hop connector 320; task card 1088; scenario card 539. Trace line widths 2 and 4 and declined strike height 2 (these equal border-width.trace and trace-heavy, but those aren't sizes); half-fill rect width 4. Construction leftovers: decision text box 606 × 31, hidden note text 183, hidden empty state label 0, spacer height 1. On-red backdrop 652 × 106. Not in scope: trace line min-height 16 (space-16 in code), dash patterns, icon vector geometry |
+
+## Token rename and consolidation (Nov 5, 2026)
+
+Per Nathan Curtis, *Naming Tokens in Design Systems* and *Space in Design Systems*. Color unchanged. Old values snapped to the nearest step, ties up. Code and Figma use concept tokens only: padding = inset (or inset-squish), vertical gap = stack, horizontal gap = inline; one-sided padding takes its axis concept.
+
+- Scale: space xxs 2 · xs 4 · s 8 · sm 12 · m 16 · l 24 · xl 32. Font size xs 10 · s 12 · m 14 · l 18 · decision 22 · hero 36 · thesis → xs. Radius s 4 · m 8 · circle. Size: icon 16, checkbox 18, card-width 640, column-max 1200, plus node 12, label-column 100, sidebar-width 300 (approved: no hug equivalent).
+- inset-squish redefined (Jon): vertical one scale step below horizontal. s = 8/12, m = 12/16.
+- Concept tokens added beyond the requested set, each because a use needed it: inset-xxs, inset-xs, inset-sm, inset-xl; inset-squish-xxs (2/4), inset-squish-xs (4/8); stack-xxs, stack-sm, stack-xl; inline-sm, inline-m, inline-l. inset-s and inset-l are kept as requested though unused.
+- Dropped: space.inline (em), unused. 1px uses (visually hidden box, pressed-button nudge) → border-width.hairline. Checkbox consequence indent → calc(checkbox + inline-s), 26 unchanged. Old-design CSS (card-header, creep-alert, amount-gate, schema fields, remember toggle, old buttons, btn--run) deleted as unused rather than re-tokened.
+- Figma: old Space/Size/Radius/Font size variables replaced by the new set and deleted; every binding moved by the same rules. Parity diff 162 ↔ 162, zero.
+
+### Values that moved (old → new)
+| Component | Moves |
+|---|---|
+| Button | padding 9/16 → 12/16 (inset-squish-m; 8/16 fit no concept, tie to the larger); radius 5 → 4; label 13 → 14 |
+| Tier chip | padding 3/8 → 4/8 (squish-xs); compact 2/3 → 2/4 (squish-xxs); compact scope creep 2/1 → 2/2 (inset-xxs); type 11 → 12, compact 10; radius 4 |
+| Section label | gap 6 → 8 |
+| Causal trace | rail top 3 → 4; value 11 → 12 |
+| Hop connector | label 11 → 12 |
+| Approval checkbox | box radius 3 → 4; label 13 → 14; consequence 12 |
+| Agent status | status line 11 → 12; core inset 3 → 4 (core 6 → 4 inside the 12 node) |
+| Consent card frame | header padding 14/16 → 16; body gap 14 → 16; panel detail and outcome 13 → 14; receipt time 11 → 12; receipt label gap 6 → 8 |
+| Alert | body 13 → 14; passive gap 6 → 8 |
+| Draft preview | padding 12/14 → 12/16 (squish-m); field gap 6 → 8; radius 5 → 4; fields 11 → 12 |
+| Field rows, Timeline | gap 6 → 8; type 11 → 12 |
+| Top bar | height 52 → hugs (still 52: Stop button 8/12 + bar 8/24); Stop button padding 6/12 → 8/12, radius 5 → 4, label 13 → 14; "Agent stopped" 13 → 14 |
+| Thesis strip | height 18 → hugs (17 in code: 2px rule + text) |
+| Task card, Scenario card | padding 14/16 → 16; scenario gap 6 → 8, Run margin 6 → 8; scenario label 15 → 14 |
+| App shell | main padding 28/32 → 32; main gap 20 → 24; gate offset 12 → 8 (keeps the locked 32px card offset) |
+| Landing | headline 28 → 22 (decision); legend gap 10 → 12, legend padding 10/12 → 12; scenarios gap 10 → 12 |
+| Activity row | padding 5/6 → 4/8 (squish-xs); gap 6 → 8; list gap 3 → 4; chip column 38 → hugs; state label 9 → 10; fallback badge 8 → 10 |
+| Grant item, list | padding 8/10 → 8/12 (squish-s); list gap 6 → 8; radius 5 → 4; scope and server 11 → 12 |
+| Sidebar | sublabel margins −6/10 → −8/12 |
+| Agent running | pulse 10 → 12 (node) |
+| Gallery (dev page) | gaps 14 → 16, 20 → 24, 6 → 8; swatch and card grids → flex wrap (sizes 140, 400 dropped) |
+| Radius, everywhere | 3, 4, 5 → 4 (s); 8 → 8 (m) |
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Completion (code + Figma) | Top bar dropped from 52 to 37 once Stop Agent left: the bar now hugs | Layout: nothing jumps between screens | "Agent stopped" gets the Stop button's box (inset-squish-s, hairline transparent border; in Figma a surface-colored hairline counted in layout). 52 on every screen |
+| Partial completion | Fallback row cut the tool to "issues.up…" (13px short) after badge type 8 → 10 and gaps 6 → 8 | Sidebar rows show status + record + tier + tool | Fallback indent 16 → 8 (inline-s), info gap → inline-xxs, badge padding → inline-xxs. Fits, badge kept |
+| Landing (Figma) | Legend card padding overrides had fallen back to 16 | Legend frames use the compact 12 padding | Bound to inset-sm |
+| Figma | Slot content inside instances (field lists, timelines, decision and muted text) wasn't rebound: its layer IDs read as inherited | Every value binds to a token | Rebound slot content directly; no old variable left before deletion |
+| Activity row | Chip column hugs, so tool names no longer share one left edge across READ / WRITE / CREEP rows | Approved trade-off (fixed sizes hug) | Left as is; flag for review |
+| Figma, no token | Trace node half-fill height 8 and declined strike width 8 (geometry inside the 12 node); field row default width 400; activity state label box height 13 | Report, don't invent | Left raw |

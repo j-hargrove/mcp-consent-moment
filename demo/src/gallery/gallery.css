@@ -3,7 +3,7 @@ body {
   background: var(--color-neutral-field);
   color: var(--color-role-ink);
   font-family: var(--font-family-sans);
-  font-size: var(--font-size-14);
+  font-size: var(--font-size-m);
   line-height: var(--font-line-height-body);
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
@@ -11,44 +11,44 @@ body {
 .g {
   display: flex;
   flex-direction: column;
-  gap: var(--space-32);
-  padding: var(--space-32);
+  gap: var(--space-stack-xl);
+  padding: var(--space-inset-xl);
 }
 .g-title {
   font-family: var(--font-family-brand);
   font-weight: var(--font-weight-brand);
-  font-size: var(--font-size-18);
+  font-size: var(--font-size-l);
   letter-spacing: var(--tracking-wide);
   color: var(--color-role-brand);
 }
-.g-section { display: flex; flex-direction: column; gap: var(--space-14); }
+.g-section { display: flex; flex-direction: column; gap: var(--space-stack-m); }
 .g-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--size-140), 1fr));
-  gap: var(--space-16);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-stack-m) var(--space-inline-m);
 }
 .g-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--size-400), 1fr));
-  gap: var(--space-20);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-stack-l) var(--space-inline-l);
   align-items: start;
 }
-.g-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-14); }
-.g-cell { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-6); }
+.g-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-stack-m) var(--space-inline-m); }
+.g-cell { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-stack-s); }
 .g-cap {
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-10);
+  font-size: var(--font-size-xs);
   color: var(--color-role-text-secondary);
 }
 .g-red {
-  padding: var(--space-16);
+  padding: var(--space-inset-m);
   background: var(--color-tier-destructive-panel);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-s);
 }
 .g-red .g-cap { color: var(--color-tier-destructive-panel-text-secondary); }
 .g-pane {
-  padding: var(--space-16);
+  padding: var(--space-inset-m);
   background: var(--color-neutral-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-s);
 }
 .g-fill > .cm-draft { align-self: stretch; }
