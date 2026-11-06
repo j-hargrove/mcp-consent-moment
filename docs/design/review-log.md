@@ -185,3 +185,14 @@ Remaining sub-2px gaps are rounding: code lays out 16.8px lines (12px × 1.4) on
 | Frames that grew | Scope creep — issues.update 900 → 955; multi-hop 900 → 941. The other seven stay at 900 (tallest main column 688) | — | No canvas overlaps (frames sit side by side at y 0) |
 | Multi-hop export node (Figma) | The intro line and card already shared a parent ("Consent card", 28:1732, 640 wide, hugs) | One node to export for shot 4 | Renamed to "multi-hop / card". 640 × 696; code's card wrap is 698 (the +1.6 card gap logged above) |
 | Shot 4 | The first export was the whole screen frame saved as multihop-figma-vs-code.png; it's kept as multihop-figma-2x.png and composed with the 2x code card (4352 × 1928) | Card next to card | Re-export "multi-hop / card" at 2x to multihop-figma-2x.png and rerun demo/scripts/compose-shot4.py |
+
+## Figma construction leftovers (Nov 5, 2026)
+
+From the Phase 3.5 binding report's "construction leftovers" (Layout values row above). References checked on both pages: an instance sublayer counts if it's shown on any screen or component.
+
+| Layer | Found | Referenced? | Fix |
+|---|---|---|---|
+| Decision text box 606 × 31 | Consent card frame Tier=destructive (8:426) and Tier=receipt (8:449): hidden placeholder "Body content" in the Body slot, fixed width and height. Tier=read (8:338) was already Fill / Hug | No (hidden on every instance) | Set to Fill width / Hug height (stretch, auto height); now 608 wide, the slot's content width on these strokeless-layout tiers. Figma reports a hidden layer's sizing as Fixed because it's out of layout; the stored setting applies when shown |
+| Hidden note text 183 | Note in all 20 Trace step variants, hidden by default | Yes: shown on the scope creep screen (new-half / ends "Moves ownership to another team", new-open / none "Tags only") and in the component examples (new-half / ends, new-half / none, new-open / none) | Kept: it's the note slot every trace step needs. Not actually fixed: shown instances hug; the 183 is the hidden layer's last size, reported as Fixed only because it's hidden |
+| Hidden empty state label 0 | Activity row State=fallback, State label (8:647): hidden, a single space, width 0 | No | Deleted. Row unchanged (254 × 27) |
+| Spacer height 1 | Push-right spacers (Fill width, height 1, no fill or stroke): Consent card frame header in read / write / scope-creep / alert, destructive panel row, Top bar active / stopped | Yes: in every screen's top bar and every card header | Kept. They push the server name and Stop Agent to the right; space-between can't replace them because the left groups (chip, icon, tool; title, status) would spread apart. The 1 is a construction height with no visual effect |
