@@ -176,3 +176,12 @@ Remaining sub-2px gaps are rounding: code lays out 16.8px lines (12px × 1.4) on
 | Multi-hop sidebar (Figma) | Showed only crm.contacts.update | Matches code: both prior-session grants seed at landing | issues.update · issue-tracker · granted earlier added above it |
 | Button (Figma), open | Primary is 42 high, secondary 44: the primary has no stroke, code gives every button a 1px border (transparent on primary) | Not in this pass | Row height is unaffected (the actions row hugs the taller button). Left for a pass on Button |
 | Shot 4 | Code side retaken at 2x: docs/case-study/multihop-code-2x.png (1280 × 1396, deviceScaleFactor 2) | Jon exports the Figma side by hand | demo/scripts/compose-shot4.py combines multihop-figma-2x.png + multihop-code-2x.png into multihop-figma-vs-code.png (field background, space.xl margins from tokens.json). Waiting on the Figma export; the committed comparison is still the 1x one |
+
+## Figma screen frames fit content (Nov 5, 2026)
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Every screen frame (Figma) | Screens were a fixed 1440 × 900 and clipped anything below; the multi-hop card lost its bottom padding and edge in the 2x export | Frames show their whole content | All 9 screen frames hug vertically with min height 900; each Body hugs and grows, so it fills to 900 on short screens and expands on tall ones, and the sidebar stretches with it. landing — 5 scenarios already hugged (934), unchanged |
+| Frames that grew | Scope creep — issues.update 900 → 955; multi-hop 900 → 941. The other seven stay at 900 (tallest main column 688) | — | No canvas overlaps (frames sit side by side at y 0) |
+| Multi-hop export node (Figma) | The intro line and card already shared a parent ("Consent card", 28:1732, 640 wide, hugs) | One node to export for shot 4 | Renamed to "multi-hop / card". 640 × 696; code's card wrap is 698 (the +1.6 card gap logged above) |
+| Shot 4 | The first export was the whole screen frame saved as multihop-figma-vs-code.png; it's kept as multihop-figma-2x.png and composed with the 2x code card (4352 × 1928) | Card next to card | Re-export "multi-hop / card" at 2x to multihop-figma-2x.png and rerun demo/scripts/compose-shot4.py |
