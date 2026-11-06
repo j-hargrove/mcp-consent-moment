@@ -28,6 +28,11 @@ const RECORD_ICON = {
 
 const CHIP_TIER = { creep: 'scope-creep' };
 
+/** crm.contacts.update can wrap as "crm.contacts." / "update" rather than mid-word. */
+const breakAfterDots = name => name.split('.').flatMap((part, i, all) => (
+  i < all.length - 1 ? [part, '.', <wbr key={i} />] : [part]
+));
+
 const STATE_LABEL = {
   pending:         '',
   running:         'running',
@@ -81,7 +86,7 @@ function ActivityRow({ event, gateOpen }) {
       <TierChip tier={CHIP_TIER[tier] ?? tier} compact />
 
       <div className="activity-info">
-        <span className="activity-tool" title={toolName}>{toolName}</span>
+        <span className="activity-tool">{breakAfterDots(toolName)}</span>
         {isFallback && <span className="activity-fallback-badge">fallback</span>}
       </div>
 

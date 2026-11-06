@@ -72,7 +72,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 - Sidebar rows: status icon + record-type icon + tier tag + tool.
 
 ## Rules
-- Primary sits on the left on every card; secondary follows it.
+- Primary sits on the left on every card; secondary follows it. The two actions split the row 50/50; label left, icon at the right edge.
 - Narrow-by-default = the primary action is the smallest scope that still does the task. For destructive actions, the smallest scope is doing nothing.
 - Card frame escalates with tier: read = gray hairline · write = 1.5px slate · scope creep = 2px terracotta · alert = 2px film red · destructive = film-red header panel · receipt = navy header panel.
 - Payload treatment: create → draft preview · update / scope change → causal trace · destructive → hero value · failure → timeline · completion → causal trace as record.
@@ -128,4 +128,4 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 - A stopped run uses the same receipt: "Agent stopped." with what was decided before it stopped.
 
 ## Sidebar tag colors
-READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate takes the tier color (write slate, scope creep terracotta with oxblood label for contrast, destructive film red) with a pause icon, and the icon and label pulse while the gate is open · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.
+Tool names wrap to a second line (breaking after a dot), never truncate. READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate takes the tier color (write slate, scope creep terracotta with oxblood label for contrast, destructive film red) with a pause icon, and the icon and label pulse while the gate is open · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.

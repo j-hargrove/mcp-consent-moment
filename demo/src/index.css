@@ -149,6 +149,7 @@ body {
 
 .activity-info {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-inline-xxs);
   min-width: 0;
@@ -157,9 +158,9 @@ body {
   font-family: var(--font-family-mono);
   font-size: var(--font-size-xs);
   color: var(--color-role-text-secondary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* Long names wrap to a second line, breaking after a dot first */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .activity-fallback-badge {
   font-family: var(--font-family-mono);

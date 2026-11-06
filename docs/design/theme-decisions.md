@@ -86,7 +86,7 @@ All surfaces flat.
 
 ## Components (draft, 12)
 1. Agent header (rust Tektur title, teal agent light + status, Stop Agent) + thesis strip
-2. Button — primary / secondary / ghost / override; on-surface and on-red. Label left + Carbon icon right. Title Case. Hover shifts the background over 120ms: primary navy → slate; secondary, ghost, override → field; border and text unchanged. The double outline is :focus-visible only.
+2. Button — primary / secondary / ghost / override; on-surface and on-red. Label left + Carbon icon right (space-between). Title Case. In a card's actions the two buttons split the row 50/50. Hover shifts the background over 120ms: primary navy → slate; secondary, ghost, override → field; border and text unchanged. The double outline is :focus-visible only.
 3. Tier chip — READ / WRITE / SCOPE CREEP / DESTRUCTIVE / ALERT
 4. Trace node — granted / new (half) / new (open) / high / declined
 5. Approval checkbox — off / on (forest) / review-first (2px film-red border, no fill; checked matches on)

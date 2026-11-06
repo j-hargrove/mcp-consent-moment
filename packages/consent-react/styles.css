@@ -418,7 +418,8 @@
   gap: var(--space-inline-s);
   padding: 0 var(--space-inline-m) var(--space-stack-m);
 }
-.cm-frame__actions .cm-btn { flex: 1 1 auto; }
+/* Two equal buttons span the row: primary left. Figma Fill matches */
+.cm-frame__actions .cm-btn { flex: 1 1 0; min-width: 0; }
 
 .cm-frame__panel {
   display: flex;

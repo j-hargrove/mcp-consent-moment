@@ -141,3 +141,38 @@ Built from the Figma "multi-hop" frame and "landing — 5 scenarios" Option A vi
 | Hop rule length | Figma screen had a hand-set 236 width (rule 228); now hugs the 238 label in both Figma and code | Every use matches | Hug in both; 10px longer than the hand edit |
 | Placeholders confirmed | Multi-hop task, intro, status, read row, scenario card copy from 4a | Figma is the source for this card | Used as written in Figma; logged in screen-decisions.md |
 | Completion copy, no Figma frame | Multi-hop receipt headlines and LEFT FOR YOU rows | Honest outcome; rows name the item only | "Task complete. N payments field(s) left for you." / "Task complete. Email changed on the CRM and payments." / "0 of 1 done. Email change left for you." Rows "payments · <field>" |
+
+## Phase 4 follow-ups — Figma follows code (Nov 5, 2026)
+
+Jon's call: Figma follows code on the shared trace components; card action buttons split 50/50 in both (code can't be matched by Figma's Fill with flex 1 1 auto, so code moved). Target: every Figma card within 2px of code.
+
+Card heights, code vs Figma (code − Figma):
+
+| Card | Before | After |
+|---|---|---|
+| Write — issues.create | +9.8 | −1.2 |
+| Revoked write — issues.update | +56.8 | +0.8 |
+| Scope creep — issues.update | +49.8 | −0.2 |
+| Destructive refund | −7.2 | −1.2 |
+| Tool error | +12.8 | +1.8 |
+| Completion receipt — happy | +32 | 0 |
+| Completion receipt — partial | +26 | 0 |
+| Multi-hop | +49.6 | +1.6 |
+
+Remaining sub-2px gaps are rounding: code lays out 16.8px lines (12px × 1.4) on fractional pixels, Figma rounds.
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Trace components (Figma) | Trace step Server / Field / Value / Note, Hop label and Approval checkbox Label / Consequence were auto (~1.3); code computes 150% (line-height/body) | Figma follows code | 150% on all 20 Trace step variants, Hop connector, Approval checkbox. Figma can't bind the unitless line-height/body variable as a percent (number variables bind as px), so 150% is set directly and matches the token |
+| Trace checkbox (Figma) | Code puts stack-xs above a checkbox inside a trace step; Figma had none | Same | Control padding-top bound to Space/stack/xs in every Trace step variant |
+| Card text outside the trace (Figma) | Shared trace changes left gaps from text still on auto: tier chip, section label, card header tool and server, destructive and receipt panel text, draft ID, timeline rows, muted slot text. Code computes 150% for all of it (only button labels are normal; decision 140%, hero 110% and draft fields 140% already matched) | Target within 2px | 150% on auto text in Consent card frame, Tier chip, Section label, Draft preview, Timeline row, and the cards' slot text. Button labels untouched |
+| Revoked write (Figma) | +32: its two non-last Line=none steps had 0 bottom padding; code drops the padding only on the last step | Same as the 4a crm-step fix | Those steps' Body padding-bottom bound to stack-m (any non-last step at 0 on every screen) |
+| Refund (Figma) | The reason value wrapped to 2 lines: Field rows were a fixed 400 (the raw default flagged in 3.5) | Field rows fill the card, as in code | Field row instances set to Fill on refund and write; no raw width left |
+| Refund and receipts (Figma) | 2px taller: Figma counted the 1px edge in layout; code draws it as an inset outline that takes no space | Same | Consent card frame Tier=destructive and Tier=receipt: strokes not included in layout |
+| Card actions (code) | Buttons were flex 1 1 auto (label width + equal share of the spare space, 274 / 322 on multi-hop); Figma can't express that | Jon: 50/50 in both | .cm-frame__actions .cm-btn flex 1 1 0. Every card now 298–300 each |
+| Button (Figma) | On Fill buttons the icon sat right after the label; code pushes it to the right edge (space-between) | Label left, icon right | All 24 Button variants space-between. Hugging buttons (Run) unchanged |
+| Activity sidebar (code + Figma) | Tool names truncated ("crm.contacts.up…") with the full name only on hover | Rows show the tool | Names wrap to a second line, breaking after a dot (code: <wbr> after each dot, overflow-wrap anywhere; Figma: Tool text fills and grows in height at 150%, zero-width spaces after the dots on every screen). Hover title removed. Code and Figma wrap the same rows at the same size: payments.refund next to "needs you" and crm.contacts.update next to "waiting", both 89 × 30 / 101 × 30 |
+| Activity row fallback (Figma) | A Fill tool name in a wrapping row would always push the fallback badge to a second line | Code keeps the badge inline when it fits | Fallback variant's Tool text hugs. In code, the multi-hop fallback row (crm.contacts.update) drops its badge under the name; no Figma frame shows that state |
+| Multi-hop sidebar (Figma) | Showed only crm.contacts.update | Matches code: both prior-session grants seed at landing | issues.update · issue-tracker · granted earlier added above it |
+| Button (Figma), open | Primary is 42 high, secondary 44: the primary has no stroke, code gives every button a 1px border (transparent on primary) | Not in this pass | Row height is unaffected (the actions row hugs the taller button). Left for a pass on Button |
+| Shot 4 | Code side retaken at 2x: docs/case-study/multihop-code-2x.png (1280 × 1396, deviceScaleFactor 2) | Jon exports the Figma side by hand | demo/scripts/compose-shot4.py combines multihop-figma-2x.png + multihop-code-2x.png into multihop-figma-vs-code.png (field background, space.xl margins from tokens.json). Waiting on the Figma export; the committed comparison is still the 1x one |
