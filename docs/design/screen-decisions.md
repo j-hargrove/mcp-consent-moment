@@ -111,7 +111,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 ## Destructive refund card — payments.refund
 - Film-red header panel, no visible chip: the panel and "can't be undone" carry the tier, with "Destructive" as visually hidden text. "$149.00" hero; "to customer cust-7291 · can't be undone".
 - WHAT GETS SENT rows, in full.
-- BEFORE YOU CONFIRM section label (uppercase mono like WHAT GETS SENT, slate checkmark icon), then the review checkbox "I've checked the amount and the customer." at decision weight in ink. The whole row is the click target and carries the focus ring (border-width.focus). 2px film-red box border while off. It is required, so it looks different from the optional remember and select checkboxes.
+- BEFORE YOU CONFIRM section label (uppercase mono like WHAT GETS SENT, slate checkmark icon), then the review checkbox (Kind=review) "I've checked the amount and the customer." at decision weight in ink. The whole row is the click target and carries the focus ring (border-width.focus). 2px film-red box border while off. It is required, so it looks different from the optional remember and select checkboxes.
 - "Not remembered. Every refund asks again." sits directly under the action buttons in slate: it's about the decision as a whole, not the review box.
 - Confirm requires the review checkbox. Clicking early shows "Check the amount first." inline; the button is never disabled.
 - Don't Refund falls back in every scenario: the agent notes it on the ticket and ends on "2 of 3 done."
@@ -148,3 +148,12 @@ Final approval round. These were open after Phase 6.
 - Revoked-CRM card copy as built: "Change the email on contact ct-4821.", Change This Email · Deny.
 - Multi-hop fallback row: the badge wraps under the tool name, so the name stays whole.
 - Line-height and tracking tokens locked at their current values.
+
+## Checkbox kinds
+The four kinds are named for their jobs (theme-decisions.md component 5):
+| Kind | Job | Where |
+|---|---|---|
+| remember | Optional: don't ask again for this scope | Write, revoked write (ticket and CRM), scope creep |
+| select | Optional widening: approve one new field | Scope-creep and multi-hop trace steps |
+| review | Required before a destructive action | Refund (BEFORE YOU CONFIRM) |
+| todo | A LEFT FOR YOU row; Needs you = yes is film red, no is plain | Receipt |

@@ -89,7 +89,12 @@ All surfaces flat.
 2. Button — primary / secondary / ghost / override; on-surface and on-red. Label left + Carbon icon right (space-between). Title Case. In a card's actions the two buttons split the row 50/50. Hover shifts the background over 120ms: primary navy → slate; secondary, ghost, override → field; border and text unchanged. The double outline is :focus-visible only.
 3. Tier chip — READ / WRITE / SCOPE CREEP / DESTRUCTIVE / ALERT
 4. Trace node — granted / new (half) / new (open) / high / declined
-5. Approval checkbox — off / on (forest) / review-first (2px film-red border, no fill; checked matches on)
+5. Approval checkbox — off / on (forest, white check, fills instantly). Kind names the job:
+   - remember: optional; names exactly what it remembers (write, revoked write, scope creep).
+   - select: optional widening; one per new field on a trace step (scope creep, multi-hop).
+   - review: required before a destructive action (refund). 2px film-red border while off, decision-weight ink label, the whole row is the target.
+   - todo: a LEFT FOR YOU row on the receipt. Needs you = yes: 2px film-red border while off. Needs you = no: plain box, slate label.
+   Film red always means a person has to act (review, and todo that needs you). Figma: Kind = remember / select / review / todo, plus Needs you = yes / no.
 6. Agent status line (mono, teal) + agent light (working / speaking / waiting / stopped)
 7. Scope row — folded into causal trace steps; each new-field step carries its own checkbox
 8. Causal trace card
