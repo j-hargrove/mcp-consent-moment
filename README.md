@@ -12,6 +12,8 @@ Agents move fast. People decide slowly. An agent calls tools at machine speed, a
 
 Most hosts ask for one permission when a server connects. That single grant treats a read and an irreversible refund the same way, and it asks before the person knows what they are deciding. Consent has to happen at the moment of use, sized to the risk.
 
+The agent runs in the MCP client on behalf of a support rep. The rep holds consent; the customer is the one affected.
+
 ## Five theses
 
 1. Defer the grant to first meaningful use, not connection.
