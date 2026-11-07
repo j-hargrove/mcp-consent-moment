@@ -371,7 +371,7 @@ async function finishWithoutRefund({ callTool, emit, onStatusChange, onComplete 
     tasks: [
       { label: 'Bug triaged and ticket filed', done: true },
       { label: noted ? 'Ticket updated with a note' : 'Ticket note', done: noted, leftover: !noted },
-      { label: 'Refund requires manual action', done: false, manual: true },
+      { label: 'Refund', done: false, manual: true },
     ],
   });
 }

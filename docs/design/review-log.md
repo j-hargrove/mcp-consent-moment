@@ -251,3 +251,4 @@ Self-check: all five scenarios run with motion on and with reduced motion, plus 
 | Screen | Caught | Rule | Fix |
 |---|---|---|---|
 | Completion | Headline used a "(s)" placeholder and didn't name the fields | Receipt headline names leftover fields | Headlines name the fields: "Task complete. Billing contact and card notifications left for you." / "Task complete. Billing contact left for you." / "Task complete. Card notifications left for you." Rows stay "payments · <field>" |
+| Completion | Leftover row repeated the outcome line | Principle 5, rows name the item only | Row reads "Refund". Code: the partial-completion and tool-error Skip receipts. Figma: Consent receipt, Outcome=partial (Outcome=happy has no leftover rows), and the partial-completion screen's override. Every other row already names the item only: Assignee and labels · Labels · Ticket update · Ticket note · payments · <field> · CRM email change |
