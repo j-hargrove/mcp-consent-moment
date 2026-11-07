@@ -53,6 +53,7 @@ export function RefundCard({ request, onResolve }) {
         )}
         autoFocus
         onEscape={dontRefund}
+        footnote="Not remembered. Every refund asks again."
         primary={<Button data-action="deny" icon="close" onClick={dontRefund}>Don't Refund</Button>}
         secondary={(
           <Button data-action="allow" data-live={live || undefined} variant="override" icon="arrow-right" onClick={confirm}>
@@ -62,12 +63,9 @@ export function RefundCard({ request, onResolve }) {
       >
         <SectionLabel icon="purchase">WHAT GETS SENT</SectionLabel>
         <FieldRows fields={fields} />
-        <ApprovalCheckbox
-          checked={reviewed}
-          onChange={review}
-          review
-          consequence="Not remembered. Every refund asks again."
-        >
+        {/* Required, not optional: its own section, decision weight. Slate icon, since forest means approved */}
+        <SectionLabel icon="checkmark" tone={null}>BEFORE YOU CONFIRM</SectionLabel>
+        <ApprovalCheckbox checked={reviewed} onChange={review} review required>
           I've checked the amount and the customer.
         </ApprovalCheckbox>
         {nudge && <p className="cm-muted" role="status">Check the amount first.</p>}

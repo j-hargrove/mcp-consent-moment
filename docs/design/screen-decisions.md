@@ -110,7 +110,9 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 
 ## Destructive refund card — payments.refund
 - Film-red header panel, no visible chip: the panel and "can't be undone" carry the tier, with "Destructive" as visually hidden text. "$149.00" hero; "to customer cust-7291 · can't be undone".
-- WHAT GETS SENT rows, in full. Review checkbox "I've checked the amount and the customer." · "Not remembered. Every refund asks again."
+- WHAT GETS SENT rows, in full.
+- BEFORE YOU CONFIRM section label (uppercase mono like WHAT GETS SENT, slate checkmark icon), then the review checkbox "I've checked the amount and the customer." at decision weight in ink. The whole row is the click target and carries the focus ring (border-width.focus). 2px film-red box border while off. It is required, so it looks different from the optional remember and select checkboxes.
+- "Not remembered. Every refund asks again." sits directly under the action buttons in slate: it's about the decision as a whole, not the review box.
 - Confirm requires the review checkbox. Clicking early shows "Check the amount first." inline; the button is never disabled.
 - Don't Refund falls back in every scenario: the agent notes it on the ticket and ends on "2 of 3 done."
 - Actions: Don't Refund · Confirm $149.00 Refund.

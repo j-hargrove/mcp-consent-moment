@@ -255,3 +255,13 @@ Self-check: all five scenarios run with motion on and with reduced motion, plus 
 | Tokens | Line-height and tracking were still marked provisional | Values are locked once approved | Locked at their current values: "Provisional" removed from tokens.json. The Figma variable descriptions never carried the word, so Figma needed no change. Values unchanged, so the generated CSS is unchanged and the variable diff stays zero (167 = 167) |
 | Revoked CRM write | Copy built without a Figma frame, open for approval | Jon approved as built (Nov 6) | No change: "Change the email on contact ct-4821.", Change This Email · Deny, email icon, "Deny: the contact keeps its current email." |
 | Activity sidebar | Multi-hop fallback row's badge wraps under crm.contacts.update; no Figma frame shows it | Jon approved as built (Nov 6) | No change: the badge wraps so the tool name stays whole |
+
+## Checkbox flow (Nov 6, 2026)
+
+Audit, 7 checkboxes plus the receipt checklist. Remember: write card, revoked write (ticket and CRM), scope-creep remember. Select (optional widening): scope-creep assignee and labels, multi-hop billing_contact and card_on_file.notify_to. Review (required): refund. Receipt LEFT FOR YOU rows are a to-do checklist: rows needing a person use the review style, the rest are muted.
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Refund | Review checkbox looked like the optional remember checkboxes | Principle 4, risk changes structure | BEFORE YOU CONFIRM label, decision-weight label. Code: new `required` prop on ApprovalCheckbox, refund only. The whole row is the click target and carries the focus ring (border-width.focus). Film-red box border, inline nudge and never-disabled Confirm unchanged. Section label icon in slate, since forest means approved. Figma: Approval checkbox Kind=required (off, on), Section label Icon=checkmark; receipt alert rows keep Kind=review |
+| Refund | "Not remembered" note read as the review box's consequence | Every choice states its own consequence | Note moved under the buttons, slate. Code: `footnote` on ConsentFrame. Figma: Footnote layer on Consent card frame Tier=destructive behind a Footnote boolean (off by default, so the landing legend is unchanged); the refund screen turns it on and sets Actions bottom padding to stack-s, giving code's 8 between buttons and note |
+| All | Checkbox tick lagged behind the click | Standard controls respond instantly | Instant fill; stroke-draw removed. The box's background and border transitions are gone too. The stroke-draw stays only on the Approve Selected button icon. behavior-and-motion.md updated |

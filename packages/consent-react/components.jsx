@@ -53,10 +53,11 @@ export function TierChip({ tier, compact = false, onPanel = false }) {
   );
 }
 
-export function SectionLabel({ icon, children }) {
+/** tone overrides the icon's assigned color; null keeps the label's slate. */
+export function SectionLabel({ icon, tone = ICON_TONES[icon], children }) {
   return (
     <div className="cm-section-label">
-      {icon && <Icon name={icon} tone={ICON_TONES[icon]} />}
+      {icon && <Icon name={icon} tone={tone ?? undefined} />}
       <span>{children}</span>
     </div>
   );
@@ -203,13 +204,15 @@ export function CausalTrace({ steps, motion = 'draw' }) {
 }
 
 /**
- * On is forest with a white check. review marks a check the human must make: 2px film-red border while off.
- * muted is a leftover row that isn't an alert: slate label.
+ * On is forest with a white check, filled the instant it's ticked. review marks a check the human
+ * must make: 2px film-red border while off. muted is a leftover row that isn't an alert: slate label.
+ * required is the destructive review step: decision-weight label, the whole row is the click target
+ * and carries the focus ring.
  */
-export function ApprovalCheckbox({ checked, onChange, review = false, muted = false, consequence, children }) {
+export function ApprovalCheckbox({ checked, onChange, review = false, muted = false, required = false, consequence, children }) {
   const id = useId();
   return (
-    <div className="cm-check" data-review={review || undefined} data-muted={muted || undefined}>
+    <div className="cm-check" data-review={review || undefined} data-muted={muted || undefined} data-required={required || undefined}>
       <input
         id={id}
         className="cm-check__input"
@@ -347,7 +350,7 @@ export function TopBar({ state, status, prefix, notice, onStop }) {
  */
 export function ConsentFrame({
   tier, tool, server, icon, panel, decision, primary, secondary, children,
-  enter = true, autoFocus = false, onEscape,
+  enter = true, autoFocus = false, onEscape, footnote,
 }) {
   const chipTier = tier === 'receipt' ? null : tier;
   const { actionsRef, onKeyDown } = useGateKeys({ autoFocus, onEscape });
@@ -372,6 +375,7 @@ export function ConsentFrame({
         </div>
       )}
       <CardActions primary={primary} secondary={secondary} actionsRef={actionsRef} />
+      {footnote && <p className="cm-frame__footnote">{footnote}</p>}
     </section>
   );
 }

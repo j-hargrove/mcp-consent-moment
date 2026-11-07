@@ -16,7 +16,7 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 ## Motion tokens
 | Token | Value | Use |
 |---|---|---|
-| motion.duration.fast | 120ms | hover, checkbox, chip, icon press |
+| motion.duration.fast | 120ms | hover, chip, icon press |
 | motion.duration.base | 200ms | card enter (opacity), thesis strip change |
 | motion.duration.slow | 400ms | trace draw, dashed → solid, icon motion |
 | motion.duration.scan | 450ms | card scan line |
@@ -69,8 +69,10 @@ Rule: an icon moves only if the motion explains what the action does. Plays once
 | view | review | blinks once (scaleY) |
 | close | cancel / deny | tightens (scale 0.8) |
 | renew | retry | one full turn |
-| checkmark | approve selected; checkbox ticked | stroke draws itself (also when a checkbox is ticked) |
+| checkmark | approve selected | stroke draws itself (button icon only) |
 | download | export receipt | arrow drops into tray |
 | maximize | scope expanded (event) | arrows push outward once — plays on detection, no hover needed |
 | stop-sign | stop agent | never moves |
 Status icons in the sidebar and record-type icons do not animate, except the waiting pulse above.
+
+Checkboxes respond instantly: ticking fills the box forest with a white check at once. No stroke-draw and no fade, because a standard control must not lag the click.

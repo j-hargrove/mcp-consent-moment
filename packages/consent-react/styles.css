@@ -309,9 +309,6 @@
   border: var(--border-width-write) solid var(--color-role-text-secondary);
   border-radius: var(--radius-s);
   flex-shrink: 0;
-  transition:
-    background var(--motion-duration-fast) var(--motion-easing-standard),
-    border-color var(--motion-duration-fast) var(--motion-easing-standard);
 }
 .cm-check__input:checked + .cm-check__label .cm-check__box {
   background: var(--color-role-approved);
@@ -326,6 +323,18 @@
   border: var(--border-width-alert) solid var(--color-role-alert);
 }
 .cm-check[data-muted] .cm-check__label { color: var(--color-role-text-secondary); }
+/* The destructive review step: the whole row is the target and carries the focus ring */
+.cm-check[data-required] .cm-check__label {
+  padding: var(--space-inset-xs);
+  margin: calc(-1 * var(--space-inset-xs));
+  border-radius: var(--radius-s);
+  font-weight: var(--font-weight-decision);
+  color: var(--color-role-ink);
+}
+.cm-check[data-required] .cm-check__input:focus-visible + .cm-check__label .cm-check__box { outline: none; }
+.cm-check[data-required] .cm-check__input:focus-visible + .cm-check__label {
+  outline: var(--border-width-focus) solid var(--color-role-ink);
+}
 .cm-check__consequence {
   margin: var(--space-stack-xs) 0 0 calc(var(--size-checkbox) + var(--space-inline-s));
   font-family: var(--font-family-sans);
@@ -420,6 +429,14 @@
 }
 /* Two equal buttons span the row: primary left. Figma Fill matches */
 .cm-frame__actions .cm-btn { flex: 1 1 0; min-width: 0; }
+/* A note about the decision as a whole, under the buttons rather than any one control */
+.cm-frame__footnote {
+  margin-top: calc(-1 * var(--space-stack-s));
+  padding: 0 var(--space-inline-m) var(--space-stack-m);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-s);
+  color: var(--color-role-text-secondary);
+}
 
 .cm-frame__panel {
   display: flex;
@@ -753,8 +770,6 @@
   transform-box: fill-box;
   animation: cm-icon-drop var(--motion-duration-slow) var(--motion-easing-standard);
 }
-/* The check draws itself when a box is ticked */
-.cm-check__box .cm-icon[data-name='checkmark'] { animation: cm-reveal-across var(--motion-duration-fast) var(--motion-easing-standard); }
 /* Scope expanded is an event: the arrows push outward once when the card detects it, after the scan */
 .cm-frame__header .cm-icon[data-name='maximize'] path {
   animation-duration: var(--motion-duration-slow);
