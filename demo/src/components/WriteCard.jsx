@@ -23,6 +23,8 @@ export function WriteCard({ request, committed, resultId, remember, onRememberCh
         server={request.serverId}
         icon="receipt"
         decision={decisionFor(request.args)}
+        autoFocus={!committed}
+        onEscape={committed ? undefined : () => onResolve(false)}
         primary={
           <Button data-action={live('allow')} icon="arrow-right" onClick={() => onResolve(true)}>Create This Ticket</Button>
         }

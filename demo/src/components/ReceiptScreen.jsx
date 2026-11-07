@@ -53,6 +53,7 @@ export function ReceiptScreen({ completion, stopped, events, onReset }) {
         outcome={outcome}
         steps={steps}
         left={stopped ? null : left}
+        autoFocus
         onToggleLeft={(label, done) => setLeft(items => items.map(i => (i.label === label ? { ...i, done } : i)))}
         primary={<Button icon="arrow-right" onClick={onReset}>Run Another Scenario</Button>}
         secondary={(

@@ -63,6 +63,8 @@ export function CreepCard({ request, onKeep, onApprove }) {
         tool={request.tool.name}
         server={request.serverId}
         icon="maximize"
+        autoFocus
+        onEscape={onKeep}
         decision={`${request.serverId} wants to write ${newFields.length} fields it didn't have before.`}
         primary={<Button data-action="deny" icon="arrow-right" onClick={onKeep}>Keep Current Grant</Button>}
         secondary={

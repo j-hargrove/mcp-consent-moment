@@ -75,6 +75,8 @@ export function MultiHopCard({ request, before = {}, onKeep, onApprove }) {
         tool={request.tool.name}
         server={serverId}
         icon="link"
+        autoFocus
+        onEscape={onKeep}
         decision={`Changing this email also changes ${newFields.length} things on ${hopServer}, a server you haven't granted.`}
         primary={<Button data-action="deny" icon="arrow-right" onClick={onKeep}>Change CRM Only</Button>}
         secondary={

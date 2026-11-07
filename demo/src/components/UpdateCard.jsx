@@ -44,6 +44,8 @@ export function UpdateCard({ request, remember, onRememberChange, onResolve }) {
         server={request.serverId}
         icon={copy.icon}
         decision={copy.decision(request.args)}
+        autoFocus
+        onEscape={() => onResolve(false)}
         primary={<Button data-action="allow" icon="arrow-right" onClick={() => onResolve(true)}>{copy.allow}</Button>}
         secondary={<Button data-action="deny" variant="secondary" icon="close" onClick={() => onResolve(false)}>Deny</Button>}
       >

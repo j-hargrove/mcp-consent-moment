@@ -207,3 +207,26 @@ From the Phase 3.5 binding report's "construction leftovers" (Layout values row 
 | Set layout | 24 variants in a 6 × 4 jumble, primary, secondary, ghost and override mixed across rows; Surface=red split across two rows on the backdrop | Readable matrix | Grid layout: columns = State (default, hover, focus), rows = Variant (primary, secondary, ghost, override). Surface=surface block on top, an empty zero-height row, Surface=red block below. Row gap Space/stack/m, column gap Space/inline/m, padding Space/inset/m (all 16). The empty row makes the gap between blocks two row gaps, so the backdrop's 16 padding around the red block leaves 16 above it too. Set 382 × 504 |
 | On-red backdrop | Sized for the old layout | Red block sits on the panel color | Rectangle refit to the red block: full set width, from 16 above the red rows to the set's bottom edge (382 × 252), still behind the set. Its position isn't a variable (rectangles can't bind x / y); it follows the set's token padding |
 | Components page | Set grew 276 taller and overlapped Tier chip | No overlaps | Every component below moved down 276; no overlaps on the page |
+
+## Phase 5: behavior and motion (Nov 6, 2026)
+
+Self-check: all five scenarios run with motion on and with reduced motion, plus Stop Agent mid-run, revoke then re-ask, keyboard only (Tab / Space / Enter / Escape) through every card, and a double-click on Confirm. 47 checks passed in each mode, with no console errors. The token grep finds no raw ms, s or cubic-bezier outside the generated token CSS.
+
+| Item | Caught | Rule | Fix |
+|---|---|---|---|
+| Agent tempo | The scripted agent waited raw 400–1300ms delays in agent.js | No durations outside tokens.json; a new value becomes a token first | New `pace.*` group (step, read, beat, fallback, hold, retry) at the same values. The agent reads them from the token CSS. Machine time, not motion, so reduced motion leaves it alone. Not a Figma variable |
+| JS timers | The deliberate beat, double-commit guard and char delay need durations in JS | Every duration comes from motion.* tokens | `readDuration()` reads the generated custom properties, so JS and CSS share one source |
+| Status line | "paused → " made the whole sentence type again at every gate | Waiting: completely still | The prefix appears whole; only the agent's own words type on. The light speaks only while working, so it's still at a gate and static when stopped |
+| Status line | Typing char by char would make screen readers announce every letter | Accessibility | The full sentence sits in a visually hidden live region; the typed text is aria-hidden |
+| Status line | Stop and completion are facts, not the agent speaking | Stop confirms in place | Stopped status appears whole: "Agent stopped. Nothing else will run." |
+| Refund | Confirm worked the moment the box was checked | Rule 4: deliberate beat | Live after motion.duration.deliberate. An early click shows "Check the amount first." The button is never disabled |
+| Refund | A guard armed by any click would swallow the click right after a nudge | Rule 8: ignore repeat commits | Only a click that commits arms the guard. Both refund buttons share it, and Try Refund Again and Skip for Now share one |
+| Refund | The second click of a double-click on Confirm landed after the card closed and selected the next card's text | Rule 8: no double commits | For the guard window, the guard also blocks multi-click selection |
+| Keyboard | Enter with focus on the review checkbox could have meant Confirm | Rule 3: no shortcut to a destructive action | Enter on anything but a button takes the primary (Don't Refund). Confirm needs explicit focus + Enter |
+| Write card | After approval the card stays up, and its keys stayed live | Grants appear after the decision, once | Autofocus, Enter and Escape turn off once the draft is committed |
+| Receipt | Focus fell to the page after the last decision | Keyboard only through every card | Focus lands on Run Another Scenario |
+| Landing | The legend's mini frames would each run the scan line | Signature moments are for cards entering | Legend frames opt out (`enter={false}`) |
+| Trace draw | Scaling a dashed segment squashes its dashes | Dashed terracotta draws last | Lines and the hop rule reveal with clip-path, so the dashes stay put. Delays are order × trace-stagger + phase × slow |
+| Checkmark | The Carbon checkmark is a filled path, so there's no stroke to draw | Icon motion: stroke draws itself | Revealed left to right with clip-path, the same visual result. It also draws when a review or approval box is ticked |
+| Waiting pulse | Confirmed | Uses opacity.pulse over breathe | No change. Static under reduced motion |
+| Reduced motion | "Instant crossfades" left open whether fades stay | No drawing, typing, icon motion or scan | Movement, drawing, typing, the scan line, icon motion, the light and the pulse are off. Opacity crossfades keep their tokens. The beat and the guard stay because they're behavior |

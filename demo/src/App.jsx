@@ -190,7 +190,7 @@ export default function App() {
   return (
     <div className="app">
 
-      <TopBar state={agentState} status={atGate ? `paused → ${status}` : status} notice={stopNotice} onStop={stopAgent} />
+      <TopBar state={agentState} prefix={atGate ? 'paused → ' : ''} status={status} notice={stopNotice} onStop={stopAgent} />
       <ThesisStrip active={litThesesRef.current} />
 
       {/* ── Body ── */}

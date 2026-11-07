@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { renderSchemaFields } from '@mcp-consent/core';
 import {
   ApprovalCheckbox, Button, ConsentFrame, DestructivePanel, FieldRows, SectionLabel,
+  useCommitGuard, useDeliberateBeat,
 } from '@mcp-consent/react';
 
 /**
@@ -11,6 +12,10 @@ import {
 export function RefundCard({ request, onResolve }) {
   const [reviewed, setReviewed] = useState(false);
   const [nudge, setNudge] = useState(false);
+  // Confirm goes live after motion.duration.deliberate. Never disabled: an early click nudges instead
+  const live = useDeliberateBeat();
+  // Both buttons share one guard: after either commits, repeat clicks are ignored
+  const guard = useCommitGuard();
 
   const { amount_usd: amount, customer_id: customer } = request.args;
   const money = Number(amount).toFixed(2);
@@ -22,13 +27,15 @@ export function RefundCard({ request, onResolve }) {
     setNudge(false);
   };
 
-  const confirm = () => {
-    if (!reviewed) {
+  const confirm = guard(() => {
+    if (!live || !reviewed) {
       setNudge(true);
-      return;
+      return false;
     }
     onResolve(true);
-  };
+    return true;
+  });
+  const dontRefund = guard(() => onResolve(false));
 
   return (
     <div className="consent-card-wrap">
@@ -44,9 +51,11 @@ export function RefundCard({ request, onResolve }) {
             detail={`to customer ${customer} · can't be undone`}
           />
         )}
-        primary={<Button data-action="deny" icon="close" onClick={() => onResolve(false)}>Don't Refund</Button>}
+        autoFocus
+        onEscape={dontRefund}
+        primary={<Button data-action="deny" icon="close" onClick={dontRefund}>Don't Refund</Button>}
         secondary={(
-          <Button data-action="allow" variant="override" icon="arrow-right" onClick={confirm}>
+          <Button data-action="allow" data-live={live || undefined} variant="override" icon="arrow-right" onClick={confirm}>
             Confirm ${money} Refund
           </Button>
         )}

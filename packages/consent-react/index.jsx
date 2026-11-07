@@ -18,6 +18,7 @@ import {
 } from '@mcp-consent/core';
 
 export * from './components.jsx';
+export * from './motion.js';
 
 // ---------------------------------------------------------------------------
 // useConsentGate

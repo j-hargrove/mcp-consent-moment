@@ -15,6 +15,7 @@
  *                        cross-server changes ask every time and are never remembered
  */
 
+import { readDuration } from '@mcp-consent/react';
 import { servers } from './servers.js';
 
 // ---------------------------------------------------------------------------
@@ -218,7 +219,8 @@ export function seedGrants(budget, grantedSchemas) {
   grantedSchemas['crm.contacts.update'] = CRM_NARROW_SCHEMA;
 }
 
-const delay = ms => new Promise(r => setTimeout(r, ms));
+/** The agent's tempo comes from the pace.* tokens: machine time, not UI motion. */
+const pause = step => new Promise(r => setTimeout(r, readDuration(`pace-${step}`)));
 
 // ---------------------------------------------------------------------------
 // Shared beat helpers
@@ -231,12 +233,12 @@ async function runReads(ctx) {
   emit({ id: 'b1', state: 'running', toolName: 'docs.search', serverId: 'company-data', tier: 'read', label: 'Searching documentation' });
   await callTool('company-data', getTool('company-data', 'docs.search'), ARGS.docsSearch);
   emit({ id: 'b1', state: 'passed' });
-  await delay(500);
+  await pause('read');
 
   emit({ id: 'b2', state: 'running', toolName: 'customers.read', serverId: 'company-data', tier: 'read', label: 'Reading customer record' });
   await callTool('company-data', getTool('company-data', 'customers.read'), ARGS.customersRead);
   emit({ id: 'b2', state: 'passed' });
-  await delay(500);
+  await pause('read');
 }
 
 async function runIssuesCreate(ctx) {
@@ -252,7 +254,7 @@ async function runIssuesCreate(ctx) {
   const { issue_id } = await tool.call(ARGS.issuesCreate);
   emit({ id: 'b3', state: 'passed', resultId: issue_id, decision: { kind: 'granted', value: issue_id } });
   onStatusChange('ticket filed');
-  await delay(900); // Hold so the human sees the draft become a real ticket
+  await pause('hold'); // The draft becomes a real ticket before the next gate
   return true;
 }
 
@@ -313,7 +315,7 @@ async function runIssuesUpdateExpanded(ctx, extraArgs = {}) {
 
   emit({ id: 'b5', state: 'denied', decision: { kind: 'declined', value: 'Kept the current grant' } });
   onStatusChange('keeping the current grant');
-  await delay(700);
+  await pause('fallback');
   emit({ id: 'b5-fb', state: 'running', isFallback: true, toolName: 'issues.update', serverId: 'issue-tracker', tier: 'write', label: 'Updating ticket within existing scope' });
   await callTool('issue-tracker', narrowTool, narrowArgs);
   await narrowTool.call(narrowArgs);
@@ -351,7 +353,7 @@ function finishAfterUpdate({ onStatusChange, onComplete }, left, insight) {
 /** The refund didn't happen: the agent notes it on the ticket and leaves the refund to the human. */
 async function finishWithoutRefund({ callTool, emit, onStatusChange, onComplete }, note, message) {
   onStatusChange('refund not issued, leaving a note on the ticket');
-  await delay(700);
+  await pause('fallback');
 
   // The narrow issues.update grant is already held, so this flows silently (thesis 4)
   const narrowTool = getTool('issue-tracker', 'issues.update');
@@ -359,7 +361,7 @@ async function finishWithoutRefund({ callTool, emit, onStatusChange, onComplete 
   const noted = await callTool('issue-tracker', narrowTool, note);
   if (noted) await narrowTool.call(note);
   emit({ id: 'b4-fb', state: noted ? 'fallback' : 'denied' });
-  await delay(400);
+  await pause('step');
 
   onStatusChange(message);
   onComplete({
@@ -391,7 +393,7 @@ async function runHappy(ctx) {
 
   const ok3 = await runIssuesCreate(ctx);
   if (!ok3) { onStopped?.('issues.create'); return; }
-  await delay(600);
+  await pause('beat');
 
   onStatusChange('wants to refund $149.00');
   const refundTool = getTool('payments', 'payments.refund');
@@ -400,10 +402,10 @@ async function runHappy(ctx) {
   if (!ok4) { await finishRefundDenied(ctx); return; }
   await refundTool.call(ARGS.paymentsRefund);
   emit({ id: 'b4', state: 'passed', decision: REFUND_SENT });
-  await delay(600);
+  await pause('beat');
 
   const left = await runIssuesUpdateExpanded(ctx);
-  await delay(400);
+  await pause('step');
   finishAfterUpdate(ctx, left, 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.');
 }
 
@@ -418,7 +420,7 @@ async function runPartial(ctx) {
 
   const ok3 = await runIssuesCreate(ctx);
   if (!ok3) { onStopped?.('issues.create'); return; }
-  await delay(600);
+  await pause('beat');
 
   onStatusChange('wants to refund $149.00');
   const refundTool = getTool('payments', 'payments.refund');
@@ -429,9 +431,9 @@ async function runPartial(ctx) {
     // User approved — run the rest as happy path
     await refundTool.call(ARGS.paymentsRefund);
     emit({ id: 'b4', state: 'passed', decision: REFUND_SENT });
-    await delay(600);
+    await pause('beat');
     const left = await runIssuesUpdateExpanded(ctx);
-    await delay(400);
+    await pause('step');
     finishAfterUpdate(ctx, left, 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.');
     return;
   }
@@ -450,7 +452,7 @@ async function runScopeCreepDenied(ctx) {
 
   const ok3 = await runIssuesCreate(ctx);
   if (!ok3) { onStopped?.('issues.create'); return; }
-  await delay(600);
+  await pause('beat');
 
   onStatusChange('wants to refund $149.00');
   const refundTool = getTool('payments', 'payments.refund');
@@ -459,10 +461,10 @@ async function runScopeCreepDenied(ctx) {
   if (!ok4) { await finishRefundDenied(ctx); return; }
   await refundTool.call(ARGS.paymentsRefund);
   emit({ id: 'b4', state: 'passed', decision: REFUND_SENT });
-  await delay(600);
+  await pause('beat');
 
   const left = await runIssuesUpdateExpanded(ctx);
-  await delay(400);
+  await pause('step');
   finishAfterUpdate(ctx, left, 'Reads flowed silently. Every write and destructive action gated exactly once, with the full schema shown.');
 }
 
@@ -477,7 +479,7 @@ async function runToolError(ctx) {
 
   const ok3 = await runIssuesCreate(ctx);
   if (!ok3) { onStopped?.('issues.create'); return; }
-  await delay(600);
+  await pause('beat');
 
   // Consent gate runs normally (user approves), then execution fails
   onStatusChange('wants to refund $149.00');
@@ -504,7 +506,7 @@ async function runToolError(ctx) {
     // Passive until it needs a person: alert color waits for the second failure
     emit({ id: 'b4', state: 'retrying', label: 'Retrying refund…', retryCount: 1 });
     onStatusChange('refund failed, retrying automatically');
-    await delay(1300);
+    await pause('retry');
 
     try {
       await errorTool.call(ARGS.paymentsRefund); // call 2 — throws
@@ -524,7 +526,7 @@ async function runToolError(ctx) {
 
       if (choice === 'retry') {
         emit({ id: 'b4', state: 'retrying', label: 'Retrying refund…', retryCount: 2 });
-        await delay(900);
+        await pause('hold');
         await errorTool.call(ARGS.paymentsRefund); // call 3 — succeeds
         emit({ id: 'b4', state: 'passed', decision: REFUND_SENT, label: 'Refund processed (retry 2)', retryCount: 2 });
         refundOutcome = 'passed';
@@ -535,11 +537,11 @@ async function runToolError(ctx) {
     }
   }
 
-  await delay(600);
+  await pause('beat');
 
   if (refundOutcome === 'passed') {
     const left = await runIssuesUpdateExpanded(ctx);
-    await delay(400);
+    await pause('step');
     finishAfterUpdate(ctx, left, 'The agent surfaced the failure, recovered automatically on retry, and completed the task.');
     return;
   }
@@ -569,7 +571,7 @@ async function runMultiHop(ctx) {
   await callTool('crm', readTool, ARGS.crmContactsRead);
   const contact = await readTool.call(ARGS.crmContactsRead);
   emit({ id: 'm1', state: 'passed' });
-  await delay(500);
+  await pause('read');
 
   const narrowTool = getTool('crm', 'crm.contacts.update');
   const before = { email: contact.email };
@@ -602,12 +604,12 @@ async function runMultiHop(ctx) {
     if (await callTool('crm', narrowTool, narrowArgs)) {
       await narrowTool.call(narrowArgs);
       emit({ id: 'm2', state: 'passed', decision: { kind: 'granted', value: 'Email changed after revoke' } });
-      await delay(400);
+      await pause('step');
       finish([]);
       return;
     }
     emit({ id: 'm2', state: 'denied', decision: { kind: 'declined', value: 'Email not changed' } });
-    await delay(400);
+    await pause('step');
     const message = '0 of 1 done. Email change left for you.';
     onStatusChange(message);
     onComplete({
@@ -629,7 +631,7 @@ async function runMultiHop(ctx) {
     const paymentsArgs = { customer_id: contact.linked.payments_customer_id, ...pickFields(linkedArgs, approved) };
     if (approved.length) await PAYMENTS_LINKED_TOOL.call(paymentsArgs);
     emit({ id: 'm2', state: 'passed', decision: { kind: 'granted', value: `Email changed · ${approved.join(', ')} on payments, not remembered` } });
-    await delay(400);
+    await pause('step');
     finish(approved);
     return;
   }
@@ -637,11 +639,11 @@ async function runMultiHop(ctx) {
   // Change CRM Only: the email alone, inside the grant the CRM already holds
   emit({ id: 'm2', state: 'denied', decision: { kind: 'declined', value: 'Payments not changed' } });
   onStatusChange('changing the crm email only');
-  await delay(700);
+  await pause('fallback');
   emit({ id: 'm2-fb', state: 'running', isFallback: true, toolName: 'crm.contacts.update', serverId: 'crm', tier: 'write', label: 'Changing the CRM email only' });
   await callTool('crm', narrowTool, narrowArgs);
   await narrowTool.call(narrowArgs);
   emit({ id: 'm2-fb', state: 'fallback' });
-  await delay(400);
+  await pause('step');
   finish([]);
 }

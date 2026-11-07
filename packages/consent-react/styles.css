@@ -671,3 +671,108 @@
   gap: var(--space-inline-s);
 }
 .cm-timeline__time { color: var(--color-role-time); }
+
+/* ════════════════════════════════════════════════════════════════════
+   Motion (behavior-and-motion.md). Durations and easing are motion.* tokens only.
+   Machine motion is teal and calm; human weight is red and still.
+   ════════════════════════════════════════════════════════════════════ */
+
+@keyframes cm-fade-in { from { opacity: 0; } }
+@keyframes cm-pop { from { opacity: 0; transform: scale(0); } }
+@keyframes cm-reveal-down { from { clip-path: inset(0 0 100% 0); } }
+@keyframes cm-reveal-across { from { clip-path: inset(0 100% 0 0); } }
+
+/* ── Agent light: the first of two loops. Working breathes, speaking quickens, waiting holds its breath ── */
+@keyframes cm-core { 0%, 100% { transform: scale(0.7); } 50% { transform: scale(1); } }
+@keyframes cm-ring {
+  from { inset: 0; opacity: 1; }
+  to { inset: calc(-1 * var(--space-xs)); opacity: 0; }
+}
+.cm-agent[data-state='working'] .cm-agent__core { animation: cm-core var(--motion-duration-breathe) var(--motion-easing-standard) infinite; }
+.cm-agent[data-state='working'] .cm-agent__ring { animation: cm-ring var(--motion-duration-breathe) var(--motion-easing-standard) infinite; }
+.cm-agent[data-state='speaking'] .cm-agent__core { animation: cm-core var(--motion-duration-speak) var(--motion-easing-standard) infinite; }
+.cm-agent[data-state='speaking'] .cm-agent__ring { animation: cm-ring var(--motion-duration-speak) var(--motion-easing-standard) infinite; }
+
+/* ── Card enter: resolves like a display. Destructive and alert cards hard-cut (no data-enter) ── */
+@keyframes cm-scan {
+  from { top: 0; opacity: 1; }
+  to { top: 100%; opacity: 1; }
+}
+.cm-frame { position: relative; }
+.cm-frame[data-enter] { animation: cm-fade-in var(--motion-duration-base) var(--motion-easing-standard); }
+.cm-frame[data-enter]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--border-width-hairline);
+  background: var(--color-role-agent);
+  opacity: 0;
+  pointer-events: none;
+  animation: cm-scan var(--motion-duration-scan) var(--motion-easing-standard);
+}
+
+/* ── Causal trace draws itself. CausalTrace sets integer --cm-order and --cm-phase per piece ── */
+.cm-trace__node { display: block; }
+.cm-trace[data-motion='draw'] .cm-trace__node,
+.cm-trace[data-motion='draw'] .cm-trace__line,
+.cm-trace[data-motion='draw'] .cm-hop__rule,
+.cm-trace[data-motion='draw'] .cm-hop__label {
+  animation-delay: calc(var(--cm-order) * var(--motion-duration-trace-stagger) + var(--cm-phase) * var(--motion-duration-slow));
+  animation-timing-function: var(--motion-easing-standard);
+  animation-fill-mode: both;
+}
+.cm-trace[data-motion='draw'] .cm-trace__node { animation-name: cm-pop; animation-duration: var(--motion-duration-fast); }
+.cm-trace[data-motion='draw'] .cm-trace__line { animation-name: cm-reveal-down; animation-duration: var(--motion-duration-slow); }
+.cm-trace[data-motion='draw'] .cm-hop__rule { animation-name: cm-reveal-across; animation-duration: var(--motion-duration-slow); }
+.cm-trace[data-motion='draw'] .cm-hop__label { animation-name: cm-fade-in; animation-duration: var(--motion-duration-slow); }
+
+/* ── Receipt replays: rows stagger in quickly ── */
+.cm-trace[data-motion='record'] .cm-trace__step,
+.cm-receipt__row {
+  animation: cm-fade-in var(--motion-duration-base) var(--motion-easing-standard) both;
+  animation-delay: calc(var(--cm-row) * var(--motion-duration-receipt-stagger));
+}
+
+/* ── Animated icons: play once to illustrate the action, never loop. stop-sign never moves ── */
+@keyframes cm-icon-nudge { 50% { transform: translateX(var(--space-xs)); } }
+@keyframes cm-icon-blink { 50% { transform: scaleY(0.1); } }
+@keyframes cm-icon-tighten { 50% { transform: scale(0.8); } }
+@keyframes cm-icon-turn { to { transform: rotate(1turn); } }
+@keyframes cm-icon-drop { from { transform: translateY(calc(-1 * var(--space-xs))); opacity: 0; } }
+@keyframes cm-icon-push-out-a { 50% { transform: translate(calc(-1 * var(--space-xxs)), var(--space-xxs)); } }
+@keyframes cm-icon-push-out-b { 50% { transform: translate(var(--space-xxs), calc(-1 * var(--space-xxs))); } }
+
+.cm-btn:is(:hover, :active) .cm-icon[data-name='arrow-right'] { animation: cm-icon-nudge var(--motion-duration-slow) var(--motion-easing-standard); }
+.cm-btn:is(:hover, :active) .cm-icon[data-name='view'] { animation: cm-icon-blink var(--motion-duration-base) var(--motion-easing-standard); }
+.cm-btn:is(:hover, :active) .cm-icon[data-name='close'] { animation: cm-icon-tighten var(--motion-duration-base) var(--motion-easing-standard); }
+.cm-btn:is(:hover, :active) .cm-icon[data-name='renew'] { animation: cm-icon-turn var(--motion-duration-slow) var(--motion-easing-standard); }
+.cm-btn:is(:hover, :active) .cm-icon[data-name='checkmark'] { animation: cm-reveal-across var(--motion-duration-slow) var(--motion-easing-standard); }
+.cm-btn:is(:hover, :active) .cm-icon[data-name='download'] path:first-child {
+  transform-box: fill-box;
+  animation: cm-icon-drop var(--motion-duration-slow) var(--motion-easing-standard);
+}
+/* The check draws itself when a box is ticked */
+.cm-check__box .cm-icon[data-name='checkmark'] { animation: cm-reveal-across var(--motion-duration-fast) var(--motion-easing-standard); }
+/* Scope expanded is an event: the arrows push outward once when the card detects it, after the scan */
+.cm-frame__header .cm-icon[data-name='maximize'] path {
+  animation-duration: var(--motion-duration-slow);
+  animation-delay: var(--motion-duration-scan);
+  animation-timing-function: var(--motion-easing-standard);
+}
+.cm-frame__header .cm-icon[data-name='maximize'] path:first-child { animation-name: cm-icon-push-out-a; }
+.cm-frame__header .cm-icon[data-name='maximize'] path:last-child { animation-name: cm-icon-push-out-b; }
+
+/* ── Reduced motion: nothing moves, draws or types. Opacity crossfades stay ── */
+@media (prefers-reduced-motion: reduce) {
+  .cm-agent__core,
+  .cm-agent__ring,
+  .cm-frame[data-enter]::after,
+  .cm-trace *,
+  .cm-receipt__row,
+  .cm-icon,
+  .cm-icon path { animation: none !important; }
+  .cm-btn:active,
+  .cm-btn[data-force='active'] { transform: none; }
+}

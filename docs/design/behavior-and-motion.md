@@ -5,8 +5,8 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 
 ## Behavioral rules
 1. The agent waits at every gate. Nothing runs while a consent card is open; status shows "paused". No timeouts, no countdowns.
-2. Narrow is the default. Focus lands on the narrow (primary) action. Enter = primary. Escape = the safe choice (Deny / Keep current grant / Don't refund).
-3. No shortcut to broader scope. "Approve selected", "Confirm refund", "Try again" require a click — no keyboard shortcut expands scope or confirms a destructive action.
+2. Narrow is the default. Focus lands on the narrow (primary) action. Enter = primary. Escape = the safe choice (Deny / Keep Current Grant / Don't Refund / Skip for Now / Change CRM Only). Enter on anything but a button takes the primary; a button with explicit focus keeps its own Enter.
+3. No shortcut to broader scope. "Approve Selected", "Confirm Refund", "Try Refund Again" require a click or explicit focus + Enter — no keyboard shortcut expands scope or confirms a destructive action.
 4. Deliberate beat on destructive. Confirm becomes active ~600ms after the card appears and requires the review checkbox. Early click shows inline "Check the amount first" (no disabled buttons).
 5. Labels state exact scope. "Approve selected · N of 2" updates live. Buttons never claim more than they do.
 6. Grants appear after the decision, never before. Authorized list and activity update only after the human acts. Revoke is immediate; next use re-asks.
@@ -18,13 +18,19 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 |---|---|---|
 | motion.duration.fast | 120ms | hover, checkbox, chip, icon press |
 | motion.duration.base | 200ms | card enter (opacity), thesis strip change |
-| motion.duration.slow | 400ms | trace draw, dashed → solid, scan line (~450ms) |
+| motion.duration.slow | 400ms | trace draw, dashed → solid, icon motion |
+| motion.duration.scan | 450ms | card scan line |
 | motion.duration.deliberate | 600ms | destructive beat before confirm is live |
 | motion.duration.breathe | 3200ms | agent light, working |
 | motion.duration.speak | 900ms | agent light, speaking |
-| motion.type.charDelay | 22ms | status line types on |
+| motion.duration.char-delay | 22ms | status line types on |
+| motion.duration.trace-stagger | 100ms | trace nodes pop in sequence |
+| motion.duration.receipt-stagger | 40ms | receipt rows |
+| motion.duration.double-commit-guard | 1000ms | destructive buttons ignore repeat clicks |
 | motion.easing.standard | cubic-bezier(0.2, 0, 0, 1) | everything |
-Reduced motion: all transitions become instant crossfades; no drawing, no typing, no icon motion, agent light static, no waiting pulse.
+Reduced motion: all transitions become instant crossfades; no drawing, no typing, no icon motion, agent light static, no waiting pulse. Opacity crossfades (card enter, dashed → solid, thesis strip) keep their tokens. The deliberate beat and double-commit guard are behavior, not motion, so they stay.
+
+Agent tempo: the scripted agent waits pace.* tokens between steps (machine time, not UI motion; reduced motion doesn't change it).
 
 ## Agent presence (the light)
 A small teal light in the top bar, left of the status line. Original form: solid core + thin ring, no lens styling, no blur/glow.

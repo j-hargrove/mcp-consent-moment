@@ -161,4 +161,10 @@
   --motion-duration-receipt-stagger: 40ms;
   --motion-duration-double-commit-guard: 1000ms;
   --motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --pace-step: 400ms;
+  --pace-read: 500ms;
+  --pace-beat: 600ms;
+  --pace-fallback: 700ms;
+  --pace-hold: 900ms;
+  --pace-retry: 1300ms;
 }

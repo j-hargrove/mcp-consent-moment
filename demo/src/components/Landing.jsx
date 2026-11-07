@@ -11,13 +11,13 @@ const TIERS = [
 function TierSample({ tier, text }) {
   if (tier === 'destructive') {
     return (
-      <ConsentFrame tier={tier} panel={<div><TierChip tier={tier} onPanel /></div>}>
+      <ConsentFrame tier={tier} enter={false} panel={<div><TierChip tier={tier} onPanel /></div>}>
         <p>{text}</p>
       </ConsentFrame>
     );
   }
   return (
-    <ConsentFrame tier={tier}>
+    <ConsentFrame tier={tier} enter={false}>
       <p>{text}</p>
     </ConsentFrame>
   );
