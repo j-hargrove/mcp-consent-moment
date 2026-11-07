@@ -54,7 +54,7 @@ The completion receipt reuses the same trace as a record of what you decided.
 - Enter takes the primary action. Escape takes the safe choice: Deny, Keep Current Grant, Don't Refund, Skip for Now, or Change CRM Only.
 - No keyboard shortcut broadens scope or confirms a destructive action.
 - Destructive actions have a deliberate beat. Confirm goes live after 600ms and needs the review checkbox. An early click shows "Check the amount first." and the button is never disabled. Repeat clicks are ignored for 1s.
-- Stop always works: one click, no modal, confirmed in place with "Agent stopped. Nothing else will run."
+- Stop always works: one click, no modal, confirmed in place with "support-agent stopped. nothing else will run."
 - Grants appear only after the decision. Revoke is immediate, and the next use asks again.
 - Reduced motion is supported. Nothing moves, draws or types; opacity fades keep their token durations.
 

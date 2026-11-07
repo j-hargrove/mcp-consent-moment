@@ -10,7 +10,7 @@ const FIELD_NOTES = {
 const formatValue = value => (Array.isArray(value) ? value.join(', ') : String(value ?? 'not set'));
 
 /**
- * Thesis 4: a server asking for more re-prompts and never silently expands.
+ * Thesis 4: when the agent asks for more than its grant on a server allows, it re-prompts and never silently expands.
  * Primary keeps the grant as it is. Approval covers only the fields checked here.
  */
 export function CreepCard({ request, agentName, onKeep, onApprove }) {

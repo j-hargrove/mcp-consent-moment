@@ -18,7 +18,7 @@ Reads flow silently, writes ask once and can be remembered, destructive actions 
 The schema tells the host what a call will do before it runs: which fields, which values, where they go. The card renders that, not "allow access?"
 
 **4. Consent is a budget, not a switch.**
-Granted scope is visible, attributable and revocable. A server asking for more than it holds asks again; it never expands silently.
+Granted scope is visible, attributable and revocable. An agent asking for more than its grant on a server asks again; it never expands silently.
 
 **5. The system matches the human to the right tempo.**
 Low-risk actions get visibility after the fact. High-risk actions get a gate before. The system classifies the risk, because a person can't at agent speed and shouldn't have to.
@@ -86,7 +86,7 @@ A change on one server can carry into another. In the demo, changing a contact's
 - **The agent waits at every gate.** Nothing runs while a card is open. The status reads "paused". There are no timeouts and no countdowns.
 - **Escape is the safe choice.** Focus lands on the primary (narrowest) action; Enter takes it. Escape takes the safe choice: Deny, Keep Current Grant, Don't Refund, Skip for Now, Change CRM Only. No shortcut broadens scope or confirms a destructive action.
 - **Destructive actions have a deliberate beat.** Confirm goes live after a short pause and needs a review checkbox. An early click explains what's missing; the button is never disabled. Repeat clicks are ignored for a second, so a double click can't commit twice.
-- **Stop always works.** One click, no modal, confirmed in place: "Agent stopped. Nothing else will run."
+- **Stop always works.** One click, no modal, confirmed in place after the agent's name: "support-agent stopped. nothing else will run."
 - **Failures come back at human tempo.** The agent retries once on its own. If the retry fails, the person decides: Skip for Now or Try Refund Again.
 
 ## What this asks of hosts

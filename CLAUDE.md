@@ -31,7 +31,7 @@ If you can't map a decision to a thesis, it's probably not in scope.
 
 4. **Consent is a budget, not a switch.**
    Granted scope is visible, attributable, revocable.
-   Scope creep (server requests more than previously granted) re-prompts — never silently expands.
+   Scope creep (the agent requests more than the server grant allows) re-prompts — never silently expands.
 
 5. **The system matches the human to the right tempo.**
    Low-risk: post-hoc visibility. High-risk: pre-hoc gate.

@@ -10,7 +10,7 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 4. Deliberate beat on destructive. Confirm becomes active ~600ms after the card appears and requires the review checkbox. Early click shows inline "Check the amount first" (no disabled buttons).
 5. Labels state exact scope. "Approve selected · N of 2" updates live. Buttons never claim more than they do.
 6. Grants appear after the decision, never before. Authorized list and activity update only after the human acts. Revoke is immediate; next use re-asks.
-7. Stop always works. One click, no modal. Confirms in place: "Agent stopped. Nothing else will run."
+7. Stop always works. One click, no modal. Confirms in place, after the agent name: "support-agent stopped. nothing else will run." The receipt headline stays "Agent stopped."
 8. No double commits. Destructive buttons ignore repeat clicks for 1s.
 
 ## Motion tokens

@@ -188,7 +188,7 @@ export async function suite({ browser, url, reduced, shotsDir }) {
   await run(page, 'Happy path');
   await card(page, 'Create This Ticket');
   await page.getByRole('button', { name: 'Stop Agent' }).click();
-  ok('stop: confirms in place', (await statusText(page)) === 'Agent stopped. Nothing else will run.', await statusText(page));
+  ok('stop: confirms in place', (await statusText(page)) === 'Stopped. Nothing else will run.', await statusText(page));
   ok('stop: light slate static', (await lightState(page)) === 'stopped' && (await page.locator('.cm-agent__core').evaluate(e => getComputedStyle(e).animationName)) === 'none');
   await page.waitForTimeout(3000);
   ok('stop: nothing else runs', (await page.locator('.activity-row').count()) === 3 && !(await page.getByText("Don't Refund").count()));

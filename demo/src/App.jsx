@@ -109,7 +109,7 @@ export default function App() {
 
   const onStopped = useCallback((toolName) => {
     setStopped({ toolName });
-    setStatus(`Agent stopped. Consent denied for ${toolName}.`);
+    setStatus(`Stopped. Consent denied for ${toolName}.`);
   }, []);
 
   const stopAgent = useCallback(() => {
@@ -125,7 +125,7 @@ export default function App() {
     setApprovedDraft(null);
     setIsRunning(false);
     setStopped({ byUser: true });
-    setStatus('Agent stopped. Nothing else will run.');
+    setStatus('Stopped. Nothing else will run.');
   }, [isRunning, resolve]);
 
   const startDemo = useCallback(async (mode) => {
