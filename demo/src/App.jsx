@@ -267,7 +267,6 @@ export default function App() {
 
           <div className="side-section">
             <SectionLabel icon="security">WHAT YOU'VE AUTHORIZED</SectionLabel>
-            <div className="side-section__sublabel">Revoke anytime — agent re-prompts on next use.</div>
             <BudgetPanel grants={grants} onRevoke={revokeGrant} sessionStart={SESSION_START} />
           </div>
         </aside>

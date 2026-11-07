@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { mediaTokens } from './scripts/media-tokens.mjs';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [mediaTokens(), react()],
   resolve: {
     alias: {
       '@mcp-consent/core': resolve(__dirname, '../packages/consent-core/src/index.js'),

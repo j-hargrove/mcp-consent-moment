@@ -5,7 +5,7 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 
 ## Behavioral rules
 1. The agent waits at every gate. Nothing runs while a consent card is open; status shows "paused". No timeouts, no countdowns.
-2. Narrow is the default. Focus lands on the narrow (primary) action. Enter = primary. Escape = the safe choice (Deny / Keep Current Grant / Don't Refund / Skip for Now / Change CRM Only). Enter on anything but a button takes the primary; a button with explicit focus keeps its own Enter.
+2. Narrow is the default. Focus lands on the narrow (primary) action. In one column (below size.breakpoint-m), a gate that opens off screen first scrolls into view, smoothly, or with a jump under reduced motion. Enter = primary. Escape = the safe choice (Deny / Keep Current Grant / Don't Refund / Skip for Now / Change CRM Only). Enter on anything but a button takes the primary; a button with explicit focus keeps its own Enter.
 3. No shortcut to broader scope. "Approve Selected", "Confirm Refund", "Try Refund Again" require a click or explicit focus + Enter — no keyboard shortcut expands scope or confirms a destructive action.
 4. Deliberate beat on destructive. Confirm becomes active ~600ms after the card appears and requires the review checkbox. Early click shows inline "Check the amount first" (no disabled buttons).
 5. Labels state exact scope. "Approve selected · N of 2" updates live. Buttons never claim more than they do.
@@ -62,7 +62,7 @@ Runs only while a gate is open and stops instantly when it resolves, with no fad
 - Receipt replays: causal trace rows stagger in quickly (~40ms each).
 
 ## Animated icons — only to illustrate an action
-Rule: an icon moves only if the motion explains what the action does. Plays once (hover, press, or triggering event), ≤450ms, never loops. One exception: the sidebar waiting pulse on the pause icon, which loops while a gate is open.
+Rule: an icon moves only if the motion explains what the action does. Plays once (hover, press, or triggering event), ≤450ms, never loops. On touch screens it plays on press, never on hover. One exception: the sidebar waiting pulse on the pause icon, which loops while a gate is open.
 | Icon | Action | Motion |
 |---|---|---|
 | arrow-right | commit / continue | nudges forward 4px |

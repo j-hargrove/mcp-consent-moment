@@ -1,5 +1,5 @@
 /**
- * Runs both self-check suites against the demo, with motion on and with reduced motion on.
+ * Runs the self-check suites (Nov 2, Phase 5, responsive) against the demo, with motion on and with reduced motion on.
  * Starts its own Vite dev server. Exits non-zero unless every suite hits its expected count
  * with no failures, page errors or console errors.
  *   cd demo && npm test
@@ -10,13 +10,14 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as nov2 from './nov2-suite.mjs';
 import * as phase5 from './phase5-suite.mjs';
+import * as responsive from './responsive-suite.mjs';
 
 const demoDir = fileURLToPath(new URL('../demo/', import.meta.url));
 // Playwright is a devDependency of the demo, the repo's only npm project
 const { chromium } = createRequire(`${demoDir}package.json`)('playwright');
 const PORT = 5199;
 const url = `http://localhost:${PORT}/`;
-const SUITES = [nov2, phase5];
+const SUITES = [nov2, phase5, responsive];
 const PASS = /^(ok|PASS)\b/;
 const FAIL = /^(FAIL|PAGEERROR|CONSOLE)\b/;
 

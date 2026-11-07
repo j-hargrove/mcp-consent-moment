@@ -359,15 +359,6 @@ body {
 /* ── Side panel wider to fit new activity layout ── */
 .side-panel { width: var(--size-sidebar-width); }
 
-/* ── Side section sublabel ── */
-.side-section__sublabel {
-  font-size: var(--font-size-xs);
-  color: var(--color-role-text-secondary);
-  margin-top: calc(-1 * var(--space-stack-s));
-  margin-bottom: var(--space-stack-sm);
-  line-height: var(--font-line-height-snug);
-}
-
 /* ── Consent card context header ── */
 .consent-card-wrap {
   width: 100%;
@@ -384,4 +375,31 @@ body {
   color: var(--color-role-text-secondary);
   line-height: var(--font-line-height-body);
   padding: 0 var(--space-inline-xxs);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Responsive (screen-decisions.md, Responsive). Breakpoints are size.breakpoint-* tokens.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* One column: the main column decides, the sidebar records, so the sidebar stacks under it.
+   The page scrolls as one, so a gate can scroll into view */
+@media (width < var(--size-breakpoint-m)) {
+  .app,
+  .app-body,
+  .main-panel { height: auto; overflow: visible; }
+  .app-body { flex-direction: column; }
+  .side-panel {
+    width: 100%;
+    overflow: visible;
+    border-left: 0;
+    border-top: var(--border-width-hairline) solid var(--color-neutral-border);
+  }
+  .main-stage { min-width: 0; }
+}
+
+@media (width < var(--size-breakpoint-s)) {
+  .main-panel { padding: var(--space-inset-m); }
+  .landing__grid,
+  .landing__legend { grid-template-columns: 1fr; }
+  [data-revoke] { min-height: var(--size-touch-target); }
 }

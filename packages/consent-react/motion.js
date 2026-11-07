@@ -16,6 +16,13 @@ export function readDuration(name) {
 
 export const motionDuration = name => readDuration(`motion-duration-${name}`);
 
+/** readSize('breakpoint-m') → '1024px'. Reads the generated size.* custom property. */
+export function readSize(name) {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(`--size-${name}`).trim();
+  if (!raw) throw new Error(`Missing size token --size-${name}`);
+  return raw;
+}
+
 const REDUCED = '(prefers-reduced-motion: reduce)';
 
 export function usePrefersReducedMotion() {

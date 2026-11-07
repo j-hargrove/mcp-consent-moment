@@ -6,7 +6,7 @@
 
 import { Fragment, useEffect, useId, useRef } from 'react';
 import { ICON_PATHS } from './icon-paths.js';
-import { useTypedText } from './motion.js';
+import { readSize, useTypedText } from './motion.js';
 
 /** Assigned colors from theme-decisions.md. Everything else inherits ink or slate. */
 export const ICON_TONES = {
@@ -75,6 +75,27 @@ function CardActions({ primary, secondary, actionsRef }) {
 }
 
 /**
+ * One column (below size.breakpoint-m): a gate that opens off screen scrolls into view, card top first,
+ * and focus lands on the primary without a second jump. Reduced motion jumps with no smooth scroll.
+ * Two columns: the card is already in view, so focus alone, as before.
+ */
+function revealGate(actions, button) {
+  if (!button) return;
+  const card = actions.closest('.consent-card-wrap') ?? actions.closest('.cm-frame');
+  if (!window.matchMedia(`(width < ${readSize('breakpoint-m')})`).matches || !card) {
+    button.focus();
+    return;
+  }
+  const { top, bottom } = card.getBoundingClientRect();
+  const inView = top >= 0 && bottom <= window.innerHeight;
+  if (!inView) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.scrollIntoView({ block: 'start', behavior: reduced ? 'instant' : 'smooth' });
+  }
+  button.focus({ preventScroll: true });
+}
+
+/**
  * Gate keyboard rules (behavior-and-motion.md 2, 3).
  * autoFocus: focus lands on the primary (narrow) action when the card opens.
  * onEscape: Escape anywhere takes the safe choice. Enter on anything but a button takes the primary.
@@ -87,7 +108,7 @@ function useGateKeys({ autoFocus, onEscape }) {
   const primary = () => actionsRef.current?.querySelector('button');
 
   useEffect(() => {
-    if (autoFocus) primary()?.focus();
+    if (autoFocus) revealGate(actionsRef.current, primary());
   }, [autoFocus]);
 
   useEffect(() => {
@@ -240,6 +261,7 @@ export function ApprovalCheckbox({ checked, onChange, kind = 'remember', needsYo
  * The status line types on at motion.duration.char-delay; while it types, a working light speaks.
  * Waiting holds still and stopped is static, so neither speaks. Stopped text is a fact and appears whole.
  * prefix is shown whole, before the typed text ("paused → ").
+ * The line reserves the full text's size before it types on, so nothing below it jumps.
  */
 export function AgentStatus({ state = 'working', name, prefix = '', children = '' }) {
   const text = String(children);
@@ -252,7 +274,11 @@ export function AgentStatus({ state = 'working', name, prefix = '', children = '
         <span className="cm-agent__core" />
       </span>
       {name && <span className="cm-agent__name">{name}</span>}
-      <span className="cm-agent__text" aria-hidden="true">{prefix}{shown}</span>
+      {/* The full sentence sits invisibly under the typed one, so the line holds its final size while it types */}
+      <span className="cm-agent__text" aria-hidden="true">
+        <span className="cm-agent__reserve">{prefix}{text}</span>
+        <span className="cm-agent__typed">{prefix}{shown}</span>
+      </span>
       <span className="cm-visually-hidden" role="status">{prefix}{text}</span>
     </div>
   );

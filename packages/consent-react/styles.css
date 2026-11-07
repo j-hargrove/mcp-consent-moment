@@ -357,12 +357,22 @@
   font-weight: var(--font-weight-decision);
   white-space: nowrap;
 }
+/* The reserve and the typed text share one grid cell; the reserve holds the line's final size */
 .cm-agent__text {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  text-transform: lowercase;
+}
+.cm-agent__reserve,
+.cm-agent__typed {
+  grid-area: 1 / 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-transform: lowercase;
 }
+.cm-agent__reserve { visibility: hidden; }
 .cm-agent[data-state='stopped'] { color: var(--color-role-agent-stopped); }
 .cm-agent__light {
   position: relative;
@@ -766,14 +776,27 @@
 @keyframes cm-icon-push-out-a { 50% { transform: translate(calc(-1 * var(--space-xxs)), var(--space-xxs)); } }
 @keyframes cm-icon-push-out-b { 50% { transform: translate(var(--space-xxs), calc(-1 * var(--space-xxs))); } }
 
-.cm-btn:is(:hover, :active) .cm-icon[data-name='arrow-right'] { animation: cm-icon-nudge var(--motion-duration-slow) var(--motion-easing-standard); }
-.cm-btn:is(:hover, :active) .cm-icon[data-name='view'] { animation: cm-icon-blink var(--motion-duration-base) var(--motion-easing-standard); }
-.cm-btn:is(:hover, :active) .cm-icon[data-name='close'] { animation: cm-icon-tighten var(--motion-duration-base) var(--motion-easing-standard); }
-.cm-btn:is(:hover, :active) .cm-icon[data-name='renew'] { animation: cm-icon-turn var(--motion-duration-slow) var(--motion-easing-standard); }
-.cm-btn:is(:hover, :active) .cm-icon[data-name='checkmark'] { animation: cm-reveal-across var(--motion-duration-slow) var(--motion-easing-standard); }
-.cm-btn:is(:hover, :active) .cm-icon[data-name='download'] path:first-child {
+/* Press plays the icon everywhere. Hover plays it only where a pointer can hover, so a tap on a
+   touch screen plays it once, on press, and a sticky hover never replays it */
+.cm-btn:active .cm-icon[data-name='arrow-right'] { animation: cm-icon-nudge var(--motion-duration-slow) var(--motion-easing-standard); }
+.cm-btn:active .cm-icon[data-name='view'] { animation: cm-icon-blink var(--motion-duration-base) var(--motion-easing-standard); }
+.cm-btn:active .cm-icon[data-name='close'] { animation: cm-icon-tighten var(--motion-duration-base) var(--motion-easing-standard); }
+.cm-btn:active .cm-icon[data-name='renew'] { animation: cm-icon-turn var(--motion-duration-slow) var(--motion-easing-standard); }
+.cm-btn:active .cm-icon[data-name='checkmark'] { animation: cm-reveal-across var(--motion-duration-slow) var(--motion-easing-standard); }
+.cm-btn:active .cm-icon[data-name='download'] path:first-child {
   transform-box: fill-box;
   animation: cm-icon-drop var(--motion-duration-slow) var(--motion-easing-standard);
+}
+@media (hover: hover) {
+  .cm-btn:hover .cm-icon[data-name='arrow-right'] { animation: cm-icon-nudge var(--motion-duration-slow) var(--motion-easing-standard); }
+  .cm-btn:hover .cm-icon[data-name='view'] { animation: cm-icon-blink var(--motion-duration-base) var(--motion-easing-standard); }
+  .cm-btn:hover .cm-icon[data-name='close'] { animation: cm-icon-tighten var(--motion-duration-base) var(--motion-easing-standard); }
+  .cm-btn:hover .cm-icon[data-name='renew'] { animation: cm-icon-turn var(--motion-duration-slow) var(--motion-easing-standard); }
+  .cm-btn:hover .cm-icon[data-name='checkmark'] { animation: cm-reveal-across var(--motion-duration-slow) var(--motion-easing-standard); }
+  .cm-btn:hover .cm-icon[data-name='download'] path:first-child {
+    transform-box: fill-box;
+    animation: cm-icon-drop var(--motion-duration-slow) var(--motion-easing-standard);
+  }
 }
 /* Scope expanded is an event: the arrows push outward once when the card detects it, after the scan */
 .cm-frame__header .cm-icon[data-name='maximize'] path {
@@ -795,4 +818,70 @@
   .cm-icon path { animation: none !important; }
   .cm-btn:active,
   .cm-btn[data-force='active'] { transform: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Responsive (screen-decisions.md, Responsive). Breakpoints are size.breakpoint-* tokens,
+   resolved into the media queries at build time. Above breakpoint-m nothing here applies.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* One column: the status line and thesis labels wrap, never truncate */
+@media (width < var(--size-breakpoint-m)) {
+  .cm-agent { align-items: baseline; }
+  .cm-agent__reserve,
+  .cm-agent__typed {
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+  .cm-thesis {
+    align-items: flex-start;
+    padding: var(--space-stack-xxs) var(--space-inline-s);
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (width < var(--size-breakpoint-s)) {
+  /* Top bar, two rows: title and Stop Agent, then the agent and its status line, which wraps */
+  .cm-topbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'title end' 'agent agent';
+    align-items: center;
+    gap: var(--space-stack-xs) var(--space-inline-sm);
+    padding: var(--space-stack-s) var(--space-inline-m);
+  }
+  .cm-topbar__title { grid-area: title; }
+  .cm-topbar__end { grid-area: end; margin-left: 0; }
+  .cm-topbar .cm-agent { grid-area: agent; display: flex; }
+  .cm-stop,
+  .cm-topbar__stopped { min-height: var(--size-touch-target); }
+  .cm-topbar__stopped { display: inline-flex; align-items: center; }
+
+  /* Thesis strip: five cells and their rules; narrower insets so labels wrap to two or three lines */
+  .cm-thesis { padding-inline: var(--space-inline-xs); }
+
+  /* Card headers and panels wrap rather than push past the card */
+  .cm-frame__header,
+  .cm-panel__row { flex-wrap: wrap; }
+  .cm-frame__tool { min-width: 0; overflow-wrap: anywhere; }
+  .cm-hop { width: auto; max-width: 100%; }
+  .cm-hop__label { overflow-wrap: anywhere; }
+
+  /* Card actions stack at full width, primary on top; consequence lines stay under them */
+  .cm-frame__actions { flex-direction: column; }
+  .cm-frame__actions .cm-btn { flex: none; width: 100%; }
+
+  /* Touch targets: every button and every checkbox row; the whole row is the tap target */
+  .cm-btn {
+    min-height: var(--size-touch-target);
+    white-space: normal;
+    text-align: left;
+  }
+  .cm-check__label {
+    min-height: var(--size-touch-target);
+    align-items: center;
+  }
 }

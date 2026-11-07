@@ -25,7 +25,7 @@ export async function suite({ browser, url, reduced, shotsDir }) {
   const focused = page => page.evaluate(() => document.activeElement?.textContent?.trim());
   const card = (page, text) => page.locator('.cm-frame', { hasText: text }).first().waitFor({ timeout: 15000 });
   const lightState = page => page.locator('.cm-agent').getAttribute('data-state');
-  const statusText = page => page.locator('.cm-agent__text').textContent();
+  const statusText = page => page.locator('.cm-agent__typed').textContent(); // the visible line; .cm-agent__reserve holds its size
   const headline = page => page.locator('.cm-panel__decision').textContent();
 
 
