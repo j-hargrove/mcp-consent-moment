@@ -4,6 +4,7 @@ import {
   DestructivePanel, DraftPreview, HopConnector, Icon, ICON_TONES, SectionLabel, TierChip, TraceNode,
 } from '@mcp-consent/react';
 import { ICON_PATHS } from '../../../packages/consent-react/icon-paths.js';
+import { AGENT_NAME } from '../agent.js';
 
 const VARIANTS = [
   ['primary', 'Create This Ticket', 'arrow-right'],
@@ -136,10 +137,10 @@ export function Gallery() {
 
       <Section title="AGENT LIGHT AND STATUS LINE">
         <div className="g-pane g-row">
-          <AgentStatus state="working">reading customers.read</AgentStatus>
-          <AgentStatus state="speaking">filing support ticket</AgentStatus>
-          <AgentStatus state="waiting">paused → waiting for you</AgentStatus>
-          <AgentStatus state="stopped">agent stopped</AgentStatus>
+          <AgentStatus state="working" name={AGENT_NAME}>reading customers.read</AgentStatus>
+          <AgentStatus state="speaking" name={AGENT_NAME}>filing support ticket</AgentStatus>
+          <AgentStatus state="waiting" name={AGENT_NAME}>paused → waiting for you</AgentStatus>
+          <AgentStatus state="stopped" name={AGENT_NAME}>agent stopped</AgentStatus>
         </div>
       </Section>
 
@@ -167,7 +168,7 @@ export function Gallery() {
             tier="scope-creep" tool="issues.update" server="issue-tracker" icon="maximize"
             primary={<Button icon="arrow-right">Keep Current Grant</Button>}
             secondary={<Button variant="secondary" icon="checkmark">Approve Selected · 1 of 2</Button>}
-            decision="issue-tracker wants to write 2 fields it didn't have before."
+            decision={`${AGENT_NAME} wants to write 2 new fields on issue-tracker.`}
           />
           <ConsentFrame
             tier="scope-creep" tool="crm.contacts.update" icon="link"

@@ -22,7 +22,7 @@
 | Review variant (scope/refund) | — | Review Linked Changes · Review Payment Change |
 
 ## Layout (locked)
-- Top bar: Tektur "CONSENT MOMENT" (rust) + teal agent light + status line in teal mono (plain language, no thesis numbers) + "Stop Agent" (film red, stop-sign icon) right-aligned on every screen. On completion it reads "Agent stopped" in slate.
+- Top bar: Tektur "CONSENT MOMENT" (rust) + teal agent light + agent name "support-agent" (teal mono, decision weight; slate when stopped) + status line in teal mono (plain language, no thesis numbers) + "Stop Agent" (film red, stop-sign icon) right-aligned on every screen. On completion it reads "Agent stopped" in slate.
 - Thesis strip directly under the top bar.
 - Agent task card, full width of the main column (bot icon on label). The main column caps at 1200px, left-aligned.
 - Consent card 640px wide, horizontally centered, top-aligned 32px under the Agent Task card, with a one-line intro above it. Decision sentence 22px Plex Sans 600.
@@ -66,7 +66,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 - Revoked CRM grant: the agent re-asks for the CRM email only (write card, email icon, "Change the email on contact ct-4821.", Change This Email · Deny). Payments is left for you; a revoke never leads to a cross-server ask. Deny ends on "0 of 1 done. Email change left for you."
 
 ## Icon placement (all screens)
-- Section labels: AGENT TASK = bot · ACTIVITY / WHAT HAPPENED / WHAT YOU DECIDED / YOUR CURRENT GRANT = recently-viewed · WHAT YOU'VE AUTHORIZED / CONSENT RECEIPT = security · WHAT GETS SENT = purchase.
+- Section labels: AGENT TASK · support-agent = bot · ACTIVITY / WHAT HAPPENED / WHAT YOU DECIDED / YOUR CURRENT GRANT = recently-viewed · WHAT YOU'VE AUTHORIZED / CONSENT RECEIPT = security · WHAT GETS SENT = purchase.
 - Card header: tier chip + record-type icon + tool name.
 - Buttons: label left, Carbon icon right — arrow-right = commit, view = review, close = deny, renew = retry, checkmark = approve selected, download = export.
 - Sidebar rows: status icon + record-type icon + tier tag + tool.
@@ -101,7 +101,7 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 - Approving leaves assignee and labels for the human. Deny leaves the ticket update for the human.
 
 ## Scope-creep card — issues.update
-- 2px terracotta frame. "issue-tracker wants to write 2 fields it didn't have before."
+- 2px terracotta frame. "support-agent wants to write 2 new fields on issue-tracker." The agent is the one asking; the server is where the fields land.
 - YOUR CURRENT GRANT trace (forest) → dashed terracotta → "+ assignee" (salmon half-fill, "Moves ownership to another team"), "+ labels" (open navy, "Tags only"), each unchecked.
 - Actions: Keep Current Grant · Approve Selected · 0 of 2. Clicking Approve Selected with nothing checked shows "Check at least one field first." inline.
 - Remember (unchecked) names the checked fields: "Remember assignee and labels for issue-tracker". With none checked it reads "Remember for issue-tracker". Left unchecked, approval covers this update only and the grant stays as it was.

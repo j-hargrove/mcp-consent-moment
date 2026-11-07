@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useConsentGate, BudgetPanel, SectionLabel, ThesisStrip, TopBar } from '@mcp-consent/react';
 import { RiskTier } from '@mcp-consent/core';
-import { DEFAULT_TASK, runDemo, seedGrants, taskFor } from './agent.js';
+import { AGENT_NAME, DEFAULT_TASK, runDemo, seedGrants, taskFor } from './agent.js';
 import { ActivityStrip } from './components/ActivityStrip.jsx';
 import { CreepCard } from './components/CreepCard.jsx';
 import { Landing } from './components/Landing.jsx';
@@ -190,7 +190,7 @@ export default function App() {
   return (
     <div className="app">
 
-      <TopBar state={agentState} prefix={atGate ? 'paused → ' : ''} status={status} notice={stopNotice} onStop={stopAgent} />
+      <TopBar state={agentState} agentName={AGENT_NAME} prefix={atGate ? 'paused → ' : ''} status={status} notice={stopNotice} onStop={stopAgent} />
       <ThesisStrip active={litThesesRef.current} />
 
       {/* ── Body ── */}
@@ -199,7 +199,7 @@ export default function App() {
         {/* ── Main panel ── */}
         <main className="main-panel">
           <div className="task-card">
-            <SectionLabel icon="bot">AGENT TASK</SectionLabel>
+            <SectionLabel icon="bot">AGENT TASK · {AGENT_NAME}</SectionLabel>
             <div className="task-card__text">
               {task}
             </div>
@@ -228,6 +228,7 @@ export default function App() {
             ) : pendingRequest?.isCreep ? (
               <CreepCard
                 key={pendingRequest.createdAt}
+                agentName={AGENT_NAME}
                 request={pendingRequest}
                 onKeep={() => handleResolve(false)}
                 onApprove={approveFields}

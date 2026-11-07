@@ -13,7 +13,7 @@ const formatValue = value => (Array.isArray(value) ? value.join(', ') : String(v
  * Thesis 4: a server asking for more re-prompts and never silently expands.
  * Primary keeps the grant as it is. Approval covers only the fields checked here.
  */
-export function CreepCard({ request, onKeep, onApprove }) {
+export function CreepCard({ request, agentName, onKeep, onApprove }) {
   const [selected, setSelected] = useState([]);
   const [remember, setRemember] = useState(false);
   const [nudge, setNudge] = useState(false);
@@ -65,7 +65,7 @@ export function CreepCard({ request, onKeep, onApprove }) {
         icon="maximize"
         autoFocus
         onEscape={onKeep}
-        decision={`${request.serverId} wants to write ${newFields.length} fields it didn't have before.`}
+        decision={`${agentName} wants to write ${newFields.length} new fields on ${request.serverId}.`}
         primary={<Button data-action="deny" icon="arrow-right" onClick={onKeep}>Keep Current Grant</Button>}
         secondary={
           <Button data-action="allow" variant="secondary" icon="checkmark" onClick={approve}>

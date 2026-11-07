@@ -352,6 +352,11 @@
   color: var(--color-role-agent);
   min-width: 0;
 }
+.cm-agent__name {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-decision);
+  white-space: nowrap;
+}
 .cm-agent__text {
   overflow: hidden;
   text-overflow: ellipsis;

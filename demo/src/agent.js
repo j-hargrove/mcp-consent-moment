@@ -30,6 +30,9 @@ export const MODE = {
   MULTI_HOP:          'multi-hop',
 };
 
+/** The agent's name: the one actor asking for consent. Components get it as a prop, never hardcoded. */
+export const AGENT_NAME = 'support-agent';
+
 const TRIAGE_TASK = 'Triage a customer payment error, file a support ticket, and issue a refund.';
 
 /** The Agent Task card: the landing shows the triage task the first four scenarios share. */

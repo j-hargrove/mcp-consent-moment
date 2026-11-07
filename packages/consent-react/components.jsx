@@ -241,7 +241,7 @@ export function ApprovalCheckbox({ checked, onChange, kind = 'remember', needsYo
  * Waiting holds still and stopped is static, so neither speaks. Stopped text is a fact and appears whole.
  * prefix is shown whole, before the typed text ("paused → ").
  */
-export function AgentStatus({ state = 'working', prefix = '', children = '' }) {
+export function AgentStatus({ state = 'working', name, prefix = '', children = '' }) {
   const text = String(children);
   const [shown, typing] = useTypedText(text, state !== 'stopped');
   const light = typing && state === 'working' ? 'speaking' : state;
@@ -251,6 +251,7 @@ export function AgentStatus({ state = 'working', prefix = '', children = '' }) {
         <span className="cm-agent__ring" />
         <span className="cm-agent__core" />
       </span>
+      {name && <span className="cm-agent__name">{name}</span>}
       <span className="cm-agent__text" aria-hidden="true">{prefix}{shown}</span>
       <span className="cm-visually-hidden" role="status">{prefix}{text}</span>
     </div>
@@ -326,11 +327,11 @@ export function ThesisStrip({ active = [] }) {
 }
 
 /** Stop stays on every screen until the agent has stopped, then the slot reads as a fact. */
-export function TopBar({ state, status, prefix, notice, onStop }) {
+export function TopBar({ state, agentName, status, prefix, notice, onStop }) {
   return (
     <header className="cm-topbar">
       <span className="cm-topbar__title">CONSENT MOMENT</span>
-      <AgentStatus state={state} prefix={prefix}>{status}</AgentStatus>
+      <AgentStatus state={state} name={agentName} prefix={prefix}>{status}</AgentStatus>
       <div className="cm-topbar__end">
         {notice && <span className="cm-topbar__notice" role="status">{notice}</span>}
         {state === 'stopped'
