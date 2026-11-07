@@ -129,3 +129,13 @@ CRM email change → payments billing_contact → card_on_file.notify_to. Figma'
 
 ## Sidebar tag colors
 Tool names wrap to a second line (breaking after a dot), never truncate. READ = navy outline · WRITE = slate fill · CREEP = terracotta outline, oxblood text · DEST = film red. Waiting at a gate takes the tier color (write slate, scope creep terracotta with oxblood label for contrast, destructive film red) with a pause icon, and the icon and label pulse while the gate is open · passed = forest check · declined = slate close · stopped = slate · running = teal · needs you = film-red warning · timestamps = brown.
+
+## Case-study artifacts
+All in docs/case-study/, committed and pushed.
+| File | What it shows | Status |
+|---|---|---|
+| hero-refund-2x.png | Destructive refund card at hero size | Committed |
+| multihop-figma-2x.png · multihop-code-2x.png · multihop-figma-vs-code.png | Multi-hop card, Figma next to code (shot 4) | Committed |
+| figma-1-variables.png | Figma variable collections from tokens.json | Committed |
+| figma-2-button-properties.png | Button component properties | Committed |
+| figma-3-auto-layout.png | Auto layout on the consent card frame | Committed |
