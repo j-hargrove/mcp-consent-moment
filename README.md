@@ -2,6 +2,8 @@
 
 Consent sized to the risk, asked at the moment of use.
 
+Case study: https://jonathanhargrove.com/#/mcp-consent
+
 **Live demo:** https://mcp-consent-moment.vercel.app
 
 ![The destructive refund card: a film-red panel with the $149.00 amount, a review checkbox, and Don't Refund next to Confirm $149.00 Refund](docs/case-study/hero-refund-2x.png)
