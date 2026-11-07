@@ -139,3 +139,10 @@ All in docs/case-study/, committed and pushed.
 | figma-1-variables.png | Figma variable collections from tokens.json | Committed |
 | figma-2-button-properties.png | Button component properties | Committed |
 | figma-3-auto-layout.png | Auto layout on the consent card frame | Committed |
+
+## Approved (Nov 6, 2026)
+Final approval round. These were open after Phase 6.
+- Multi-hop receipt headlines name the leftover fields: "Task complete. Billing contact and card notifications left for you." · "Task complete. Billing contact left for you." · "Task complete. Card notifications left for you." Kept: "Task complete. Email changed on the CRM and payments." and "0 of 1 done. Email change left for you." Rows stay "payments · <field>".
+- Revoked-CRM card copy as built: "Change the email on contact ct-4821.", Change This Email · Deny.
+- Multi-hop fallback row: the badge wraps under the tool name, so the name stays whole.
+- Line-height and tracking tokens locked at their current values.
