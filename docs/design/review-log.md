@@ -210,7 +210,7 @@ From the Phase 3.5 binding report's "construction leftovers" (Layout values row 
 
 ## Phase 5: behavior and motion (Nov 6, 2026)
 
-Self-check: all five scenarios run with motion on and with reduced motion, plus Stop Agent mid-run, revoke then re-ask, keyboard only (Tab / Space / Enter / Escape) through every card, and a double-click on Confirm. 47 checks passed in each mode, with no console errors. The token grep finds no raw ms, s or cubic-bezier outside the generated token CSS.
+Self-check: all five scenarios run with motion on and with reduced motion, plus Stop Agent mid-run, revoke then re-ask, keyboard only (Tab / Space / Enter / Escape) through every card, and a double-click on Confirm. 104 checks (the Nov 2 suite's 57 plus 47 Phase 5 checks) passed in each mode, with no console errors. The token grep finds no raw ms, s or cubic-bezier outside the generated token CSS.
 
 | Item | Caught | Rule | Fix |
 |---|---|---|---|
@@ -230,3 +230,5 @@ Self-check: all five scenarios run with motion on and with reduced motion, plus 
 | Checkmark | The Carbon checkmark is a filled path, so there's no stroke to draw | Icon motion: stroke draws itself | Revealed left to right with clip-path, the same visual result. It also draws when a review or approval box is ticked |
 | Waiting pulse | Confirmed | Uses opacity.pulse over breathe | No change. Static under reduced motion |
 | Reduced motion | "Instant crossfades" left open whether fades stay | No drawing, typing, icon motion or scan | Movement, drawing, typing, the scan line, icon motion, the light and the pulse are off. Opacity crossfades keep their tokens. The beat and the guard stay because they're behavior |
+| Check suite | Phase 5 reported 47 checks against the Nov 2 suite's 57. The 47 were a new Phase 5 script; the Nov 2 suite lived in a session scratchpad and didn't run at all | The verification loop reruns every earlier check | Rebuilt the Nov 2 suite from its session record and ran it beside the Phase 5 checks: 104 per run, 57 + 47, all passing with motion on and with reduced motion. All 57 are kept. Two were updated for later decisions, not dropped: the refund helper waits out the deliberate beat (Phase 5), and the grant counts and the revoke target follow the two seeded grants (Nov 5 multi-hop). Under reduced motion, the waiting-row check expects no pulse |
+| Figma | pace.* tokens existed in code but not in Figma, breaking the zero-diff claim | Figma and code at parity | Added the pace variables to Figma; diff is zero. pace/step … pace/retry are in the Motion collection: FLOAT ms, no scopes, WEB syntax var(--pace-*). 167 code tokens = 167 Figma variables, no value differences |

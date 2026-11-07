@@ -28,9 +28,18 @@ Inversion of HAL: HAL's light was red and belonged to the machine. Here the mach
 | motion.duration.receipt-stagger | 40ms | receipt rows |
 | motion.duration.double-commit-guard | 1000ms | destructive buttons ignore repeat clicks |
 | motion.easing.standard | cubic-bezier(0.2, 0, 0, 1) | everything |
-Reduced motion: all transitions become instant crossfades; no drawing, no typing, no icon motion, agent light static, no waiting pulse. Opacity crossfades (card enter, dashed → solid, thesis strip) keep their tokens. The deliberate beat and double-commit guard are behavior, not motion, so they stay.
+Reduced motion: nothing moves, draws or types. Opacity fades keep their token durations. The deliberate beat, double-commit guard and agent pacing are behavior, not motion, and are unchanged.
 
-Agent tempo: the scripted agent waits pace.* tokens between steps (machine time, not UI motion; reduced motion doesn't change it).
+## Pace tokens (agent tempo)
+How long the scripted agent waits between steps. Machine time, not UI motion.
+| Token | Value | Use |
+|---|---|---|
+| pace.step | 400ms | short beat before the next step or the receipt |
+| pace.read | 500ms | after each silent read |
+| pace.beat | 600ms | between beats |
+| pace.fallback | 700ms | the agent says what it will fall back to before it runs |
+| pace.hold | 900ms | a result lands before the next gate: draft becomes real, manual retry |
+| pace.retry | 1300ms | automatic retry backoff |
 
 ## Agent presence (the light)
 A small teal light in the top bar, left of the status line. Original form: solid core + thin ring, no lens styling, no blur/glow.
@@ -60,7 +69,7 @@ Rule: an icon moves only if the motion explains what the action does. Plays once
 | view | review | blinks once (scaleY) |
 | close | cancel / deny | tightens (scale 0.8) |
 | renew | retry | one full turn |
-| checkmark | approve selected | stroke draws itself |
+| checkmark | approve selected; checkbox ticked | stroke draws itself (also when a checkbox is ticked) |
 | download | export receipt | arrow drops into tray |
 | maximize | scope expanded (event) | arrows push outward once — plays on detection, no hover needed |
 | stop-sign | stop agent | never moves |
