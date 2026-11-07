@@ -319,20 +319,20 @@
   outline: var(--border-width-focus) solid var(--color-role-ink);
   outline-offset: var(--space-inset-xxs);
 }
-.cm-check[data-review] .cm-check__input:not(:checked) + .cm-check__label .cm-check__box {
+:is(.cm-check[data-kind='review'], .cm-check[data-needs-you]) .cm-check__input:not(:checked) + .cm-check__label .cm-check__box {
   border: var(--border-width-alert) solid var(--color-role-alert);
 }
-.cm-check[data-muted] .cm-check__label { color: var(--color-role-text-secondary); }
+.cm-check[data-kind='todo']:not([data-needs-you]) .cm-check__label { color: var(--color-role-text-secondary); }
 /* The destructive review step: the whole row is the target and carries the focus ring */
-.cm-check[data-required] .cm-check__label {
+.cm-check[data-kind='review'] .cm-check__label {
   padding: var(--space-inset-xs);
   margin: calc(-1 * var(--space-inset-xs));
   border-radius: var(--radius-s);
   font-weight: var(--font-weight-decision);
   color: var(--color-role-ink);
 }
-.cm-check[data-required] .cm-check__input:focus-visible + .cm-check__label .cm-check__box { outline: none; }
-.cm-check[data-required] .cm-check__input:focus-visible + .cm-check__label {
+.cm-check[data-kind='review'] .cm-check__input:focus-visible + .cm-check__label .cm-check__box { outline: none; }
+.cm-check[data-kind='review'] .cm-check__input:focus-visible + .cm-check__label {
   outline: var(--border-width-focus) solid var(--color-role-ink);
 }
 .cm-check__consequence {

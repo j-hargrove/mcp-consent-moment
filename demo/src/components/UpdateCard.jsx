@@ -52,6 +52,7 @@ export function UpdateCard({ request, remember, onRememberChange, onResolve }) {
         <SectionLabel>WHAT GETS WRITTEN</SectionLabel>
         <CausalTrace steps={steps} />
         <ApprovalCheckbox
+          kind="remember"
           checked={remember}
           onChange={onRememberChange}
           consequence="Left unchecked, the agent asks again next time."

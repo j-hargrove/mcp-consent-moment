@@ -48,7 +48,7 @@ export function CreepCard({ request, onKeep, onApprove }) {
       value: formatValue(request.args[field]),
       line: 'ends',
       control: (
-        <ApprovalCheckbox checked={selected.includes(field)} onChange={on => toggle(field, on)}>
+        <ApprovalCheckbox kind="select" checked={selected.includes(field)} onChange={on => toggle(field, on)}>
           Approve {field}
         </ApprovalCheckbox>
       ),
@@ -76,6 +76,7 @@ export function CreepCard({ request, onKeep, onApprove }) {
         <SectionLabel icon="recently-viewed">YOUR CURRENT GRANT</SectionLabel>
         <CausalTrace steps={steps} />
         <ApprovalCheckbox
+          kind="remember"
           checked={remember}
           onChange={setRemember}
           consequence="Left unchecked, approval covers this update only and the grant stays as it was."

@@ -204,15 +204,18 @@ export function CausalTrace({ steps, motion = 'draw' }) {
 }
 
 /**
- * On is forest with a white check, filled the instant it's ticked. review marks a check the human
- * must make: 2px film-red border while off. muted is a leftover row that isn't an alert: slate label.
- * required is the destructive review step: decision-weight label, the whole row is the click target
- * and carries the focus ring.
+ * On is forest with a white check, filled the instant it's ticked. kind names the job, as in Figma:
+ *   remember  optional; names exactly what it remembers
+ *   select    optional widening; one per new field on a trace step
+ *   review    required before a destructive action: 2px film-red border while off, decision-weight
+ *             label, the whole row is the click target and carries the focus ring
+ *   todo      a LEFT FOR YOU row. needsYou: 2px film-red border while off; otherwise a slate label
+ * Film red always means a person has to act.
  */
-export function ApprovalCheckbox({ checked, onChange, review = false, muted = false, required = false, consequence, children }) {
+export function ApprovalCheckbox({ checked, onChange, kind = 'remember', needsYou = false, consequence, children }) {
   const id = useId();
   return (
-    <div className="cm-check" data-review={review || undefined} data-muted={muted || undefined} data-required={required || undefined}>
+    <div className="cm-check" data-kind={kind} data-needs-you={(kind === 'todo' && needsYou) || undefined}>
       <input
         id={id}
         className="cm-check__input"
@@ -443,8 +446,8 @@ export function ConsentReceipt({
             <div key={item.label} className="cm-receipt__row" style={{ '--cm-row': steps.length + i }}>
               <ApprovalCheckbox
                 checked={item.done}
-                review={item.alert}
-                muted={!item.alert}
+                kind="todo"
+                needsYou={item.alert}
                 onChange={val => onToggleLeft?.(item.label, val)}
               >
                 {item.label}

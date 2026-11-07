@@ -65,7 +65,7 @@ export function RefundCard({ request, onResolve }) {
         <FieldRows fields={fields} />
         {/* Required, not optional: its own section, decision weight. Slate icon, since forest means approved */}
         <SectionLabel icon="checkmark" tone={null}>BEFORE YOU CONFIRM</SectionLabel>
-        <ApprovalCheckbox checked={reviewed} onChange={review} review required>
+        <ApprovalCheckbox kind="review" checked={reviewed} onChange={review}>
           I've checked the amount and the customer.
         </ApprovalCheckbox>
         {nudge && <p className="cm-muted" role="status">Check the amount first.</p>}

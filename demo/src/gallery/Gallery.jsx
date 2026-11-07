@@ -45,11 +45,11 @@ function ScopeCreepTrace() {
         { kind: 'granted', server: 'issue-tracker', field: 'status, resolution_note', value: 'open → resolved', line: 'ends' },
         {
           kind: 'new-half', field: '+ assignee', note: 'Moves ownership to another team', line: 'ends',
-          control: <ApprovalCheckbox checked={assignee} onChange={setAssignee}>Approve assignee</ApprovalCheckbox>,
+          control: <ApprovalCheckbox kind="select" checked={assignee} onChange={setAssignee}>Approve assignee</ApprovalCheckbox>,
         },
         {
           kind: 'new-open', field: '+ labels', note: 'Tags only',
-          control: <ApprovalCheckbox checked={labels} onChange={setLabels}>Approve labels</ApprovalCheckbox>,
+          control: <ApprovalCheckbox kind="select" checked={labels} onChange={setLabels}>Approve labels</ApprovalCheckbox>,
         },
       ]}
     />
@@ -121,11 +121,14 @@ export function Gallery() {
 
       <Section title="APPROVAL CHECKBOX">
         <div className="g-pane g-row">
-          <ApprovalCheckbox checked={false}>Off</ApprovalCheckbox>
-          <ApprovalCheckbox checked>On</ApprovalCheckbox>
-          <ApprovalCheckbox checked={false} review>Review first</ApprovalCheckbox>
-          <ApprovalCheckbox checked review>Review done</ApprovalCheckbox>
-          <ApprovalCheckbox checked={write} onChange={setWrite} consequence="Applies to new tickets only.">
+          <ApprovalCheckbox kind="remember" checked={false}>Remember · off</ApprovalCheckbox>
+          <ApprovalCheckbox kind="remember" checked>Remember · on</ApprovalCheckbox>
+          <ApprovalCheckbox kind="select" checked={false}>Select · off</ApprovalCheckbox>
+          <ApprovalCheckbox kind="review" checked={false}>Review · off</ApprovalCheckbox>
+          <ApprovalCheckbox kind="review" checked>Review · on</ApprovalCheckbox>
+          <ApprovalCheckbox kind="todo" needsYou checked={false}>Todo · needs you</ApprovalCheckbox>
+          <ApprovalCheckbox kind="todo" checked={false}>Todo · plain</ApprovalCheckbox>
+          <ApprovalCheckbox kind="remember" checked={write} onChange={setWrite} consequence="Applies to new tickets only.">
             Don't ask again for new tickets on issue-tracker
           </ApprovalCheckbox>
         </div>
@@ -186,7 +189,7 @@ export function Gallery() {
             primary={<Button icon="close">Don't Refund</Button>}
             secondary={<Button variant="override" icon="arrow-right">Confirm $149.00 Refund</Button>}
           >
-            <ApprovalCheckbox checked={review} onChange={setReview} review consequence="Not remembered. Every refund asks again.">
+            <ApprovalCheckbox kind="review" checked={review} onChange={setReview} consequence="Not remembered. Every refund asks again.">
               I've checked the amount and the customer.
             </ApprovalCheckbox>
           </ConsentFrame>

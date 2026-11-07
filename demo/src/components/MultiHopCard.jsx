@@ -60,7 +60,7 @@ export function MultiHopCard({ request, before = {}, onKeep, onApprove }) {
       note: FIELD_NOTES[field],
       line: 'ends',
       control: (
-        <ApprovalCheckbox checked={selected.includes(field)} onChange={on => toggle(field, on)}>
+        <ApprovalCheckbox kind="select" checked={selected.includes(field)} onChange={on => toggle(field, on)}>
           Approve {field}
         </ApprovalCheckbox>
       ),

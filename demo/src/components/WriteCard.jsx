@@ -35,6 +35,7 @@ export function WriteCard({ request, committed, resultId, remember, onRememberCh
         <SectionLabel>WHAT GETS WRITTEN</SectionLabel>
         <DraftPreview id={resultId ?? 'ISS-new'} fields={fields} committed={committed} />
         <ApprovalCheckbox
+          kind="remember"
           checked={remember}
           onChange={onRememberChange}
           consequence="Left unchecked, the agent asks again next time."

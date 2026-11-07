@@ -94,7 +94,7 @@ All surfaces flat.
    - select: optional widening; one per new field on a trace step (scope creep, multi-hop).
    - review: required before a destructive action (refund). 2px film-red border while off, decision-weight ink label, the whole row is the target.
    - todo: a LEFT FOR YOU row on the receipt. Needs you = yes: 2px film-red border while off. Needs you = no: plain box, slate label.
-   Film red always means a person has to act (review, and todo that needs you). Figma: Kind = remember / select / review / todo, plus Needs you = yes / no.
+   Film red always means a person has to act (review, and todo that needs you). Figma: Kind = remember / select / review / todo, plus Needs you = yes / no. Code: `<ApprovalCheckbox kind="remember | select | review | todo" needsYou>`, the same names.
 6. Agent status line (mono, teal) + agent light (working / speaking / waiting / stopped)
 7. Scope row — folded into causal trace steps; each new-field step carries its own checkbox
 8. Causal trace card
