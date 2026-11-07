@@ -178,7 +178,7 @@ export async function suite({ browser, url, reduced, shotsDir }) {
   ok('multi-hop: nudge with none checked', await page.getByText('Check at least one field first.').isVisible());
   await page.keyboard.press('Escape');
   await page.locator('.cm-panel__decision').waitFor({ timeout: 15000 });
-  ok('multi-hop Change CRM Only', (await page.locator('.cm-frame[data-tier="receipt"] .cm-panel__detail').textContent()).includes('2 payments fields left for you.'));
+  ok('multi-hop Change CRM Only', (await page.locator('.cm-frame[data-tier="receipt"] .cm-panel__detail').textContent()).includes('Billing contact and card notifications left for you.'));
   await page.context().close();
 
   // ── Stop Agent mid-run ──

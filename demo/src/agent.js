@@ -557,6 +557,9 @@ async function runToolError(ctx) {
 /** LEFT FOR YOU rows name the item only. */
 const linkedRow = field => `payments · ${field}`;
 
+/** The receipt headline names leftover payments fields in plain language. */
+const LINKED_NAME = { billing_contact: 'billing contact', 'card_on_file.notify_to': 'card notifications' };
+
 /**
  * The CRM email is granted; the 2 payments fields that follow it are not.
  * Change CRM Only writes the email alone and leaves payments for the human.
@@ -585,7 +588,7 @@ async function runMultiHop(ctx) {
     const left = LINKED_FIELDS.filter(field => !approved.includes(field));
     const message = left.length === 0
       ? 'Task complete. Email changed on the CRM and payments.'
-      : `Task complete. ${left.length} payments ${left.length === 1 ? 'field' : 'fields'} left for you.`;
+      : `Task complete. ${leftoverName(left.map(field => LINKED_NAME[field]))} left for you.`;
     onStatusChange(message);
     onComplete({
       type: left.length ? 'partial' : 'done',

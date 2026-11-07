@@ -245,3 +245,9 @@ Self-check: all five scenarios run with motion on and with reduced motion, plus 
 | App shell | `height: 100vh` was the one raw size in the app styles | Every value traces to a token; allowed 0 and 100% | `height: 100%`; html, body and #root are already 100%, so the shell renders the same |
 | All | Raw-value grep over packages/ and demo/: no hex, rgb(), px, ms, s or cubic-bezier outside the generated token CSS and its generator | Every value traces to a token | Kept: the Google Fonts link in index.html and gallery.html loads the three font.family token families. Structural values that aren't design values stay: grid tracks, flex grow, 50% for the half-fill and the visually hidden clip, 45deg for the declined strike, 1turn for renew. The keyframe ratios (0.7, 0.8, scaleY) are the values in behavior-and-motion.md |
 | All | Every tracked file checked by import, not name | Remove what the build doesn't use | All nine demo cards are imported by App.jsx; the gallery (Phase 2 page, dev only), favicon, token generator and shot-4 script are referenced. No old glyphs (✓ ✕ ↻ ⬡ ⚠ →), no old card, no "Allow" copy |
+
+## Final approval round (Nov 6, 2026)
+
+| Screen | Caught | Rule | Fix |
+|---|---|---|---|
+| Completion | Headline used a "(s)" placeholder and didn't name the fields | Receipt headline names leftover fields | Headlines name the fields: "Task complete. Billing contact and card notifications left for you." / "Task complete. Billing contact left for you." / "Task complete. Card notifications left for you." Rows stay "payments · <field>" |
